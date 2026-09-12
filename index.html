@@ -1852,6 +1852,158 @@
                         { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
                         { id: 'el_footer', type: 'label', name: 'フッター', text: '幹事: {{発行者名}}　連絡先: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
+                },
+
+                // 経理・取引書類（見積書/発注書/納品書/受領書/請求書/領収書）：市販の帳票フォーマットの構成に準拠
+                // 共通レイアウト: 右上ロゴ／中央上タイトル／左に宛先・右に自社情報／明細（1行）／小計・消費税・合計／備考
+                quotation: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '見積書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '御 見 積 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '見積No・発行日', text: '見積No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_headline', type: 'label', name: '見積金額', text: '御見積金額：¥{{合計金額}}', x: 20, y: 75, width: 90, height: 16, fontSize: 15, align: 'center', bold: true, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_notes', type: 'label', name: '備考', text: '備考\n{{備考}}', x: 20, y: 155, width: 170, height: 28, fontSize: 10, border: true, borderColor: '#d1d5db' }
+                    ]
+                },
+                purchaseOrder: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '発注書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '発 注 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '発注No・発行日', text: '発注No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_headline', type: 'label', name: '総合計金額', text: '総合計金額：¥{{合計金額}}', x: 20, y: 75, width: 90, height: 16, fontSize: 15, align: 'center', bold: true, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_notes', type: 'label', name: '備考', text: '備考\n{{備考}}', x: 20, y: 155, width: 170, height: 28, fontSize: 10, border: true, borderColor: '#d1d5db' }
+                    ]
+                },
+                deliveryNote: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '納品書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '納 品 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '納品No・発行日', text: '納品No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_headline', type: 'label', name: '総合計金額', text: '総合計金額：¥{{合計金額}}', x: 20, y: 75, width: 90, height: 16, fontSize: 15, align: 'center', bold: true, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_notes', type: 'label', name: '備考', text: '備考\n{{備考}}', x: 20, y: 155, width: 170, height: 28, fontSize: 10, border: true, borderColor: '#d1d5db' }
+                    ]
+                },
+                receiptOfGoods: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '受領書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '受 領 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '受領No・発行日', text: '受領No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_headline', type: 'label', name: '総合計金額', text: '総合計金額：¥{{合計金額}}', x: 20, y: 75, width: 90, height: 16, fontSize: 15, align: 'center', bold: true, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_notes', type: 'label', name: '備考', text: '備考\n{{備考}}', x: 20, y: 152, width: 170, height: 18, fontSize: 10, border: true, borderColor: '#d1d5db' },
+                        { id: 'el_confirm', type: 'label', name: '受領確認文', text: '上記の通り、受領いたしました。', x: 20, y: 178, width: 170, height: 8, fontSize: 11, align: 'center' },
+                        { id: 'el_receivedDate', type: 'label', name: '受領日', text: '受領日: {{受領日}}', x: 20, y: 192, width: 90, height: 8, fontSize: 10, align: 'left' },
+                        { id: 'el_stampBox', type: 'label', name: '受領印', text: '印', x: 140, y: 185, width: 30, height: 22, fontSize: 10, align: 'center', color: '#9ca3af', border: true, borderColor: '#9ca3af' }
+                    ]
+                },
+                invoiceBill: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '請求書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '請 求 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '請求No・発行日', text: '請求No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_dueDate', type: 'label', name: 'お支払期限', text: 'お支払期限: {{支払期限}}', x: 20, y: 155, width: 90, height: 8, fontSize: 10, align: 'left' },
+                        { id: 'el_bankBox', type: 'label', name: '振込先', text: '【お振込先】\n{{銀行名}} {{支店名}}\n{{預金種別}} {{口座番号}}\n名義: {{口座名義}}', x: 20, y: 166, width: 90, height: 30, fontSize: 9, align: 'left', border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_bankNote', type: 'label', name: '振込手数料注記', text: '※恐れ入りますが、振込手数料はお客様にてご負担ください。', x: 115, y: 166, width: 75, height: 20, fontSize: 8, color: '#6b7280' },
+                        { id: 'el_notes', type: 'label', name: '備考', text: '備考\n{{備考}}', x: 20, y: 200, width: 170, height: 25, fontSize: 10, border: true, borderColor: '#d1d5db' }
+                    ]
+                },
+                paymentReceipt: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '領収書',
+                    elements: [
+                        { id: 'el_logo', type: 'logo', name: 'ロゴ', x: 150, y: 12, width: 40, height: 20 },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '領 収 書', x: 20, y: 15, width: 125, height: 14, fontSize: 22, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '(軽減税率対象)', x: 20, y: 29, width: 125, height: 6, fontSize: 9, align: 'center', color: '#6b7280' },
+                        { id: 'el_docNo', type: 'label', name: '領収No・発行日', text: '領収No.: {{番号}}\n発行日: {{発行日}}', x: 115, y: 36, width: 75, height: 14, fontSize: 10, align: 'right' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{宛先}} 御中\n〒{{郵便番号}}\n{{住所}}\n\nご担当: {{氏名}} 様', x: 20, y: 36, width: 90, height: 34, fontSize: 11, align: 'left' },
+                        { id: 'el_companyName', type: 'label', name: '自社名', text: 'サンプル株式会社', x: 115, y: 53, width: 75, height: 7, fontSize: 11, bold: true, dataBind: 'companyName' },
+                        { id: 'el_companyAddress', type: 'label', name: '自社住所', text: '〒000-0000\n東京都千代田区1-1-1', x: 115, y: 61, width: 75, height: 12, fontSize: 8.5, dataBind: 'companyAddress' },
+                        { id: 'el_companyContact', type: 'label', name: '自社連絡先', text: 'TEL: 03-0000-0000\ninfo@example.com', x: 115, y: 74, width: 75, height: 8, fontSize: 8.5, dataBind: 'companyContact' },
+                        { id: 'el_invoiceReg', type: 'label', name: 'インボイス登録番号', text: '登録番号: T0000000000000', x: 115, y: 83, width: 75, height: 6, fontSize: 8, color: '#6b7280', dataBind: 'invoiceRegNo' },
+                        { id: 'el_headline', type: 'label', name: '領収金額', text: '領収金額：¥{{合計金額}}', x: 20, y: 75, width: 90, height: 16, fontSize: 15, align: 'center', bold: true, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_table', type: 'table', name: '明細', x: 20, y: 98, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目', '数量', '単位', '単価', '金額'], columns: ['品目', '数量', '単位', '単価', '金額'] },
+                        { id: 'el_subDivider', type: 'box', name: '小計区切り線', x: 110, y: 118, width: 80, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_subtotal', type: 'label', name: '小計', text: '小計　¥{{小計}}', x: 110, y: 120, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_tax', type: 'label', name: '消費税', text: '消費税(8%)　¥{{消費税}}', x: 110, y: 128, width: 80, height: 7, fontSize: 10, align: 'right' },
+                        { id: 'el_totalDivider', type: 'box', name: '合計区切り線', x: 110, y: 137, width: 80, height: 0.8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
+                        { id: 'el_notes', type: 'label', name: '但し書き・備考', text: '但し書き: {{但し書き}}\n{{備考}}', x: 20, y: 155, width: 170, height: 28, fontSize: 10, border: true, borderColor: '#d1d5db' }
+                    ]
                 }
             };
 
@@ -1869,9 +2021,15 @@
                 nameBadge:          { icon: 'badge',              desc: '氏名・所属を大きく表示／QRなし',     category: 'ラベル・証明' },
                 certificate:        { icon: 'workspace_premium',  desc: '真贋確認QR付き',                    category: 'ラベル・証明' },
                 parkingPermit:      { icon: 'local_parking',      desc: '車両照会QR付き',                    category: 'ラベル・証明' },
-                coupon:             { icon: 'confirmation_number',desc: '利用確認QR付き',                    category: 'ラベル・証明' }
+                coupon:             { icon: 'confirmation_number',desc: '利用確認QR付き',                    category: 'ラベル・証明' },
+                quotation:          { icon: 'request_quote',       desc: '見積No.・明細・小計/消費税/合計',    category: '経理・取引書類' },
+                purchaseOrder:      { icon: 'shopping_cart',       desc: '発注No.・明細・小計/消費税/合計',    category: '経理・取引書類' },
+                deliveryNote:       { icon: 'local_shipping',      desc: '納品No.・明細・小計/消費税/合計',    category: '経理・取引書類' },
+                receiptOfGoods:     { icon: 'fact_check',          desc: '受領確認文・受領印欄つき',           category: '経理・取引書類' },
+                invoiceBill:        { icon: 'receipt',             desc: 'お支払期限・振込先つき',             category: '経理・取引書類' },
+                paymentReceipt:     { icon: 'payments',            desc: '但し書き・領収金額つき',             category: '経理・取引書類' }
             };
-            const TEMPLATE_GALLERY_CATEGORY_ORDER = ['受付・会員', '案内状・通知', 'ラベル・証明'];
+            const TEMPLATE_GALLERY_CATEGORY_ORDER = ['受付・会員', '案内状・通知', 'ラベル・証明', '経理・取引書類'];
 
             // デザイナー要素配列を、簡易サムネイル用のcanvasに描画（メインのrenderCanvasとは独立した軽量版）
             function renderTemplateThumbnail(canvas, preset) {
