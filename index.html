@@ -280,6 +280,14 @@
                 </button>
                 <div id="settingsMenuDropdown" class="hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 z-30">
                     <input type="file" id="configFileInput" accept=".json" class="hidden">
+                    <button id="openCompanyProfileBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
+                        <span class="material-icons text-[18px] text-gray-500">apartment</span>
+                        <span>
+                            <span class="block text-xs font-medium text-gray-800">自社情報を登録</span>
+                            <span class="block text-[10px] text-gray-400">会社名・住所・ロゴなどを保存</span>
+                        </span>
+                    </button>
+                    <div class="my-1 border-t border-gray-100"></div>
                     <button id="exportConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
                         <span class="material-icons text-[18px] text-gray-500">download</span>
                         <span>
@@ -652,6 +660,20 @@
                                     <button id="addQrBtn" class="m3-btn-tonal text-xs px-2.5 py-1.5 rounded-full flex items-center font-medium">
                                         <span class="material-icons text-[15px] mr-1">qr_code</span>+QR
                                     </button>
+                                    <button id="addLogoBtn" class="m3-btn-tonal text-xs px-2.5 py-1.5 rounded-full flex items-center font-medium">
+                                        <span class="material-icons text-[15px] mr-1">image</span>+ロゴ
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 自社情報の一括差し込み -->
+                            <div class="mb-3.5 bg-surfaceDim p-2.5 rounded-xl border border-gray-200 flex items-center justify-between gap-2 flex-wrap">
+                                <p class="text-[11px] font-bold text-gray-600">自社情報（会社名・住所・ロゴなど）:</p>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" id="insertCompanyInfoBtn" class="text-xs px-2.5 py-1 rounded-full border border-primary/30 text-primary hover:bg-primaryContainer/60 font-medium flex items-center gap-1">
+                                        <span class="material-icons text-sm">apartment</span>会社情報を挿入
+                                    </button>
+                                    <button type="button" id="openCompanyProfileFromStep4Btn" class="text-[11px] text-gray-500 hover:text-primary underline">登録・編集</button>
                                 </div>
                             </div>
 
@@ -865,6 +887,76 @@
         </div>
     </div>
 
+    <!-- 自社情報の登録モーダル -->
+    <div id="companyProfileModal" class="fixed inset-0 bg-gray-950/70 flex items-center justify-center z-[80] hidden backdrop-blur-sm p-2 sm:p-5">
+        <div class="bg-surface rounded-3xl shadow-2xl flex flex-col w-full max-w-lg max-h-[92vh] overflow-hidden border border-outlineVariant/50">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-surfaceContainer/50 shrink-0">
+                <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <span class="material-icons text-primary text-xl">apartment</span> 自社情報の登録
+                </h3>
+                <button id="closeCompanyProfileBtn" class="text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-200 focus:outline-none">
+                    <span class="material-icons text-2xl">close</span>
+                </button>
+            </div>
+            <div class="p-5 space-y-3.5 overflow-y-auto">
+                <p class="text-[11px] text-gray-500">ここで登録した内容はブラウザに保存され、見積書・請求書などのテンプレートを開いた時に自動で差し込まれます（「会社情報を挿入」ボタンでいつでも呼び出せます）。</p>
+
+                <div class="flex items-center gap-3">
+                    <div id="companyLogoPreviewWrap" class="w-20 h-20 rounded-xl border border-gray-200 bg-surfaceDim flex items-center justify-center overflow-hidden shrink-0">
+                        <span id="companyLogoPreviewPlaceholder" class="material-icons text-gray-300 text-3xl">image</span>
+                        <img id="companyLogoPreviewImg" class="w-full h-full object-contain hidden" alt="ロゴプレビュー">
+                    </div>
+                    <div class="flex-grow">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-1">ロゴ画像 (PNG/JPEG)</label>
+                        <input type="file" id="companyLogoInput" accept="image/png,image/jpeg" class="hidden">
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="companyLogoSelectBtn" class="m3-btn-outlined px-3 py-1.5 rounded-full text-xs font-medium">画像を選択</button>
+                            <button type="button" id="companyLogoRemoveBtn" class="text-[11px] text-error hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full hidden">削除</button>
+                        </div>
+                        <div id="companyLogoColorRow" class="hidden mt-2 flex items-center gap-1.5">
+                            <span class="text-[10px] text-gray-400">ロゴから抽出した色:</span>
+                            <button type="button" id="companyLogoColorSwatch" class="w-5 h-5 rounded-full border-2 border-white shadow ring-1 ring-gray-200" title="この色を配色に使う"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="col-span-2">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">会社名・屋号</label>
+                        <input type="text" id="companyName" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="例）株式会社サンプル">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">サービス名（任意）</label>
+                        <input type="text" id="companyServiceName" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="例）〇〇コンサルティング">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">郵便番号</label>
+                        <input type="text" id="companyPostalCode" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="100-0001">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">電話番号</label>
+                        <input type="text" id="companyTel" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="03-0000-0000">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">住所</label>
+                        <input type="text" id="companyAddress" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="東京都千代田区1-1-1">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">メールアドレス</label>
+                        <input type="text" id="companyEmail" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="info@example.com">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] font-medium text-gray-600 mb-0.5">インボイス登録番号（任意）</label>
+                        <input type="text" id="companyInvoiceRegNo" class="m3-input w-full px-2.5 py-1.5 border rounded text-xs" placeholder="T1234567890123">
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-200 bg-surfaceContainer/50 shrink-0">
+                <button id="companyProfileSaveBtn" class="m3-btn-filled px-5 py-2 rounded-full text-xs font-semibold">保存する</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 拡大プレビュー＆調整モーダル (M3 Full Workspace) -->
     <div id="expandedPreviewModal" class="fixed inset-0 bg-gray-950/70 flex items-center justify-center z-[60] hidden backdrop-blur-sm transition-opacity p-2 sm:p-5">
         <div class="bg-surface rounded-3xl shadow-2xl flex flex-col w-full max-w-6xl h-[95vh] overflow-hidden border border-outlineVariant/50">
@@ -1017,6 +1109,17 @@
             let customFontBytes = null;
             let logoImageBytes = null;
 
+            // 自社情報（会社プロフィール）：見積書・請求書等のテンプレートに自動差し込みするための登録情報
+            // ※ companyLogoImage等の初期化処理から早期に呼ばれるため、ファイル冒頭付近で定義する
+            const COMPANY_PROFILE_KEY = 'atenaCompanyProfile';
+            function loadCompanyProfile() {
+                try { return JSON.parse(localStorage.getItem(COMPANY_PROFILE_KEY)) || null; }
+                catch (e) { return null; }
+            }
+            function saveCompanyProfileToStorage(profile) {
+                localStorage.setItem(COMPANY_PROFILE_KEY, JSON.stringify(profile));
+            }
+
             // デザイン作成モード用レイアウト要素配列
             let designerElements = [
                 { id: 'el_title', type: 'label', name: '大見出し', text: 'ご案内状', x: 20, y: 25, width: 170, height: 12, fontSize: 20, align: 'center', bold: true, color: '#111827', border: false, bg: false },
@@ -1076,7 +1179,8 @@
                 elementListContainer: document.getElementById('elementListContainer'), elementPropertyEditor: document.getElementById('elementPropertyEditor'),
                 elementForm: document.getElementById('elementForm'), noElementSelectedText: document.getElementById('noElementSelectedText'),
                 addLabelBtn: document.getElementById('addLabelBtn'), addTableBtn: document.getElementById('addTableBtn'),
-                addBoxBtn: document.getElementById('addBoxBtn'), addQrBtn: document.getElementById('addQrBtn'),
+                addBoxBtn: document.getElementById('addBoxBtn'), addQrBtn: document.getElementById('addQrBtn'), addLogoBtn: document.getElementById('addLogoBtn'),
+                insertCompanyInfoBtn: document.getElementById('insertCompanyInfoBtn'), openCompanyProfileFromStep4Btn: document.getElementById('openCompanyProfileFromStep4Btn'),
                 presetNoticeBtn: document.getElementById('presetNoticeBtn'), presetTicketBtn: document.getElementById('presetTicketBtn'),
                 myTemplateSelect: document.getElementById('myTemplateSelect'), myTemplateSaveBtn: document.getElementById('myTemplateSaveBtn'), myTemplateDeleteBtn: document.getElementById('myTemplateDeleteBtn'),
                 customFontInput: document.getElementById('customFontInput'), fontStatusText: document.getElementById('fontStatusText'),
@@ -1124,7 +1228,28 @@
                 expFontFamilySelect: document.getElementById('expFontFamilySelect'),
                 fontPairingPresets: document.getElementById('fontPairingPresets'),
                 colorPaletteSwatches: document.getElementById('colorPaletteSwatches'),
-                customPaletteColor: document.getElementById('customPaletteColor')
+                customPaletteColor: document.getElementById('customPaletteColor'),
+
+                // 自社情報の登録モーダル
+                openCompanyProfileBtn: document.getElementById('openCompanyProfileBtn'),
+                companyProfileModal: document.getElementById('companyProfileModal'),
+                closeCompanyProfileBtn: document.getElementById('closeCompanyProfileBtn'),
+                companyProfileSaveBtn: document.getElementById('companyProfileSaveBtn'),
+                companyLogoPreviewWrap: document.getElementById('companyLogoPreviewWrap'),
+                companyLogoPreviewPlaceholder: document.getElementById('companyLogoPreviewPlaceholder'),
+                companyLogoPreviewImg: document.getElementById('companyLogoPreviewImg'),
+                companyLogoInput: document.getElementById('companyLogoInput'),
+                companyLogoSelectBtn: document.getElementById('companyLogoSelectBtn'),
+                companyLogoRemoveBtn: document.getElementById('companyLogoRemoveBtn'),
+                companyLogoColorRow: document.getElementById('companyLogoColorRow'),
+                companyLogoColorSwatch: document.getElementById('companyLogoColorSwatch'),
+                companyName: document.getElementById('companyName'),
+                companyServiceName: document.getElementById('companyServiceName'),
+                companyPostalCode: document.getElementById('companyPostalCode'),
+                companyTel: document.getElementById('companyTel'),
+                companyAddress: document.getElementById('companyAddress'),
+                companyEmail: document.getElementById('companyEmail'),
+                companyInvoiceRegNo: document.getElementById('companyInvoiceRegNo')
             };
 
             if (els.modalCloseBtn) {
@@ -1158,6 +1283,7 @@
                     if (el.type === 'table') typeIcon = 'table_chart';
                     if (el.type === 'qr') typeIcon = 'qr_code';
                     if (el.type === 'box') typeIcon = 'crop_square';
+                    if (el.type === 'logo') typeIcon = 'image';
 
                     card.innerHTML = `
                         <div class="flex items-center gap-2 overflow-hidden">
@@ -1282,7 +1408,10 @@
                 { key: 'forest', label: 'フォレスト', color: '#1F6F4A' },
                 { key: 'burgundy', label: 'バーガンディ', color: '#7A2E3B' },
                 { key: 'terracotta', label: 'テラコッタ', color: '#B5533C' },
-                { key: 'slate', label: 'スレート', color: '#4B5563' }
+                { key: 'slate', label: 'スレート', color: '#4B5563' },
+                { key: 'teal', label: 'ティール', color: '#0F766E' },
+                { key: 'amber', label: 'アンバー', color: '#B8860B' },
+                { key: 'charcoal', label: 'チャコール', color: '#1F2937' }
             ];
             function applyColorPalette(hex) {
                 if (!hex) return;
@@ -1361,6 +1490,18 @@
                                 <label class="text-[11px] flex items-center cursor-pointer"><input type="checkbox" id="propBorder" ${el.border ? 'checked' : ''} class="mr-1"> 枠線</label>
                             </div>
                         </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-600 mb-0.5">自社情報との連携（任意）</label>
+                            <select id="propDataBind" class="m3-input w-full px-2 py-1 border rounded text-xs bg-white">
+                                <option value="" ${!el.dataBind ? 'selected' : ''}>連携なし</option>
+                                <option value="companyName" ${el.dataBind === 'companyName' ? 'selected' : ''}>会社名・屋号</option>
+                                <option value="serviceName" ${el.dataBind === 'serviceName' ? 'selected' : ''}>サービス名</option>
+                                <option value="companyAddress" ${el.dataBind === 'companyAddress' ? 'selected' : ''}>住所（郵便番号込み）</option>
+                                <option value="companyContact" ${el.dataBind === 'companyContact' ? 'selected' : ''}>連絡先（電話・メール）</option>
+                                <option value="invoiceRegNo" ${el.dataBind === 'invoiceRegNo' ? 'selected' : ''}>インボイス登録番号</option>
+                            </select>
+                            <p class="text-[10px] text-gray-400 mt-0.5">選択すると「会社情報を挿入」ボタンでこの要素に自動反映されます</p>
+                        </div>
                     `;
                 } else if (el.type === 'qr') {
                     fieldsHtml += `
@@ -1382,6 +1523,15 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="block text-[11px] text-gray-600">1行の高さ (mm)</label><input type="number" id="propRowHeight" value="${el.rowHeight || 8}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
                             <div>${fontSizeControlHtml('propFontSize', el.fontSize || 10)}</div>
+                        </div>
+                    `;
+                } else if (el.type === 'logo') {
+                    const hasLogo = !!(loadCompanyProfile() || {}).logoDataUrl;
+                    fieldsHtml += `
+                        <div class="bg-surfaceDim rounded-lg p-2.5 text-[11px] text-gray-600 flex items-center gap-2">
+                            <span class="material-icons text-base ${hasLogo ? 'text-primary' : 'text-gray-400'}">${hasLogo ? 'check_circle' : 'info'}</span>
+                            <span>${hasLogo ? '登録済みの自社ロゴが自動的に表示されます。' : 'まだロゴが登録されていません。'}</span>
+                            <button type="button" id="propOpenCompanyProfile" class="ml-auto text-primary underline whitespace-nowrap">自社情報を登録</button>
                         </div>
                     `;
                 }
@@ -1410,6 +1560,7 @@
                 bindProp('propTemplate', dom => { el.template = dom.value; });
                 bindProp('propFontSize', dom => { el.fontSize = parseFloat(dom.value) || 10; });
                 bindProp('propFontFamily', dom => { el.fontFamily = dom.value; });
+                bindProp('propDataBind', dom => { el.dataBind = dom.value || undefined; });
                 bindProp('propAlign', dom => { el.align = dom.value; });
                 bindProp('propBold', dom => { el.bold = dom.checked; });
                 bindProp('propBorder', dom => { el.border = dom.checked; });
@@ -1427,6 +1578,7 @@
             // 文字サイズのステッパー／よく使うサイズボタン（要素フォームは再生成されるため、委譲で1度だけ登録）
             if (els.elementForm) {
                 els.elementForm.addEventListener('click', (e) => {
+                    if (e.target.closest('#propOpenCompanyProfile')) { els.openCompanyProfileBtn.click(); return; }
                     const stepBtn = e.target.closest('.font-size-step');
                     const presetBtn = e.target.closest('.font-size-preset');
                     if (!stepBtn && !presetBtn) return;
@@ -1463,6 +1615,19 @@
                 designerElements.push({ id: newId, type: 'qr', name: 'QRコード', template: '{{' + (csvHeaders[0] || 'ID') + '}}', x: 140, y: 30, size: 40 });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
+            if (els.addLogoBtn) {
+                els.addLogoBtn.onclick = () => {
+                    const newId = 'el_' + Date.now();
+                    designerElements.push({ id: newId, type: 'logo', name: 'ロゴ画像', x: 20, y: 15, width: 35, height: 20 });
+                    selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                };
+            }
+            if (els.insertCompanyInfoBtn) {
+                els.insertCompanyInfoBtn.onclick = () => applyCompanyInfoToDesign(false);
+            }
+            if (els.openCompanyProfileFromStep4Btn) {
+                els.openCompanyProfileFromStep4Btn.onclick = () => els.openCompanyProfileBtn.click();
+            }
 
             els.presetNoticeBtn.onclick = () => {
                 designerElements = [
@@ -1759,6 +1924,9 @@
                     } else if (el.type === 'box') {
                         ctx.fillStyle = el.color || '#111827';
                         ctx.fillRect(rx, ry, rw, rh);
+                    } else if (el.type === 'logo') {
+                        ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1; ctx.setLineDash([3, 2]);
+                        ctx.strokeRect(rx, ry, rw, rh); ctx.setLineDash([]);
                     }
                 });
             }
@@ -1776,6 +1944,7 @@
                 els.desOrientation.value = preset.orientation;
                 designerElements = JSON.parse(JSON.stringify(preset.elements));
                 selectedElementId = preset.firstElementId;
+                applyCompanyInfoToDesign(true); // 自社情報が登録済みなら会社名・ロゴ等を自動で差し込む
                 renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
                 if (els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
                 showToast(`テンプレート『${preset.label}』を読み込みました。CSVを読み込むと必要な列がタグに表示されます。`, 'success');
@@ -1834,6 +2003,7 @@
                 els.desOrientation.value = t.orientation;
                 designerElements = JSON.parse(JSON.stringify(t.elements));
                 selectedElementId = designerElements[0] ? designerElements[0].id : null;
+                applyCompanyInfoToDesign(true);
                 renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
                 if (els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
                 showToast(`マイテンプレート『${name}』を読み込みました。`, 'success');
@@ -2197,10 +2367,23 @@
             };
 
             const zipPreviewQrImage = new Image();
-            zipPreviewQrImage.onload = () => { 
+            zipPreviewQrImage.onload = () => {
                 console.log("[ZIP画像ロード完了] プレビュー再描画をトリガーします。");
-                if (currentAppMode === 'zip') drawPreview(); 
+                if (currentAppMode === 'zip') drawPreview();
             };
+
+            // 自社情報のロゴ画像（登録済みなら常にこのImageインスタンスを使い回す。canvasプレビュー用）
+            const companyLogoImage = new Image();
+            companyLogoImage.onload = () => drawPreview();
+            function refreshCompanyLogoImage() {
+                const profile = loadCompanyProfile();
+                if (profile && profile.logoDataUrl) {
+                    if (companyLogoImage.src !== profile.logoDataUrl) companyLogoImage.src = profile.logoDataUrl;
+                } else {
+                    companyLogoImage.removeAttribute('src');
+                }
+            }
+            refreshCompanyLogoImage();
 
             function handleBgPdfUpload(e) {
                 const file = e.target.files[0]; if (!file) return;
@@ -2645,10 +2828,175 @@
                     els.desOrientation.value = t.orientation;
                     designerElements = JSON.parse(JSON.stringify(t.elements));
                     selectedElementId = designerElements[0] ? designerElements[0].id : null;
+                    applyCompanyInfoToDesign(true);
                     renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
                     showToast(`マイテンプレート『${name}』を呼び出しました。`, 'success');
                 });
                 renderMyTemplateOptions();
+            }
+
+            // 画像から代表色（背景の白系・黒系を除いた、最も頻出する色）を抽出する簡易ロジック
+            function extractDominantColorFromImage(imgEl) {
+                try {
+                    const size = 32;
+                    const c = document.createElement('canvas');
+                    c.width = size; c.height = size;
+                    const cctx = c.getContext('2d');
+                    cctx.drawImage(imgEl, 0, 0, size, size);
+                    const data = cctx.getImageData(0, 0, size, size).data;
+                    const buckets = {};
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+                        if (a < 100) continue;
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        if (max > 235 && min > 220) continue; // ほぼ白
+                        if (max < 35) continue; // ほぼ黒
+                        const key = `${Math.round(r / 24)}_${Math.round(g / 24)}_${Math.round(b / 24)}`;
+                        if (!buckets[key]) buckets[key] = { count: 0, r: 0, g: 0, b: 0 };
+                        buckets[key].count++; buckets[key].r += r; buckets[key].g += g; buckets[key].b += b;
+                    }
+                    let best = null;
+                    Object.values(buckets).forEach(bucket => { if (!best || bucket.count > best.count) best = bucket; });
+                    if (!best) return null;
+                    const toHex = v => Math.round(v).toString(16).padStart(2, '0');
+                    return `#${toHex(best.r / best.count)}${toHex(best.g / best.count)}${toHex(best.b / best.count)}`;
+                } catch (e) { return null; }
+            }
+
+            // 「〇〇を挿入」：designerElements内のdataBind付き要素へ、登録済みの自社情報を反映する
+            function applyCompanyInfoToDesign(silent) {
+                const profile = loadCompanyProfile();
+                if (!profile) { if (!silent) showToast('自社情報が未登録です。先に登録してください。', 'error'); return; }
+                const FIELD_MAP = {
+                    companyName: profile.companyName,
+                    serviceName: profile.serviceName,
+                    companyAddress: [profile.postalCode ? `〒${profile.postalCode}` : '', profile.address].filter(Boolean).join(' '),
+                    companyContact: [profile.tel ? `TEL: ${profile.tel}` : '', profile.email].filter(Boolean).join('　'),
+                    invoiceRegNo: profile.invoiceRegNo ? `登録番号: ${profile.invoiceRegNo}` : ''
+                };
+                let applied = false;
+                designerElements.forEach(el => {
+                    if (el.type === 'label' && el.dataBind && FIELD_MAP[el.dataBind]) {
+                        el.text = FIELD_MAP[el.dataBind];
+                        applied = true;
+                    }
+                    if (el.type === 'logo') applied = true;
+                });
+                if (applied) {
+                    renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                    if (!silent) showToast('自社情報を挿入しました。', 'success');
+                } else if (!silent) {
+                    showToast('このテンプレートには自社情報の差し込み欄がありません。', 'error');
+                }
+            }
+
+            if (els.openCompanyProfileBtn) {
+                els.openCompanyProfileBtn.addEventListener('click', () => {
+                    els.settingsMenuDropdown.classList.add('hidden');
+                    const profile = loadCompanyProfile() || {};
+                    els.companyName.value = profile.companyName || '';
+                    els.companyServiceName.value = profile.serviceName || '';
+                    els.companyPostalCode.value = profile.postalCode || '';
+                    els.companyTel.value = profile.tel || '';
+                    els.companyAddress.value = profile.address || '';
+                    els.companyEmail.value = profile.email || '';
+                    els.companyInvoiceRegNo.value = profile.invoiceRegNo || '';
+                    if (profile.logoDataUrl) {
+                        els.companyLogoPreviewImg.src = profile.logoDataUrl;
+                        els.companyLogoPreviewImg.classList.remove('hidden');
+                        els.companyLogoPreviewPlaceholder.classList.add('hidden');
+                        els.companyLogoRemoveBtn.classList.remove('hidden');
+                    } else {
+                        els.companyLogoPreviewImg.classList.add('hidden');
+                        els.companyLogoPreviewPlaceholder.classList.remove('hidden');
+                        els.companyLogoRemoveBtn.classList.add('hidden');
+                    }
+                    if (profile.logoAccentColor) {
+                        els.companyLogoColorRow.classList.remove('hidden');
+                        els.companyLogoColorSwatch.style.background = profile.logoAccentColor;
+                        els.companyLogoColorSwatch.dataset.color = profile.logoAccentColor;
+                    } else {
+                        els.companyLogoColorRow.classList.add('hidden');
+                    }
+                    els.companyProfileModal.classList.remove('hidden');
+                });
+            }
+            if (els.closeCompanyProfileBtn) {
+                els.closeCompanyProfileBtn.addEventListener('click', () => els.companyProfileModal.classList.add('hidden'));
+            }
+            if (els.companyProfileModal) {
+                els.companyProfileModal.addEventListener('click', (e) => {
+                    if (e.target === els.companyProfileModal) els.companyProfileModal.classList.add('hidden');
+                });
+            }
+            if (els.companyLogoSelectBtn) {
+                els.companyLogoSelectBtn.addEventListener('click', () => els.companyLogoInput.click());
+            }
+            let pendingCompanyLogoDataUrl = undefined; // undefined=未変更, null=削除, string=新しい画像
+            if (els.companyLogoInput) {
+                els.companyLogoInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const dataUrl = this.result;
+                        const img = new Image();
+                        img.onload = () => {
+                            pendingCompanyLogoDataUrl = dataUrl;
+                            els.companyLogoPreviewImg.src = dataUrl;
+                            els.companyLogoPreviewImg.classList.remove('hidden');
+                            els.companyLogoPreviewPlaceholder.classList.add('hidden');
+                            els.companyLogoRemoveBtn.classList.remove('hidden');
+                            const accentColor = extractDominantColorFromImage(img);
+                            if (accentColor) {
+                                els.companyLogoColorRow.classList.remove('hidden');
+                                els.companyLogoColorSwatch.style.background = accentColor;
+                                els.companyLogoColorSwatch.dataset.color = accentColor;
+                            } else {
+                                els.companyLogoColorRow.classList.add('hidden');
+                            }
+                        };
+                        img.src = dataUrl;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            if (els.companyLogoRemoveBtn) {
+                els.companyLogoRemoveBtn.addEventListener('click', () => {
+                    pendingCompanyLogoDataUrl = null;
+                    els.companyLogoPreviewImg.classList.add('hidden');
+                    els.companyLogoPreviewPlaceholder.classList.remove('hidden');
+                    els.companyLogoRemoveBtn.classList.add('hidden');
+                    els.companyLogoColorRow.classList.add('hidden');
+                });
+            }
+            if (els.companyLogoColorSwatch) {
+                els.companyLogoColorSwatch.addEventListener('click', () => {
+                    const color = els.companyLogoColorSwatch.dataset.color;
+                    if (color) applyColorPalette(color);
+                });
+            }
+            if (els.companyProfileSaveBtn) {
+                els.companyProfileSaveBtn.addEventListener('click', () => {
+                    const existing = loadCompanyProfile() || {};
+                    const profile = {
+                        companyName: els.companyName.value.trim(),
+                        serviceName: els.companyServiceName.value.trim(),
+                        postalCode: els.companyPostalCode.value.trim(),
+                        tel: els.companyTel.value.trim(),
+                        address: els.companyAddress.value.trim(),
+                        email: els.companyEmail.value.trim(),
+                        invoiceRegNo: els.companyInvoiceRegNo.value.trim(),
+                        logoDataUrl: pendingCompanyLogoDataUrl === undefined ? (existing.logoDataUrl || null) : pendingCompanyLogoDataUrl,
+                        logoAccentColor: pendingCompanyLogoDataUrl === null ? null : (els.companyLogoColorSwatch.dataset.color || existing.logoAccentColor || null)
+                    };
+                    saveCompanyProfileToStorage(profile);
+                    pendingCompanyLogoDataUrl = undefined;
+                    els.companyProfileModal.classList.add('hidden');
+                    showToast('自社情報を保存しました。', 'success');
+                    renderColorPaletteSwatches();
+                    refreshCompanyLogoImage();
+                    drawPreview();
+                });
             }
 
             function applyLoadedCsvData(rows, headers) {
@@ -3462,10 +3810,20 @@
             }
 
             // 帳票要素の追加・編集：配色（ブランドカラー）プリセットをまとめて適用
-            if (els.colorPaletteSwatches) {
-                els.colorPaletteSwatches.innerHTML = BRAND_PALETTE_PRESETS.map(p =>
+            function renderColorPaletteSwatches() {
+                if (!els.colorPaletteSwatches) return;
+                const profile = loadCompanyProfile();
+                let html = '';
+                if (profile && profile.logoAccentColor) {
+                    html += `<button type="button" class="w-6 h-6 rounded-full border-2 border-primary shadow ring-1 ring-primary hover:ring-2" style="background:${profile.logoAccentColor}" data-color="${profile.logoAccentColor}" title="ロゴから抽出した色"></button>`;
+                }
+                html += BRAND_PALETTE_PRESETS.map(p =>
                     `<button type="button" class="w-6 h-6 rounded-full border-2 border-white shadow ring-1 ring-gray-200 hover:ring-primary hover:ring-2" style="background:${p.color}" data-color="${p.color}" title="${p.label}"></button>`
                 ).join('');
+                els.colorPaletteSwatches.innerHTML = html;
+            }
+            renderColorPaletteSwatches();
+            if (els.colorPaletteSwatches) {
                 els.colorPaletteSwatches.addEventListener('click', (e) => {
                     const btn = e.target.closest('button[data-color]');
                     if (btn) applyColorPalette(btn.dataset.color);
@@ -3722,6 +4080,16 @@
                         } else if (el.type === 'box') {
                             ctx.fillStyle = el.color || '#111827';
                             ctx.fillRect(rx, ry, rw, rh);
+                        } else if (el.type === 'logo') {
+                            if (companyLogoImage.complete && companyLogoImage.naturalWidth > 0) {
+                                ctx.drawImage(companyLogoImage, rx, ry, rw, rh);
+                            } else {
+                                ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+                                ctx.strokeRect(rx, ry, rw, rh); ctx.setLineDash([]);
+                                ctx.fillStyle = '#9ca3af'; ctx.font = `${10 * scale * 0.35}px sans-serif`;
+                                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                                ctx.fillText('ロゴ未登録', rx + rw / 2, ry + rh / 2);
+                            }
                         }
 
                         if (isSel) {
@@ -4271,6 +4639,22 @@
                 }
                 const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
+                // 自社情報のロゴ画像（登録済み・かつ帳票に「ロゴ画像」要素があれば1回だけ埋め込んで全ページで使い回す）
+                let embeddedCompanyLogo = null;
+                if (designerElements.some(el => el.type === 'logo')) {
+                    const companyProfileForPdf = loadCompanyProfile();
+                    if (companyProfileForPdf && companyProfileForPdf.logoDataUrl) {
+                        try {
+                            const logoBytes = await fetch(companyProfileForPdf.logoDataUrl).then(r => r.arrayBuffer());
+                            embeddedCompanyLogo = companyProfileForPdf.logoDataUrl.startsWith('data:image/png')
+                                ? await pdfDoc.embedPng(logoBytes)
+                                : await pdfDoc.embedJpg(logoBytes);
+                        } catch (e) {
+                            console.warn('ロゴ画像の埋め込みに失敗しました:', e);
+                        }
+                    }
+                }
+
                 const mm2pt = 2.83465;
                 const { paperW, paperH } = getPaperDimensions();
                 const pW = paperW * mm2pt;
@@ -4452,6 +4836,12 @@
                                     const ptH = (el.height || 1) * mm2pt;
                                     const boxT = hexToRgb01(el.color);
                                     page.drawRectangle({ x: ptX, y: ptY - ptH, width: ptW, height: ptH, color: boxT ? rgb(boxT.r, boxT.g, boxT.b) : rgb(0.1, 0.1, 0.1) });
+                                } else if (el.type === 'logo') {
+                                    if (embeddedCompanyLogo) {
+                                        const ptW = (el.width || 35) * mm2pt;
+                                        const ptH = (el.height || 20) * mm2pt;
+                                        page.drawImage(embeddedCompanyLogo, { x: ptX, y: ptY - ptH, width: ptW, height: ptH });
+                                    }
                                 }
                             } catch (elemErr) {
                                 console.error(`[要素描画スキップ] 要素 ${el.name || el.id} の描画でエラー:`, elemErr);
