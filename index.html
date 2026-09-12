@@ -673,6 +673,18 @@
                                 </div>
                             </div>
 
+                            <!-- 配色（ブランドカラー）プリセット：帳票内のアクセント色・枠線・背景ティントをまとめて塗り替え -->
+                            <div class="mb-3.5 bg-surfaceDim p-2.5 rounded-xl border border-gray-200">
+                                <p class="text-[11px] font-bold text-gray-600 mb-1.5">配色（アクセントカラー・枠線や背景色にまとめて適用）:</p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <div id="colorPaletteSwatches" class="flex flex-wrap gap-1.5"></div>
+                                    <label class="flex items-center gap-1 text-[11px] text-gray-500 cursor-pointer pl-1 border-l border-gray-200">
+                                        <input type="color" id="customPaletteColor" value="#2D2A6E" class="w-6 h-6 rounded cursor-pointer border border-gray-300 p-0">
+                                        カスタム
+                                    </label>
+                                </div>
+                            </div>
+
                             <!-- 要素リスト＆詳細プロパティエディタ -->
                             <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
                                 <div class="md:col-span-5 border border-gray-200 rounded-xl p-2 h-64 overflow-y-auto space-y-1.5 bg-surfaceDim" id="elementListContainer"></div>
@@ -1110,7 +1122,9 @@
                 expFontSizeIncrease: document.getElementById('expFontSizeIncrease'),
                 expFontSizePresets: document.getElementById('expFontSizePresets'),
                 expFontFamilySelect: document.getElementById('expFontFamilySelect'),
-                fontPairingPresets: document.getElementById('fontPairingPresets')
+                fontPairingPresets: document.getElementById('fontPairingPresets'),
+                colorPaletteSwatches: document.getElementById('colorPaletteSwatches'),
+                customPaletteColor: document.getElementById('customPaletteColor')
             };
 
             if (els.modalCloseBtn) {
@@ -1194,6 +1208,46 @@
             function getFontFamilyCss(key) {
                 return (FONT_FAMILY_PRESETS.find(f => f.key === key) || FONT_FAMILY_PRESETS[0]).css;
             }
+            // hex文字列 → 0-1レンジのRGB（pdf-libのrgb()にそのまま渡せる形）
+            function hexToRgb01(hex) {
+                if (!hex || typeof hex !== 'string') return null;
+                const clean = hex.replace('#', '');
+                if (clean.length !== 6) return null;
+                return {
+                    r: parseInt(clean.substring(0, 2), 16) / 255,
+                    g: parseInt(clean.substring(2, 4), 16) / 255,
+                    b: parseInt(clean.substring(4, 6), 16) / 255
+                };
+            }
+            // 明示的な改行(\n)は尊重しつつ、要素の幅を超える行だけ自動で折り返す（日本語は文字単位で折り返す）
+            function wrapTextToLines(ctx, text, maxWidthPx) {
+                const paragraphs = String(text).split('\n');
+                const result = [];
+                paragraphs.forEach(para => {
+                    if (para === '') { result.push(''); return; }
+                    if (ctx.measureText(para).width <= maxWidthPx) { result.push(para); return; }
+                    let line = '';
+                    for (const ch of para) {
+                        const test = line + ch;
+                        if (line !== '' && ctx.measureText(test).width > maxWidthPx) {
+                            result.push(line);
+                            line = ch;
+                        } else {
+                            line = test;
+                        }
+                    }
+                    if (line) result.push(line);
+                });
+                return result;
+            }
+            // アクセントカラーを白に近づけて薄いティント（背景色用）を作る。amount: 0-1（大きいほど白に近づく）
+            function tintHexColor(hex, amount) {
+                const t = hexToRgb01(hex);
+                if (!t) return '#f9fafb';
+                const mix = c => Math.round((c + (1 - c) * amount) * 255);
+                const toHex = v => v.toString(16).padStart(2, '0');
+                return `#${toHex(mix(t.r))}${toHex(mix(t.g))}${toHex(mix(t.b))}`;
+            }
             function fontFamilySelectOptionsHtml(selectedKey) {
                 return FONT_FAMILY_PRESETS.map(f => `<option value="${f.key}" ${(selectedKey || 'gothic') === f.key ? 'selected' : ''}>${f.label}</option>`).join('');
             }
@@ -1216,6 +1270,32 @@
                     el.bold = style.bold;
                 });
                 renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+            }
+
+            // 帳票デザイン既定のアクセントカラー（テンプレートのbox/枠線/背景ティントの初期値）
+            const DEFAULT_ACCENT_COLOR = '#2D2A6E';
+
+            // 配色（ブランドパレット）プリセット。box要素の塗り・label要素の枠線色/背景ティントを一括で塗り替える
+            const BRAND_PALETTE_PRESETS = [
+                { key: 'indigo', label: 'インディゴ', color: '#2D2A6E' },
+                { key: 'navy', label: 'ネイビー', color: '#1E3A5F' },
+                { key: 'forest', label: 'フォレスト', color: '#1F6F4A' },
+                { key: 'burgundy', label: 'バーガンディ', color: '#7A2E3B' },
+                { key: 'terracotta', label: 'テラコッタ', color: '#B5533C' },
+                { key: 'slate', label: 'スレート', color: '#4B5563' }
+            ];
+            function applyColorPalette(hex) {
+                if (!hex) return;
+                designerElements.forEach(el => {
+                    if (el.type === 'box') {
+                        el.color = hex;
+                    } else if (el.type === 'label') {
+                        if (el.border) el.borderColor = hex;
+                        if (el.bg) el.bg = tintHexColor(hex, 0.9);
+                    }
+                });
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                showToast('配色を適用しました。', 'success');
             }
 
             function renderElementEditor() {
@@ -1386,11 +1466,16 @@
 
             els.presetNoticeBtn.onclick = () => {
                 designerElements = [
-                    { id: 'el_title', type: 'label', name: 'タイトル', text: '重要なお知らせ', x: 20, y: 25, width: 170, height: 12, fontSize: 22, align: 'center', bold: true, color: '#111827' },
-                    { id: 'el_dest', type: 'label', name: '宛名枠', text: '{{氏名}} 様\n保護者様', x: 20, y: 45, width: 90, height: 20, fontSize: 13, align: 'left', bold: false, border: true, bg: '#f9fafb' },
-                    { id: 'el_msg', type: 'label', name: '本文', text: '平素より格別のご高配を賜り厚く御礼申し上げます。\n本状に記載のQRコードより申請サイトへアクセスし、\n必要事項のご登録をお願い申し上げます。', x: 20, y: 75, width: 170, height: 25, fontSize: 11, align: 'left' },
-                    { id: 'el_qr', type: 'qr', name: '専用QR', template: 'https://example.com/login?token={{TOKEN}}', x: 135, y: 40, size: 45 },
-                    { id: 'el_table', type: 'table', name: '確認事項表', x: 20, y: 120, width: 170, height: 18, rowHeight: 9, fontSize: 10, headers: ['受付番号', '対象者名', '区分'], columns: ['受付番号', '氏名', '区分'] }
+                    { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                    { id: 'el_title', type: 'label', name: 'タイトル', text: '重要なお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 20, align: 'center', bold: true, fontFamily: 'mincho', color: '#111827' },
+                    { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                    { id: 'el_dest', type: 'label', name: '宛名枠', text: '{{氏名}} 様\n保護者様', x: 20, y: 44, width: 90, height: 20, fontSize: 13, align: 'left', bold: false, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                    { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。\n\nさて、本状に記載のQRコードより申請サイトへアクセスいただき、必要事項のご登録をお願い申し上げます。ご不明な点がございましたら、下記お問い合わせ先までご連絡ください。\n\n敬具', x: 20, y: 68, width: 170, height: 55, fontSize: 11, align: 'left' },
+                    { id: 'el_qr', type: 'qr', name: '専用QR', template: 'https://example.com/login?token={{TOKEN}}', x: 135, y: 128, size: 42 },
+                    { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲QRコードから手続き', x: 135, y: 171, width: 42, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                    { id: 'el_table', type: 'table', name: '確認事項表', x: 20, y: 190, width: 170, height: 18, rowHeight: 9, fontSize: 10, headers: ['受付番号', '対象者名', '区分'], columns: ['受付番号', '氏名', '区分'] },
+                    { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
+                    { id: 'el_footer', type: 'label', name: 'フッター', text: '{{発行者名}}　お問い合わせ: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                 ];
                 selectedElementId = 'el_title'; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
                 showToast('案内状プリセットを読み込みました。', 'success');
@@ -1398,11 +1483,14 @@
 
             els.presetTicketBtn.onclick = () => {
                 designerElements = [
-                    { id: 'el_header', type: 'label', name: 'チケット名', text: 'EVENT TICKET / 入場受領証', x: 15, y: 15, width: 180, height: 10, fontSize: 16, align: 'center', bold: true },
-                    { id: 'el_id', type: 'label', name: 'ID番号', text: 'No. {{番号}}', x: 15, y: 30, width: 80, height: 8, fontSize: 12, bold: true },
-                    { id: 'el_qr', type: 'qr', name: '認証QR', template: 'https://check.in/{{番号}}', x: 140, y: 25, size: 45 },
-                    { id: 'el_info', type: 'label', name: '席番・氏名', text: '座席番号: {{座席}}\nご芳名: {{氏名}} 様', x: 15, y: 45, width: 115, height: 16, fontSize: 11, border: true },
-                    { id: 'el_box', type: 'box', name: '切り取り線', x: 15, y: 80, width: 180, height: 0.5, border: true }
+                    { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                    { id: 'el_header', type: 'label', name: 'チケット名', text: 'EVENT TICKET', x: 20, y: 18, width: 257, height: 13, fontSize: 22, align: 'center', bold: true },
+                    { id: 'el_subheader', type: 'label', name: 'サブタイトル', text: '入場受領証 / Admission Receipt', x: 20, y: 32, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                    { id: 'el_info', type: 'label', name: '席番・氏名', text: 'No. {{番号}}\n座席番号: {{座席}}\nご芳名: {{氏名}} 様', x: 20, y: 50, width: 150, height: 34, fontSize: 12, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                    { id: 'el_qr', type: 'qr', name: '認証QR', template: 'https://check.in/{{番号}}', x: 185, y: 50, size: 55 },
+                    { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲入場時にご提示ください', x: 185, y: 108, width: 55, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                    { id: 'el_box', type: 'box', name: '切り取り線', x: 20, y: 140, width: 257, height: 0.6, color: '#d1d5db' },
+                    { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本チケットの譲渡・転売はご遠慮ください。', x: 20, y: 145, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                 ];
                 selectedElementId = 'el_header'; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
                 showToast('チケットプリセットを読み込みました。', 'success');
@@ -1415,7 +1503,8 @@
                     firstElementId: 'el_addr',
                     label: '宛名ラベル',
                     elements: [
-                        { id: 'el_addr', type: 'label', name: '宛先', text: '〒{{郵便番号}}\n{{住所}}\n{{氏名}} 様', x: 20, y: 30, width: 130, height: 35, fontSize: 14, align: 'left', bold: false, border: true, bg: '#f9fafb' }
+                        { id: 'el_accent', type: 'box', name: 'アクセントバー', x: 20, y: 28, width: 3, height: 48, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_addr', type: 'label', name: '宛先', text: '〒{{郵便番号}}\n{{住所}}\n\n{{氏名}} 様', x: 28, y: 30, width: 150, height: 45, fontSize: 16, align: 'left', bold: false, border: true, borderColor: DEFAULT_ACCENT_COLOR }
                     ]
                 },
                 attendanceTicket: {
@@ -1423,9 +1512,14 @@
                     firstElementId: 'el_title',
                     label: 'QR付き受講票',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '受講票', x: 20, y: 15, width: 170, height: 12, fontSize: 20, align: 'center', bold: true },
-                        { id: 'el_info', type: 'label', name: '受講者情報', text: '{{氏名}} 様\nクラス: {{クラス}}', x: 20, y: 35, width: 100, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '出欠確認QR', template: 'https://example.com/checkin?id={{ID}}', x: 135, y: 30, size: 45 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '受講票', x: 20, y: 20, width: 257, height: 13, fontSize: 22, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: 'ATTENDANCE TICKET', x: 20, y: 34, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '受講者情報', text: '{{氏名}} 様\nクラス: {{クラス}}\n\n本票を受付にご提示ください。', x: 20, y: 52, width: 140, height: 32, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '出欠確認QR', template: 'https://example.com/checkin?id={{ID}}', x: 185, y: 52, size: 55 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲受付にてスキャン', x: 185, y: 110, width: 55, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_divider', type: 'box', name: '区切り線', x: 20, y: 140, width: 257, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本票の第三者への譲渡はご遠慮ください。', x: 20, y: 145, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 nameBadge: {
@@ -1433,8 +1527,11 @@
                     firstElementId: 'el_name',
                     label: '名札',
                     elements: [
-                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}}', x: 20, y: 35, width: 257, height: 25, fontSize: 36, align: 'center', bold: true },
-                        { id: 'el_group', type: 'label', name: '所属', text: '{{クラス}}', x: 20, y: 65, width: 257, height: 14, fontSize: 16, align: 'center' }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_org', type: 'label', name: '団体名', text: '{{所属団体名}}', x: 20, y: 16, width: 257, height: 8, fontSize: 11, align: 'center', color: '#6b7280' },
+                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}}', x: 20, y: 30, width: 257, height: 28, fontSize: 38, align: 'center', bold: true },
+                        { id: 'el_underline', type: 'box', name: '区切り線', x: 95, y: 62, width: 107, height: 1, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_group', type: 'label', name: '所属', text: '{{クラス}}', x: 20, y: 66, width: 257, height: 14, fontSize: 16, align: 'center' }
                     ]
                 },
                 membershipCard: {
@@ -1442,9 +1539,13 @@
                     firstElementId: 'el_title',
                     label: '会員証',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'MEMBER CARD', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
-                        { id: 'el_info', type: 'label', name: '会員情報', text: '{{氏名}} 様\n会員種別: {{会員種別}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '入館確認QR', template: 'https://example.com/checkin?member={{会員番号}}', x: 150, y: 15, size: 40 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'MEMBER CARD', x: 20, y: 20, width: 257, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '{{会員種別}} 会員証', x: 20, y: 33, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '会員情報', text: '{{氏名}} 様\n会員番号: {{会員番号}}\n会員種別: {{会員種別}}', x: 20, y: 50, width: 150, height: 30, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '入館確認QR', template: 'https://example.com/checkin?member={{会員番号}}', x: 190, y: 48, size: 50 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲入館時にご提示', x: 190, y: 100, width: 50, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '有効期限: {{有効期限}}　発行: {{発行組織名}}', x: 20, y: 185, width: 257, height: 8, fontSize: 9, align: 'left', color: '#9ca3af' }
                     ]
                 },
                 clinicSlip: {
@@ -1452,9 +1553,13 @@
                     firstElementId: 'el_title',
                     label: '診察券',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '診察券', x: 20, y: 15, width: 170, height: 12, fontSize: 20, align: 'center', bold: true },
-                        { id: 'el_info', type: 'label', name: '患者情報', text: '{{氏名}} 様\n診察科: {{診察科}}', x: 20, y: 35, width: 100, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '予約確認QR', template: 'https://example.com/reserve?id={{患者番号}}', x: 135, y: 30, size: 45 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '診察券', x: 20, y: 20, width: 257, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: '{{診察科}}', x: 20, y: 33, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '患者情報', text: '{{氏名}} 様\n患者番号: {{患者番号}}\n診察科: {{診察科}}', x: 20, y: 50, width: 140, height: 30, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '予約確認QR', template: 'https://example.com/reserve?id={{患者番号}}', x: 185, y: 48, size: 52 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲受付にてご提示', x: 185, y: 101, width: 52, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '次回受診時も本券をお持ちください。', x: 20, y: 185, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 renewalNotice: {
@@ -1462,10 +1567,15 @@
                     firstElementId: 'el_title',
                     label: '更新案内状',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'ご契約更新のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
-                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
-                        { id: 'el_msg', type: 'label', name: '本文', text: '証券番号 {{証券番号}} のご契約が更新時期を迎えます。\n下記QRコードより更新手続きをお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left' },
-                        { id: 'el_qr', type: 'qr', name: '更新手続きQR', template: 'https://example.com/renew?id={{証券番号}}', x: 135, y: 85, size: 40 }
+                        { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'ご契約更新のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 44, width: 170, height: 8, fontSize: 12, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。\n\nさて、証券番号 {{証券番号}} のご契約が更新時期を迎えましたのでご案内申し上げます。下記QRコードより更新手続きページへお進みください。\n\n今後とも変わらぬお引き立てを賜りますようお願い申し上げます。\n\n敬具', x: 20, y: 56, width: 170, height: 55, fontSize: 11, align: 'left' },
+                        { id: 'el_qr', type: 'qr', name: '更新手続きQR', template: 'https://example.com/renew?id={{証券番号}}', x: 150, y: 118, size: 40 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲更新手続きへ', x: 150, y: 160, width: 40, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '{{発行者名}}　お問い合わせ: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 assemblyNotice: {
@@ -1473,9 +1583,15 @@
                     firstElementId: 'el_title',
                     label: '総会案内・回覧',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '総会開催のお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
-                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{部屋番号}} {{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
-                        { id: 'el_msg', type: 'label', name: '本文', text: '下記日程にて定期総会を開催いたします。\nご出席をお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left', border: true, bg: '#f9fafb' }
+                        { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '定期総会開催のお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{部屋番号}} {{氏名}} 様', x: 20, y: 44, width: 170, height: 8, fontSize: 12, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。\n下記日程にて定期総会を開催いたします。ご多用中とは存じますが、ご出席くださいますようお願い申し上げます。', x: 20, y: 56, width: 170, height: 30, fontSize: 11, align: 'left' },
+                        { id: 'el_details', type: 'label', name: '開催details', text: '記\n日時: {{開催日時}}\n場所: {{開催場所}}', x: 20, y: 90, width: 170, height: 28, fontSize: 11, align: 'left', border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_note', type: 'label', name: '注記・結語', text: '※ご欠席の場合は、委任状の提出をお願いいたします。\n\n敬具', x: 20, y: 122, width: 170, height: 20, fontSize: 10, align: 'left', color: '#6b7280' },
+                        { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '{{管理組合名等}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 seminarAttendance: {
@@ -1483,9 +1599,13 @@
                     firstElementId: 'el_title',
                     label: 'セミナー参加証',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'SEMINAR PASS / 参加証', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
-                        { id: 'el_info', type: 'label', name: '参加者情報', text: '{{氏名}} 様\n{{所属}}', x: 20, y: 35, width: 100, height: 20, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '受付確認QR', template: 'https://example.com/checkin?id={{参加者番号}}', x: 135, y: 30, size: 45 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '参加証', x: 20, y: 20, width: 257, height: 13, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: 'SEMINAR PASS', x: 20, y: 34, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '参加者情報', text: '{{氏名}} 様\n{{所属}}', x: 20, y: 52, width: 140, height: 30, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '受付確認QR', template: 'https://example.com/checkin?id={{参加者番号}}', x: 185, y: 50, size: 54 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲受付にてスキャン', x: 185, y: 107, width: 54, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本証は当日会場受付にてご提示ください。', x: 20, y: 185, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 certificate: {
@@ -1493,10 +1613,19 @@
                     firstElementId: 'el_title',
                     label: '修了証',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '修 了 証', x: 20, y: 25, width: 170, height: 15, fontSize: 26, align: 'center', bold: true },
-                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}} 殿', x: 20, y: 55, width: 170, height: 12, fontSize: 18, align: 'center' },
-                        { id: 'el_body', type: 'label', name: '本文', text: '{{講座名}} を修了したことを証明します。', x: 20, y: 75, width: 170, height: 14, fontSize: 12, align: 'center' },
-                        { id: 'el_qr', type: 'qr', name: '真贋確認QR', template: 'https://example.com/verify?id={{修了証番号}}', x: 150, y: 155, size: 30 }
+                        { id: 'el_frameTop', type: 'box', name: '飾り枠(上)', x: 10, y: 10, width: 190, height: 1.5, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_frameBottom', type: 'box', name: '飾り枠(下)', x: 10, y: 285.5, width: 190, height: 1.5, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_frameLeft', type: 'box', name: '飾り枠(左)', x: 10, y: 10, width: 1.5, height: 277, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_frameRight', type: 'box', name: '飾り枠(右)', x: 198.5, y: 10, width: 1.5, height: 277, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '修 了 証', x: 20, y: 35, width: 170, height: 16, fontSize: 28, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: 'CERTIFICATE OF COMPLETION', x: 20, y: 53, width: 170, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}} 殿', x: 20, y: 90, width: 170, height: 13, fontSize: 20, align: 'center' },
+                        { id: 'el_lead', type: 'label', name: '前文', text: '下記の課程を修了したことをここに証します。', x: 20, y: 115, width: 170, height: 8, fontSize: 12, align: 'center' },
+                        { id: 'el_course', type: 'label', name: '講座名', text: '{{講座名}}', x: 20, y: 128, width: 170, height: 12, fontSize: 17, align: 'center', bold: true },
+                        { id: 'el_signline', type: 'box', name: '署名下線', x: 125, y: 228, width: 65, height: 0.6, color: '#9ca3af' },
+                        { id: 'el_issuer', type: 'label', name: '発行日・発行者', text: '{{発行日}}\n{{発行者名}}', x: 125, y: 230, width: 65, height: 14, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_qr', type: 'qr', name: '真贋確認QR', template: 'https://example.com/verify?id={{修了証番号}}', x: 25, y: 225, size: 30 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '真贋確認', x: 25, y: 257, width: 30, height: 6, fontSize: 7, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 parkingPermit: {
@@ -1504,9 +1633,13 @@
                     firstElementId: 'el_title',
                     label: '駐車場利用証',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '駐車場利用証', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
-                        { id: 'el_info', type: 'label', name: '利用者情報', text: '{{氏名}} 様\n車両番号: {{車両番号}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '車両照会QR', template: 'https://example.com/parking?no={{車両番号}}', x: 150, y: 15, size: 40 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '駐車場利用証', x: 20, y: 20, width: 257, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: 'PARKING PERMIT', x: 20, y: 33, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '利用者情報', text: '{{氏名}} 様\n車両番号: {{車両番号}}', x: 20, y: 50, width: 140, height: 30, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '車両照会QR', template: 'https://example.com/parking?no={{車両番号}}', x: 185, y: 48, size: 52 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲入庫時にご提示', x: 185, y: 101, width: 52, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本証は指定区画以外での駐車を保証するものではありません。', x: 20, y: 185, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 coupon: {
@@ -1514,9 +1647,13 @@
                     firstElementId: 'el_title',
                     label: 'クーポン・優待券',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'SPECIAL COUPON', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
-                        { id: 'el_info', type: 'label', name: '内容', text: '{{氏名}} 様限定\n{{特典内容}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
-                        { id: 'el_qr', type: 'qr', name: '利用確認QR', template: 'https://example.com/coupon?id={{クーポンID}}', x: 150, y: 15, size: 40 }
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'SPECIAL COUPON', x: 20, y: 20, width: 257, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_subtitle', type: 'label', name: 'サブタイトル', text: 'ご優待クーポン', x: 20, y: 33, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '内容', text: '{{氏名}} 様限定\n{{特典内容}}', x: 20, y: 50, width: 140, height: 30, fontSize: 13, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '利用確認QR', template: 'https://example.com/coupon?id={{クーポンID}}', x: 185, y: 48, size: 52 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲レジにてご提示', x: 185, y: 101, width: 52, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '有効期限: {{有効期限}}　他券との併用不可', x: 20, y: 185, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 invoiceCoverLetter: {
@@ -1524,9 +1661,15 @@
                     firstElementId: 'el_title',
                     label: '請求書送付状',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '請求書在中', x: 20, y: 20, width: 170, height: 12, fontSize: 16, align: 'right', bold: true },
-                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 45, width: 170, height: 10, fontSize: 14, align: 'left' },
-                        { id: 'el_msg', type: 'label', name: '本文', text: 'いつもお世話になっております。\n{{請求月}}分の請求書を同封いたしましたので、ご確認をお願いいたします。', x: 20, y: 60, width: 170, height: 22, fontSize: 11, align: 'left' }
+                        { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 15, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                        { id: 'el_sender', type: 'label', name: '発行者', text: '{{発行者名}}', x: 20, y: 15, width: 170, height: 7, fontSize: 10, align: 'left', color: '#6b7280' },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 28, width: 170, height: 8, fontSize: 13, align: 'left' },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '請求書送付のご案内', x: 20, y: 45, width: 170, height: 12, fontSize: 17, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_underline', type: 'box', name: '見出し下線', x: 75, y: 59, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のお引き立てを賜り、厚く御礼申し上げます。\nさて、{{請求月}}分の請求書を下記の通りご送付申し上げます。ご査収のほどよろしくお願い申し上げます。', x: 20, y: 68, width: 170, height: 24, fontSize: 11, align: 'left' },
+                        { id: 'el_details', type: 'label', name: '請求details', text: '記\n請求書番号: {{請求書番号}}\nご請求金額: {{金額}}\nお支払期限: {{支払期限}}', x: 20, y: 95, width: 170, height: 32, fontSize: 11, align: 'left', border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_closing', type: 'label', name: '結語', text: 'ご不明な点がございましたら、下記までお問い合わせください。\n\n敬具', x: 20, y: 132, width: 170, height: 20, fontSize: 11, align: 'left' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '{{発行者名}}　お問い合わせ: {{連絡先}}', x: 20, y: 270, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 },
                 reunionNotice: {
@@ -1534,10 +1677,15 @@
                     firstElementId: 'el_title',
                     label: '同窓会・OB会案内',
                     elements: [
-                        { id: 'el_title', type: 'label', name: 'タイトル', text: '同窓会開催のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
-                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
-                        { id: 'el_msg', type: 'label', name: '本文', text: '久しぶりに皆さまで集まる会を開催いたします。\n下記QRコードより出欠のご回答をお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left' },
-                        { id: 'el_qr', type: 'qr', name: '出欠回答QR', template: 'https://example.com/rsvp?id={{氏名}}', x: 135, y: 85, size: 40 }
+                        { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '同窓会開催のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true, fontFamily: 'mincho' },
+                        { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 44, width: 170, height: 8, fontSize: 12, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。\n久しぶりに皆さまで集まる会を下記の通り開催することとなりました。ご多用のところ恐縮ですが、ぜひご参加いただけますと幸いです。\n\n下記QRコードより出欠のご回答をお願いいたします。', x: 20, y: 56, width: 170, height: 45, fontSize: 11, align: 'left' },
+                        { id: 'el_qr', type: 'qr', name: '出欠回答QR', template: 'https://example.com/rsvp?id={{氏名}}', x: 150, y: 108, size: 40 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲出欠のご回答', x: 150, y: 150, width: 40, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '幹事: {{発行者名}}　連絡先: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
                     ]
                 }
             };
@@ -1588,13 +1736,13 @@
 
                     if (el.type === 'label') {
                         if (el.bg) { ctx.fillStyle = el.bg; ctx.fillRect(rx, ry, rw, rh); }
-                        if (el.border) { ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1; ctx.strokeRect(rx, ry, rw, rh); }
+                        if (el.border) { ctx.strokeStyle = el.borderColor || '#9ca3af'; ctx.lineWidth = 1; ctx.strokeRect(rx, ry, rw, rh); }
                         const text = (el.text || '').replace(/\{\{(.+?)\}\}/g, (m, k) => mockRow[k] !== undefined ? mockRow[k] : m);
-                        const lines = text.split('\n');
                         const fontSize = (el.fontSize || 12) * scale * 0.35;
-                        ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px sans-serif`;
+                        ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px ${getFontFamilyCss(el.fontFamily)}`;
                         ctx.fillStyle = el.color || '#111827';
                         ctx.textBaseline = 'top';
+                        const lines = wrapTextToLines(ctx, text, Math.max(1, rw - 8));
                         lines.forEach((line, i) => {
                             let tx = rx + 4;
                             if (el.align === 'center') tx = rx + rw / 2;
@@ -1609,7 +1757,7 @@
                         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                         ctx.fillText('QR', rx + rw / 2, ry + rh / 2);
                     } else if (el.type === 'box') {
-                        ctx.fillStyle = '#111827';
+                        ctx.fillStyle = el.color || '#111827';
                         ctx.fillRect(rx, ry, rw, rh);
                     }
                 });
@@ -3313,6 +3461,20 @@
                 });
             }
 
+            // 帳票要素の追加・編集：配色（ブランドカラー）プリセットをまとめて適用
+            if (els.colorPaletteSwatches) {
+                els.colorPaletteSwatches.innerHTML = BRAND_PALETTE_PRESETS.map(p =>
+                    `<button type="button" class="w-6 h-6 rounded-full border-2 border-white shadow ring-1 ring-gray-200 hover:ring-primary hover:ring-2" style="background:${p.color}" data-color="${p.color}" title="${p.label}"></button>`
+                ).join('');
+                els.colorPaletteSwatches.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-color]');
+                    if (btn) applyColorPalette(btn.dataset.color);
+                });
+            }
+            if (els.customPaletteColor) {
+                els.customPaletteColor.addEventListener('input', (e) => applyColorPalette(e.target.value));
+            }
+
             ['pdfOrientation', 'pdfPaperSize', 'qrSize', 'qrX', 'qrY', 'desOrientation', 'desPaperSize'].forEach(id => {
                 if(els[id]) els[id].addEventListener('input', () => {
                     if (els.expandedPreviewModal && !els.expandedPreviewModal.classList.contains('hidden')) {
@@ -3508,14 +3670,14 @@
 
                         if (el.type === 'label') {
                             if (el.bg) { ctx.fillStyle = el.bg; ctx.fillRect(rx, ry, rw, rh); }
-                            if (el.border) { ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1; ctx.strokeRect(rx, ry, rw, rh); }
+                            if (el.border) { ctx.strokeStyle = el.borderColor || '#9ca3af'; ctx.lineWidth = 1; ctx.strokeRect(rx, ry, rw, rh); }
 
                             let text = (el.text || '').replace(/\{\{(.+?)\}\}/g, (m, k) => mockRow[k] !== undefined ? mockRow[k] : m);
-                            const lines = text.split('\n');
                             const fontSize = (el.fontSize || 12) * scale * 0.35;
                             ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px ${getFontFamilyCss(el.fontFamily)}`;
                             ctx.fillStyle = el.color || '#111827';
                             ctx.textBaseline = 'top';
+                            const lines = wrapTextToLines(ctx, text, Math.max(1, rw - 8));
 
                             lines.forEach((line, i) => {
                                 let tx = rx + 4;
@@ -3558,7 +3720,7 @@
                             });
 
                         } else if (el.type === 'box') {
-                            ctx.fillStyle = '#111827';
+                            ctx.fillStyle = el.color || '#111827';
                             ctx.fillRect(rx, ry, rw, rh);
                         }
 
@@ -4138,7 +4300,7 @@
                         textRenderCtx.fillStyle = el.color || '#111827';
                         textRenderCtx.textBaseline = 'top';
 
-                        const lines = (el.text || '').split('\n');
+                        const lines = wrapTextToLines(textRenderCtx, el.text || '', Math.max(1, textRenderCanvas.width - 12));
                         lines.forEach((line, lineIdx) => {
                             let lx = 6;
                             if (el.align === 'center') lx = textRenderCanvas.width / 2;
@@ -4170,10 +4332,12 @@
                                     const elTopY = ptY - ptH;
 
                                     if (el.bg) {
-                                        page.drawRectangle({ x: ptX, y: elTopY, width: ptW, height: ptH, color: rgb(0.97, 0.98, 0.98) });
+                                        const bgT = hexToRgb01(el.bg);
+                                        page.drawRectangle({ x: ptX, y: elTopY, width: ptW, height: ptH, color: bgT ? rgb(bgT.r, bgT.g, bgT.b) : rgb(0.97, 0.98, 0.98) });
                                     }
                                     if (el.border) {
-                                        page.drawRectangle({ x: ptX, y: elTopY, width: ptW, height: ptH, borderColor: rgb(0.6, 0.6, 0.6), borderWidth: 0.5 });
+                                        const borderT = hexToRgb01(el.borderColor);
+                                        page.drawRectangle({ x: ptX, y: elTopY, width: ptW, height: ptH, borderColor: borderT ? rgb(borderT.r, borderT.g, borderT.b) : rgb(0.6, 0.6, 0.6), borderWidth: 0.5 });
                                     }
 
                                     const isDynamic = (el.text || '').includes('{{');
@@ -4200,7 +4364,7 @@
                                         textRenderCtx.fillStyle = el.color || '#111827';
                                         textRenderCtx.textBaseline = 'top';
 
-                                        const lines = replacedText.split('\n');
+                                        const lines = wrapTextToLines(textRenderCtx, replacedText, Math.max(1, textRenderCanvas.width - 12));
                                         lines.forEach((line, lineIdx) => {
                                             let lx = 6;
                                             if (el.align === 'center') lx = textRenderCanvas.width / 2;
@@ -4286,7 +4450,8 @@
                                 } else if (el.type === 'box') {
                                     const ptW = (el.width || 100) * mm2pt;
                                     const ptH = (el.height || 1) * mm2pt;
-                                    page.drawRectangle({ x: ptX, y: ptY - ptH, width: ptW, height: ptH, color: rgb(0.1, 0.1, 0.1) });
+                                    const boxT = hexToRgb01(el.color);
+                                    page.drawRectangle({ x: ptX, y: ptY - ptH, width: ptW, height: ptH, color: boxT ? rgb(boxT.r, boxT.g, boxT.b) : rgb(0.1, 0.1, 0.1) });
                                 }
                             } catch (elemErr) {
                                 console.error(`[要素描画スキップ] 要素 ${el.name || el.id} の描画でエラー:`, elemErr);
