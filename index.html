@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>汎用QRコード一括生成・PDF合成・帳票デザイン作成ツール</title>
+    <title>Atena Studio | 名簿から書類を一括作成</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232D2A6E'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z' fill='%23ffffff'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z' fill='%23C9971F' transform='translate(30,30)'/%3E%3C/svg%3E">
     
     <script>
         // ▼ オンライン/オフライン自動判定 & ライブラリ読み込みローダー ▼
@@ -55,7 +56,7 @@
 
             // スタイルシートの読み込み（CDN優先）
             loadStylesheet(
-                'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Google+Sans:wght@400;500;700&display=swap',
+                'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@500;600;700&family=Roboto:wght@300;400;500;700&family=Google+Sans:wght@400;500;700&display=swap',
                 null
             );
             loadStylesheet(
@@ -102,23 +103,25 @@
                     tailwind.config = {
                         theme: {
                             extend: {
-                                fontFamily: { 
-                                    roboto: ['"Google Sans"', 'Roboto', 'ui-sans-serif', 'system-ui', 'sans-serif'] 
+                                fontFamily: {
+                                    roboto: ['Inter', '"Google Sans"', 'Roboto', 'ui-sans-serif', 'system-ui', 'sans-serif']
                                 },
                                 colors: {
-                                    primary: '#0b57d0',         // Google M3 Primary Blue
-                                    primaryHover: '#0842a0',    // Google M3 Hover
-                                    primaryContainer: '#d3e3fd',// M3 Tonal Blue Container
-                                    onPrimaryContainer: '#041e49',
-                                    surface: '#ffffff',
-                                    surfaceDim: '#f0f4f9',      // Google Workspace App Background
-                                    surfaceBright: '#f8fafd',
-                                    surfaceContainer: '#edf2fa',
-                                    outline: '#747775',
-                                    outlineVariant: '#c4c7c5',
-                                    error: '#ba1a1a',
-                                    warning: '#e37400',
-                                    accent: '#006a6a'
+                                    // 月ねこブランドトークン（Cal.com DESIGN.mdの構造・タイポ・シャドウ言語を踏襲しつつ、
+                                    // 配色だけ「月夜のインディゴ＋月あかりのゴールド」の独自ブランドカラーに変更）
+                                    primary: '#2D2A6E',          // 月夜のインディゴ（ブランドCTA）
+                                    primaryHover: '#3D3A8E',
+                                    primaryContainer: '#ECEAFA', // インディゴの淡いトーン（バッジ・アイコン背景）
+                                    onPrimaryContainer: '#2D2A6E',
+                                    surface: '#ffffff',          // Cal canvas
+                                    surfaceDim: '#f5f5f5',       // Cal surface-card
+                                    surfaceBright: '#f8f9fa',    // Cal surface-soft
+                                    surfaceContainer: '#f3f4f6', // Cal hairline-soft
+                                    outline: '#6b7280',          // Cal muted
+                                    outlineVariant: '#e5e7eb',   // Cal hairline
+                                    error: '#ef4444',            // Cal error
+                                    warning: '#f59e0b',          // Cal warning
+                                    accent: '#C9971F'            // 月あかりのゴールド（差し色として控えめに使用）
                                 }
                             }
                         }
@@ -129,70 +132,80 @@
     </script>
 
     <style>
-        body { background-color: #f0f4f9; }
-        
-        /* Material 3 Outlined Input */
+        body { background-color: #f5f5f5; font-family: 'Inter', 'Google Sans', Roboto, sans-serif; }
+
+        /* Cal.com風の見出しトラッキング（DESIGN.md: display見出しは負のletter-spacing） */
+        h1, h2 { letter-spacing: -0.02em; }
+
+        /* Cal.com風 Outlined Input */
         .m3-input {
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
             border-radius: 8px;
         }
         .m3-input:focus {
-            border-color: #0b57d0;
-            box-shadow: 0 0 0 1px #0b57d0;
+            border-color: #2D2A6E;
+            box-shadow: 0 0 0 1px #2D2A6E;
         }
-        
-        /* Material 3 Buttons */
+
+        /* 月ねこブランドカラーのボタン（構造・シャドウ言語はCal.com DESIGN.md準拠） */
         .m3-btn-filled {
-            background-color: #0b57d0;
+            background-color: #2D2A6E;
             color: #ffffff;
             transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
         }
         .m3-btn-filled:hover:not(:disabled) {
-            background-color: #0842a0;
-            box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            background-color: #3D3A8E;
+            box-shadow: 0 4px 12px rgba(45, 42, 110, 0.2);
         }
         .m3-btn-filled:active:not(:disabled) {
             transform: scale(0.98);
         }
-        
+
         .m3-btn-tonal {
-            background-color: #d3e3fd;
-            color: #041e49;
+            background-color: #ECEAFA;
+            color: #2D2A6E;
             transition: background-color 0.2s, box-shadow 0.2s;
         }
         .m3-btn-tonal:hover:not(:disabled) {
-            background-color: #c2e7ff;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            background-color: #DAD6F5;
+            box-shadow: 0 1px 2px rgba(45, 42, 110, 0.08);
         }
-        
+
         .m3-btn-outlined {
-            border: 1px solid #747775;
+            border: 1px solid #e5e7eb;
             background-color: transparent;
-            color: #1f1f1f;
+            color: #111111;
             transition: background-color 0.2s, border-color 0.2s;
         }
         .m3-btn-outlined:hover:not(:disabled) {
-            background-color: rgba(11, 87, 208, 0.08);
-            border-color: #0b57d0;
-            color: #0b57d0;
+            background-color: #ECEAFA;
+            border-color: #2D2A6E;
+            color: #2D2A6E;
         }
-        
-        /* Google M3 Segmented Buttons */
+
+        /* セグメントボタン（nav-pill-group） */
         .m3-segmented-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #444746;
+            color: #6b7280;
         }
         .m3-segmented-btn.active {
-            background-color: #0b57d0;
+            background-color: #2D2A6E;
             color: #ffffff !important;
             font-weight: 600;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 2px rgba(45, 42, 110, 0.15);
         }
         .m3-segmented-btn:not(.active):hover {
-            background-color: rgba(11, 87, 208, 0.08);
-            color: #0b57d0;
+            background-color: #ECEAFA;
+            color: #2D2A6E;
         }
-        
+
+        /* 任意機能の折りたたみ（名簿バージョン管理・詳細設定） */
+        .optional-accordion summary { cursor: pointer; list-style: none; }
+        .optional-accordion summary::-webkit-details-marker { display: none; }
+        .optional-accordion summary:hover { background-color: #f5f5f5; border-radius: 1rem; }
+        .optional-accordion .accordion-chevron { transition: transform 0.2s ease; }
+        .optional-accordion[open] .accordion-chevron { transform: rotate(180deg); }
+
         .checkerboard {
             background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
                               linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
@@ -203,11 +216,11 @@
         }
 
         .element-card.selected {
-            border-color: #0b57d0;
-            background-color: #e8f0fe;
+            border-color: #2D2A6E;
+            background-color: #ECEAFA;
         }
 
-        /* カスタムスクロールバー（Google Workspace風） */
+        /* カスタムスクロールバー（Cal.com風） */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -216,60 +229,132 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #c4c7c5;
+            background: #e5e7eb;
             border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #747775;
+            background: #9ca3af;
         }
     </style>
 </head>
 <body class="font-roboto text-[#1f1f1f] antialiased h-screen flex flex-col overflow-hidden bg-surfaceDim">
 
     <!-- Google Workspace風 Top App Bar -->
-    <header class="bg-surface border-b border-[#e0e2ec] shadow-sm z-20 relative flex items-center justify-between px-6 py-2.5">
+    <header class="bg-surface border-b border-[#e0e2ec] shadow-sm z-20 relative flex items-center flex-wrap gap-y-2 justify-between px-4 sm:px-6 py-2.5">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-primaryContainer flex items-center justify-center text-primary shadow-sm">
-                <span class="material-icons text-2xl">qr_code_2</span>
-            </div>
+            <svg width="36" height="36" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
+            </svg>
             <div>
-                <h1 id="headerTitle" class="text-base sm:text-lg font-bold tracking-tight text-[#1f1f1f] flex items-center gap-2">
-                    QR & Document Studio
-                    <span class="text-[10px] font-medium bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full">v2.5 Pro</span>
+                <h1 id="headerTitle" class="text-lg sm:text-xl text-[#2D2A6E] flex items-center gap-2" style="font-family: 'Quicksand', sans-serif;">
+                    <span class="font-semibold">Atena Studio</span>
+                    <span class="text-[10px] font-medium bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full" style="font-family: 'Inter', sans-serif;">無料版</span>
+                    <a href="about.html" target="_blank" class="text-[10px] text-gray-400 hover:text-primary underline underline-offset-2 font-normal" style="font-family: 'Inter', sans-serif;">使い方・機能紹介</a>
                 </h1>
-                <p class="text-[11px] text-gray-500">Google Material 3 準拠 ＆ 超軽量 Form XObject 合成エンジン</p>
+                <p class="text-[11px] text-gray-500 hidden sm:block">名簿から、宛名ラベル・QR付き書類・名札などをまとめて作成</p>
             </div>
         </div>
-        
-        <div class="flex items-center gap-3">
-            <!-- 設定のJSONインポート・エクスポート（M3 Tonal/Outlined Button） -->
-            <div class="flex items-center gap-1.5 bg-surfaceContainer p-1 rounded-full border border-outlineVariant/50">
-                <input type="file" id="configFileInput" accept=".json" class="hidden">
-                <button id="importConfigBtn" class="text-xs px-3 py-1.5 rounded-full flex items-center transition-all opacity-50 cursor-not-allowed text-gray-600 font-medium" disabled title="CSVファイル読み込み後に設定JSONを読み込めます">
-                    <span class="material-icons text-[16px] mr-1">upload_file</span>設定読込
-                </button>
-                <button id="exportConfigBtn" class="text-xs px-3 py-1.5 rounded-full flex items-center transition-all hover:bg-white text-gray-700 font-medium shadow-none hover:shadow-sm" title="現在の全設定をJSONファイルとして書き出します">
-                    <span class="material-icons text-[16px] mr-1">download</span>設定保存
-                </button>
+
+        <div class="flex items-center gap-2">
+            <!-- 最上位モード切り替えメニュー（M3 Segmented Button Pill） -->
+            <div class="flex flex-col items-end gap-1">
+                <nav class="flex items-center p-1 rounded-full bg-surfaceContainer border border-outlineVariant/60">
+                    <button class="m3-segmented-btn main-mode-btn active px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="overlay">
+                        <span class="material-icons sm:mr-1.5 text-[16px]">layers</span> <span class="hidden sm:inline">背景PDFに合成</span>
+                    </button>
+                    <button class="m3-segmented-btn main-mode-btn px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="designer">
+                        <span class="material-icons sm:mr-1.5 text-[16px]">design_services</span> <span class="hidden sm:inline">新規帳票デザイン</span>
+                    </button>
+                    <button class="m3-segmented-btn main-mode-btn px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="zip">
+                        <span class="material-icons sm:mr-1.5 text-[16px]">archive</span> <span class="hidden sm:inline">QR画像一括出力</span>
+                    </button>
+                </nav>
+                <p class="text-[10px] text-gray-400 hidden sm:block">↑ 現在のモード。下の①でテンプレートを選ぶと自動で切り替わります</p>
             </div>
 
-            <!-- 最上位モード切り替えメニュー（M3 Segmented Button Pill） -->
-            <nav class="flex items-center p-1 rounded-full bg-surfaceContainer border border-outlineVariant/60">
-                <button class="m3-segmented-btn main-mode-btn active px-4 py-1.5 text-xs rounded-full flex items-center focus:outline-none" data-mode="overlay">
-                    <span class="material-icons mr-1.5 text-[16px]">layers</span> 背景PDFに合成
+            <!-- 設定の保存/読込（頻度が低いため折りたたみメニューに格納） -->
+            <div class="relative hidden sm:block">
+                <button id="settingsMenuBtn" type="button" class="w-9 h-9 rounded-full hover:bg-surfaceContainer flex items-center justify-center text-gray-500" title="設定の書き出し・読み込み">
+                    <span class="material-icons text-xl">more_vert</span>
                 </button>
-                <button class="m3-segmented-btn main-mode-btn px-4 py-1.5 text-xs rounded-full flex items-center focus:outline-none" data-mode="designer">
-                    <span class="material-icons mr-1.5 text-[16px]">design_services</span> 新規帳票デザイン
-                </button>
-                <button class="m3-segmented-btn main-mode-btn px-4 py-1.5 text-xs rounded-full flex items-center focus:outline-none" data-mode="zip">
-                    <span class="material-icons mr-1.5 text-[16px]">archive</span> QR画像一括出力
-                </button>
-            </nav>
+                <div id="settingsMenuDropdown" class="hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 z-30">
+                    <input type="file" id="configFileInput" accept=".json" class="hidden">
+                    <button id="exportConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
+                        <span class="material-icons text-[18px] text-gray-500">download</span>
+                        <span>
+                            <span class="block text-xs font-medium text-gray-800">設定を書き出す</span>
+                            <span class="block text-[10px] text-gray-400">今の設定をJSONファイルに保存</span>
+                        </span>
+                    </button>
+                    <button id="importConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 transition-all opacity-50 cursor-not-allowed text-gray-600" disabled title="CSVファイル読み込み後に設定JSONを読み込めます">
+                        <span class="material-icons text-[18px] text-gray-400">upload_file</span>
+                        <span>
+                            <span class="block text-xs font-medium">設定を読み込む</span>
+                            <span class="block text-[10px] text-gray-400">CSV読込後に使えます</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="flex-grow overflow-y-auto relative p-4 sm:p-6">
         <div class="container mx-auto max-w-7xl">
+
+            <!-- 用途別テンプレートギャラリー（任意。QRは数ある機能の一つに過ぎないという前提のエントリーポイント） -->
+            <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec] mb-6">
+                <h2 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold shrink-0">1</span>
+                    何を作りますか？
+                </h2>
+                <p class="text-[11px] text-gray-500 mb-3">選ぶと下の③④（帳票の中身）が自動で組まれます。CSVは②で読み込んでください。QRコードが要らない用途にも使えます。</p>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <button type="button" data-template="mailingLabel" class="template-select-btn text-left border border-gray-200 rounded-xl p-3 hover:border-primary hover:bg-surfaceDim transition-all">
+                        <span class="material-icons text-gray-600 text-xl block mb-1">mail</span>
+                        <span class="text-xs font-semibold text-gray-900 block">宛名ラベル</span>
+                        <span class="text-[10px] text-gray-400">QRなし</span>
+                    </button>
+                    <button type="button" data-template="attendanceTicket" class="template-select-btn text-left border border-gray-200 rounded-xl p-3 hover:border-primary hover:bg-surfaceDim transition-all">
+                        <span class="material-icons text-gray-600 text-xl block mb-1">qr_code_2</span>
+                        <span class="text-xs font-semibold text-gray-900 block">QR付き受講票</span>
+                        <span class="text-[10px] text-gray-400">出欠確認QR付き</span>
+                    </button>
+                    <button type="button" data-template="nameBadge" class="template-select-btn text-left border border-gray-200 rounded-xl p-3 hover:border-primary hover:bg-surfaceDim transition-all">
+                        <span class="material-icons text-gray-600 text-xl block mb-1">badge</span>
+                        <span class="text-xs font-semibold text-gray-900 block">名札</span>
+                        <span class="text-[10px] text-gray-400">QRなし</span>
+                    </button>
+                    <button type="button" data-template="custom" class="template-select-btn text-left border border-gray-200 rounded-xl p-3 hover:border-primary hover:bg-surfaceDim transition-all">
+                        <span class="material-icons text-gray-600 text-xl block mb-1">tune</span>
+                        <span class="text-xs font-semibold text-gray-900 block">カスタムで作る</span>
+                        <span class="text-[10px] text-gray-400">自分で組む</span>
+                    </button>
+                    <button type="button" id="openTemplatePickerBtn" class="text-left border border-dashed border-gray-300 rounded-xl p-3 hover:border-primary hover:bg-surfaceDim transition-all">
+                        <span class="material-icons text-gray-600 text-xl block mb-1">grid_view</span>
+                        <span class="text-xs font-semibold text-gray-900 block">その他（10種）</span>
+                        <span class="text-[10px] text-gray-400">会員証・診察券など</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- テンプレートページ（モーダル）：見た目のプレビュー付きで選べる -->
+            <div id="templatePickerModal" class="fixed inset-0 bg-gray-950/70 flex items-center justify-center z-[70] hidden backdrop-blur-sm p-2 sm:p-5">
+                <div class="bg-surface rounded-3xl shadow-2xl flex flex-col w-full max-w-5xl h-[90vh] overflow-hidden border border-outlineVariant/50">
+                    <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-surfaceContainer/50 shrink-0">
+                        <h3 class="text-sm sm:text-base font-bold text-gray-800 flex items-center gap-2">
+                            <span class="material-icons text-primary text-xl">grid_view</span> テンプレートを選ぶ
+                        </h3>
+                        <button id="closeTemplatePickerBtn" class="text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-200 focus:outline-none">
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+                    <div class="flex-grow overflow-y-auto p-5 space-y-6">
+                        <div id="templatePickerMySection"></div>
+                        <div id="templatePickerBody" class="space-y-6"></div>
+                    </div>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- 左カラム：設定パネル -->
@@ -279,7 +364,7 @@
                     <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">1</span>
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">2</span>
                                 差し込みデータ (CSV) の読み込み
                             </h2>
                             <span class="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">全機能共通</span>
@@ -304,13 +389,55 @@
                             <span>読込件数: <span id="recordCount" class="font-bold text-primary text-sm">0</span> 件</span>
                             <span class="text-[11px] text-gray-500">※各機能でタグをクリックするとテンプレートに挿入されます</span>
                         </div>
+                        <div class="mt-3 pt-3 border-t border-gray-100 flex items-start justify-between gap-3">
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                CSVの1行目は列名（見出し）、2行目以降が1件＝生成される1ページ分のデータになります。<br>
+                                どんな列を用意すればいいか迷ったら、右のボタンで見本CSVをダウンロードできます。
+                            </p>
+                            <button id="downloadSampleCsvBtn" type="button" class="m3-btn-outlined px-3 py-1.5 rounded-full text-[11px] flex items-center font-medium whitespace-nowrap shrink-0">
+                                <span class="material-icons text-[14px] mr-1">description</span>見本CSV
+                            </button>
+                        </div>
                     </section>
+
+                    <!-- 名簿のバージョン管理（ブラウザ内IndexedDBに保存。サーバーには送信されない） -->
+                    <details id="listVersionSection" class="optional-accordion bg-surface rounded-2xl shadow-sm border border-[#e0e2ec]">
+                        <summary class="p-5 flex items-center justify-between gap-2">
+                            <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                <span class="material-icons text-[18px] text-gray-500">history</span>
+                                名簿のバージョン管理
+                                <span class="text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">任意・2回目以降に便利</span>
+                            </h2>
+                            <span class="material-icons text-gray-400 accordion-chevron">expand_more</span>
+                        </summary>
+                        <div class="px-5 pb-5">
+                            <div class="flex items-center justify-end gap-1.5 mb-2">
+                                <input type="file" id="importBackupInput" accept=".json" class="hidden">
+                                <button id="importBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-surfaceDim px-2.5 py-1 rounded-full flex items-center font-medium">
+                                    <span class="material-icons text-[14px] mr-1">upload</span>復元
+                                </button>
+                                <button id="exportBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-surfaceDim px-2.5 py-1 rounded-full flex items-center font-medium">
+                                    <span class="material-icons text-[14px] mr-1">download</span>バックアップ
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-gray-500 mb-3">読み込んだCSVを「バージョン」として保存すると、前回との差分（追加/削除/変更）を確認できます。このブラウザだけに保存され、どこにも送信されません。</p>
+                            <div class="flex items-center gap-2 mb-3">
+                                <label class="text-[11px] font-medium text-gray-700 whitespace-nowrap">一意キーとなる列（ID）:</label>
+                                <select id="listVersionIdColumn" class="m3-input flex-grow px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                    <option value="">CSV読み込み後に選択してください</option>
+                                </select>
+                                <button id="saveListVersionBtn" type="button" class="m3-btn-filled px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap" disabled>この内容を保存</button>
+                            </div>
+                            <div id="listVersionDiffSummary" class="hidden mb-3 text-xs bg-surfaceDim p-2.5 rounded-xl"></div>
+                            <div id="listVersionHistory" class="space-y-1.5 max-h-52 overflow-y-auto text-[11px] text-gray-400">まだバージョンが保存されていません。</div>
+                        </div>
+                    </details>
 
                     <!-- ▼▼ モード1: 既存PDFオーバーレイ設定 ▼▼ -->
                     <div id="modePanelOverlay" class="space-y-5">
                         <section id="templateSection" class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec] opacity-50 pointer-events-none transition-opacity duration-300">
                             <h2 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">2</span>
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
                                 QRコードにするデータの作成 (PDF用)
                             </h2>
                             
@@ -325,6 +452,20 @@
                                     <input type="checkbox" id="urlEncodeVars" class="form-checkbox text-primary rounded border-gray-300" checked>
                                     <span class="ml-2 text-xs text-gray-700 font-medium">変数の値をURLエンコードする</span>
                                 </label>
+                            </div>
+
+                            <!-- UTMパラメータ付与機能UI -->
+                            <div class="mt-3.5 border-t border-gray-100 pt-3">
+                                <label class="inline-flex items-center cursor-pointer mb-2">
+                                    <input type="checkbox" id="useUtmParams" class="form-checkbox text-primary rounded border-gray-300">
+                                    <span class="ml-2 text-xs font-medium text-gray-700">生成したURLにUTMパラメータを自動付与する</span>
+                                </label>
+                                <div id="utmParamsConfig" class="hidden pl-4 border-l-2 border-primary ml-1 py-1 grid grid-cols-3 gap-2">
+                                    <div><label class="block text-[10px] font-medium text-gray-500 mb-0.5">utm_source</label><input type="text" id="utmSource" placeholder="flyer" class="m3-input w-full px-2 py-1 border border-gray-300 text-[11px]"></div>
+                                    <div><label class="block text-[10px] font-medium text-gray-500 mb-0.5">utm_medium</label><input type="text" id="utmMedium" placeholder="print" class="m3-input w-full px-2 py-1 border border-gray-300 text-[11px]"></div>
+                                    <div><label class="block text-[10px] font-medium text-gray-500 mb-0.5">utm_campaign</label><input type="text" id="utmCampaign" placeholder="autumn2026" class="m3-input w-full px-2 py-1 border border-gray-300 text-[11px]"></div>
+                                    <p class="col-span-3 text-[10px] text-gray-400 mt-0.5">※テンプレートが http(s):// で始まるURLの場合のみ、末尾にクエリパラメータとして付与されます。空欄の項目は付与されません。</p>
+                                </div>
                             </div>
 
                             <!-- 中央テキスト機能UI -->
@@ -358,15 +499,36 @@
 
                         <section id="outputSection" class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec] opacity-50 pointer-events-none transition-opacity duration-300">
                             <h2 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">4</span>
                                 QRコードの配置座標とサイズ
                             </h2>
+
+                            <!-- 座標プリセット -->
+                            <div class="mb-3.5 bg-surfaceDim p-2.5 rounded-xl border border-gray-200 flex items-center gap-2">
+                                <select id="coordPresetSelect" class="m3-input flex-grow px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                    <option value="">プリセットを選択...</option>
+                                </select>
+                                <button id="coordPresetSaveBtn" type="button" class="m3-btn-tonal text-[11px] px-2.5 py-1.5 rounded-full font-medium whitespace-nowrap">名前を付けて保存</button>
+                                <button id="coordPresetDeleteBtn" type="button" class="text-[11px] text-error hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full whitespace-nowrap">削除</button>
+                            </div>
+
                             <div class="space-y-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">用紙の向き</label>
-                                    <select id="pdfOrientation" class="m3-input px-3 py-1.5 border border-gray-300 text-xs outline-none bg-white w-full sm:w-48">
-                                        <option value="l" selected>A4 横</option><option value="p">A4 縦</option>
-                                    </select>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">用紙サイズ</label>
+                                        <select id="pdfPaperSize" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                            <option value="A4" selected>A4</option>
+                                            <option value="A3">A3</option>
+                                            <option value="B5">B5</option>
+                                            <option value="POSTCARD">はがき</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">用紙の向き</label>
+                                        <select id="pdfOrientation" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                            <option value="l" selected>横向き (Landscape)</option><option value="p">縦向き (Portrait)</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="grid grid-cols-3 gap-3 border-t border-gray-100 pt-3">
                                     <div><label class="block text-[11px] font-medium text-gray-600 mb-1">サイズ (mm)</label><input type="number" id="qrSize" value="30" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs text-right"></div>
@@ -375,6 +537,46 @@
                                 </div>
                             </div>
                         </section>
+
+                        <!-- 詳細設定（任意）：ロゴ／角印の自動合成・検品用CSV -->
+                        <details id="logoSection" class="optional-accordion bg-surface rounded-2xl shadow-sm border border-[#e0e2ec] opacity-50 pointer-events-none transition-opacity duration-300">
+                            <summary class="p-5 flex items-center justify-between gap-2">
+                                <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                    <span class="material-icons text-[18px] text-gray-500">tune</span>
+                                    詳細設定
+                                    <span class="text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">任意</span>
+                                </h2>
+                                <span class="material-icons text-gray-400 accordion-chevron">expand_more</span>
+                            </summary>
+                            <div class="px-5 pb-5 space-y-5">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700 mb-2">ロゴ／角印の自動合成</p>
+                                    <label class="inline-flex items-center cursor-pointer mb-3">
+                                        <input type="checkbox" id="useLogo" class="form-checkbox text-primary rounded border-gray-300">
+                                        <span class="ml-2 text-xs font-medium text-gray-700">全ページに同じ画像を自動で重ねて合成する</span>
+                                    </label>
+                                    <div id="logoConfig" class="hidden space-y-3">
+                                        <div class="flex items-center gap-2">
+                                            <input type="file" id="logoFileInput" accept="image/png" class="hidden">
+                                            <button type="button" onclick="document.getElementById('logoFileInput').click()" class="m3-btn-outlined px-3 py-1.5 rounded-full text-xs flex items-center font-medium">
+                                                <span class="material-icons text-[16px] mr-1">image</span>PNG画像を選択
+                                            </button>
+                                            <span id="logoFileNameDisplay" class="text-xs text-gray-500 truncate max-w-[180px]">選択されていません</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-3 border-t border-gray-100 pt-3">
+                                            <div><label class="block text-[11px] font-medium text-gray-600 mb-1">幅 (mm)</label><input type="number" id="logoWidth" value="25" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs text-right"></div>
+                                            <div><label class="block text-[11px] font-medium text-gray-600 mb-1">X座標 (mm)</label><input type="number" id="logoX" value="250" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs text-right"></div>
+                                            <div><label class="block text-[11px] font-medium text-gray-600 mb-1">Y座標 (mm)</label><input type="number" id="logoY" value="15" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs text-right"></div>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400">※高さは画像の縦横比から自動計算されます。座標は用紙左上を原点とします。</p>
+                                    </div>
+                                </div>
+                                <label class="flex items-center cursor-pointer border-t border-gray-100 pt-4">
+                                    <input type="checkbox" id="exportVerificationCsv" class="form-checkbox text-primary rounded border-gray-300">
+                                    <span class="ml-2 text-xs font-medium text-gray-700">PDF生成と同時に検品用CSV（何ページ目にどのデータを埋め込んだか）も出力する</span>
+                                </label>
+                            </div>
+                        </details>
                     </div>
 
                     <!-- ▼▼ モード2: PDF帳票デザイン完全作成パネル ▼▼ -->
@@ -382,7 +584,7 @@
                         <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
                             <div class="flex items-center justify-between mb-3">
                                 <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                    <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">2</span>
+                                    <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
                                     用紙サイズ ＆ 帳票プリセット
                                 </h2>
                                 <div class="flex items-center gap-2">
@@ -418,13 +620,23 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- マイテンプレート（ユーザーが組んだレイアウトを名前を付けて保存・再利用） -->
+                            <div class="mt-3.5 pt-3 border-t border-gray-100 flex items-center gap-2 flex-wrap">
+                                <label class="text-[11px] font-medium text-gray-700 whitespace-nowrap">マイテンプレート:</label>
+                                <select id="myTemplateSelect" class="m3-input flex-grow min-w-[140px] px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                    <option value="">選択...</option>
+                                </select>
+                                <button id="myTemplateSaveBtn" type="button" class="m3-btn-tonal text-[11px] px-2.5 py-1.5 rounded-full font-medium whitespace-nowrap">今の内容を保存</button>
+                                <button id="myTemplateDeleteBtn" type="button" class="text-[11px] text-error hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full whitespace-nowrap">削除</button>
+                            </div>
                         </section>
 
                         <!-- レイアウト要素管理パネル -->
                         <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
                             <div class="flex items-center justify-between mb-3">
                                 <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                    <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
+                                    <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">4</span>
                                     帳票要素の追加・編集
                                 </h2>
                                 <div class="flex items-center gap-1.5">
@@ -469,7 +681,7 @@
                         <!-- ZIP専用のQRデータ作成セクション（他機能と完全分離） -->
                         <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
                             <h2 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">2</span>
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
                                 QRコードにするデータの作成 (画像一括出力専用)
                             </h2>
                             <div class="mb-2">
@@ -506,7 +718,7 @@
                         <!-- ZIPファイル名＆解像度設定 -->
                         <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
                             <h2 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">4</span>
                                 ファイル名と画像解像度
                             </h2>
                             <div class="space-y-4">
@@ -584,7 +796,7 @@
                         
                         <!-- M3 Primary Action Button -->
                         <div class="w-full max-w-full lg:max-w-[500px] mt-5">
-                            <button id="generateBtn" class="m3-btn-filled w-full py-3.5 px-6 rounded-full shadow-md flex items-center justify-center gap-2 focus:outline-none disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed transition-all font-medium text-sm" disabled>
+                            <button id="generateBtn" class="m3-btn-filled w-full py-3.5 px-6 rounded-lg shadow-md flex items-center justify-center gap-2 focus:outline-none disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed transition-all font-semibold text-sm" disabled>
                                 <span id="btnIcon" class="material-icons text-lg">download</span>
                                 <span id="btnText">CSVデータを選択してください</span>
                             </button>
@@ -752,6 +964,7 @@
             let bgPdfBytes = null, csvData = [], csvHeaders = [], currentAppMode = 'overlay', bgPdfCanvas = null;     
             let bgPdfPageCount = 0;
             let customFontBytes = null;
+            let logoImageBytes = null;
 
             // デザイン作成モード用レイアウト要素配列
             let designerElements = [
@@ -771,13 +984,40 @@
                 overlayPdfControls: document.getElementById('overlayPdfControls'),
                 configFileInput: document.getElementById('configFileInput'),
                 importConfigBtn: document.getElementById('importConfigBtn'),
+                settingsMenuBtn: document.getElementById('settingsMenuBtn'), settingsMenuDropdown: document.getElementById('settingsMenuDropdown'),
                 exportConfigBtn: document.getElementById('exportConfigBtn'),
                 csvFileInput: document.getElementById('csvFileInput'), csvEncoding: document.getElementById('csvEncoding'), fileNameDisplay: document.getElementById('fileNameDisplay'), fileStats: document.getElementById('fileStats'), recordCount: document.getElementById('recordCount'),
+                downloadSampleCsvBtn: document.getElementById('downloadSampleCsvBtn'),
+
+                // テンプレートピッカー
+                openTemplatePickerBtn: document.getElementById('openTemplatePickerBtn'), closeTemplatePickerBtn: document.getElementById('closeTemplatePickerBtn'),
+                templatePickerModal: document.getElementById('templatePickerModal'), templatePickerBody: document.getElementById('templatePickerBody'),
+                templatePickerMySection: document.getElementById('templatePickerMySection'),
+
+                // 名簿のバージョン管理
+                listVersionIdColumn: document.getElementById('listVersionIdColumn'), saveListVersionBtn: document.getElementById('saveListVersionBtn'),
+                listVersionDiffSummary: document.getElementById('listVersionDiffSummary'), listVersionHistory: document.getElementById('listVersionHistory'),
+                exportBackupBtn: document.getElementById('exportBackupBtn'), importBackupBtn: document.getElementById('importBackupBtn'), importBackupInput: document.getElementById('importBackupInput'),
                 
                 // モード1 (PDFオーバーレイ)
-                templateSection: document.getElementById('templateSection'), headerTags: document.getElementById('headerTags'), dataTemplate: document.getElementById('dataTemplate'), urlEncodeVars: document.getElementById('urlEncodeVars'), templatePreview: document.getElementById('templatePreview'), outputSection: document.getElementById('outputSection'), pdfOrientation: document.getElementById('pdfOrientation'), qrSize: document.getElementById('qrSize'), qrX: document.getElementById('qrX'), qrY: document.getElementById('qrY'),
+                templateSection: document.getElementById('templateSection'), headerTags: document.getElementById('headerTags'), dataTemplate: document.getElementById('dataTemplate'), urlEncodeVars: document.getElementById('urlEncodeVars'), templatePreview: document.getElementById('templatePreview'), outputSection: document.getElementById('outputSection'), pdfOrientation: document.getElementById('pdfOrientation'), pdfPaperSize: document.getElementById('pdfPaperSize'), qrSize: document.getElementById('qrSize'), qrX: document.getElementById('qrX'), qrY: document.getElementById('qrY'),
                 useCenterText: document.getElementById('useCenterText'), centerTextConfig: document.getElementById('centerTextConfig'), centerTextColumn: document.getElementById('centerTextColumn'), centerTextPreviewArea: document.getElementById('centerTextPreviewArea'), centerTextPreview: document.getElementById('centerTextPreview'),
                 qrCodePreviewImg: document.getElementById('qrCodePreviewImg'), qrCodePreviewPlaceholder: document.getElementById('qrCodePreviewPlaceholder'),
+
+                // UTMパラメータ付与
+                useUtmParams: document.getElementById('useUtmParams'), utmParamsConfig: document.getElementById('utmParamsConfig'),
+                utmSource: document.getElementById('utmSource'), utmMedium: document.getElementById('utmMedium'), utmCampaign: document.getElementById('utmCampaign'),
+
+                // 座標プリセット
+                coordPresetSelect: document.getElementById('coordPresetSelect'), coordPresetSaveBtn: document.getElementById('coordPresetSaveBtn'), coordPresetDeleteBtn: document.getElementById('coordPresetDeleteBtn'),
+
+                // ロゴ／角印合成
+                logoSection: document.getElementById('logoSection'), useLogo: document.getElementById('useLogo'), logoConfig: document.getElementById('logoConfig'),
+                logoFileInput: document.getElementById('logoFileInput'), logoFileNameDisplay: document.getElementById('logoFileNameDisplay'),
+                logoWidth: document.getElementById('logoWidth'), logoX: document.getElementById('logoX'), logoY: document.getElementById('logoY'),
+
+                // 検品用CSV
+                exportVerificationCsv: document.getElementById('exportVerificationCsv'),
                 
                 // モード2 (デザイナー)
                 desPaperSize: document.getElementById('desPaperSize'), desOrientation: document.getElementById('desOrientation'),
@@ -787,6 +1027,7 @@
                 addLabelBtn: document.getElementById('addLabelBtn'), addTableBtn: document.getElementById('addTableBtn'),
                 addBoxBtn: document.getElementById('addBoxBtn'), addQrBtn: document.getElementById('addQrBtn'),
                 presetNoticeBtn: document.getElementById('presetNoticeBtn'), presetTicketBtn: document.getElementById('presetTicketBtn'),
+                myTemplateSelect: document.getElementById('myTemplateSelect'), myTemplateSaveBtn: document.getElementById('myTemplateSaveBtn'), myTemplateDeleteBtn: document.getElementById('myTemplateDeleteBtn'),
                 customFontInput: document.getElementById('customFontInput'), fontStatusText: document.getElementById('fontStatusText'),
 
                 // モード3 (ZIP出力：独立化)
@@ -1041,6 +1282,341 @@
                 showToast('チケットプリセットを読み込みました。', 'success');
             };
 
+            // 用途別テンプレートギャラリー（QRは数ある要素の一つ、という位置づけのエントリーポイント）
+            const TEMPLATE_GALLERY_PRESETS = {
+                mailingLabel: {
+                    orientation: 'p',
+                    firstElementId: 'el_addr',
+                    label: '宛名ラベル',
+                    elements: [
+                        { id: 'el_addr', type: 'label', name: '宛先', text: '〒{{郵便番号}}\n{{住所}}\n{{氏名}} 様', x: 20, y: 30, width: 130, height: 35, fontSize: 14, align: 'left', bold: false, border: true, bg: '#f9fafb' }
+                    ]
+                },
+                attendanceTicket: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: 'QR付き受講票',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '受講票', x: 20, y: 15, width: 170, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_info', type: 'label', name: '受講者情報', text: '{{氏名}} 様\nクラス: {{クラス}}', x: 20, y: 35, width: 100, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '出欠確認QR', template: 'https://example.com/checkin?id={{ID}}', x: 135, y: 30, size: 45 }
+                    ]
+                },
+                nameBadge: {
+                    orientation: 'l',
+                    firstElementId: 'el_name',
+                    label: '名札',
+                    elements: [
+                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}}', x: 20, y: 35, width: 257, height: 25, fontSize: 36, align: 'center', bold: true },
+                        { id: 'el_group', type: 'label', name: '所属', text: '{{クラス}}', x: 20, y: 65, width: 257, height: 14, fontSize: 16, align: 'center' }
+                    ]
+                },
+                membershipCard: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: '会員証',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'MEMBER CARD', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
+                        { id: 'el_info', type: 'label', name: '会員情報', text: '{{氏名}} 様\n会員種別: {{会員種別}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '入館確認QR', template: 'https://example.com/checkin?member={{会員番号}}', x: 150, y: 15, size: 40 }
+                    ]
+                },
+                clinicSlip: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: '診察券',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '診察券', x: 20, y: 15, width: 170, height: 12, fontSize: 20, align: 'center', bold: true },
+                        { id: 'el_info', type: 'label', name: '患者情報', text: '{{氏名}} 様\n診察科: {{診察科}}', x: 20, y: 35, width: 100, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '予約確認QR', template: 'https://example.com/reserve?id={{患者番号}}', x: 135, y: 30, size: 45 }
+                    ]
+                },
+                renewalNotice: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '更新案内状',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'ご契約更新のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '証券番号 {{証券番号}} のご契約が更新時期を迎えます。\n下記QRコードより更新手続きをお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left' },
+                        { id: 'el_qr', type: 'qr', name: '更新手続きQR', template: 'https://example.com/renew?id={{証券番号}}', x: 135, y: 85, size: 40 }
+                    ]
+                },
+                assemblyNotice: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '総会案内・回覧',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '総会開催のお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{部屋番号}} {{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '下記日程にて定期総会を開催いたします。\nご出席をお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left', border: true, bg: '#f9fafb' }
+                    ]
+                },
+                seminarAttendance: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: 'セミナー参加証',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'SEMINAR PASS / 参加証', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
+                        { id: 'el_info', type: 'label', name: '参加者情報', text: '{{氏名}} 様\n{{所属}}', x: 20, y: 35, width: 100, height: 20, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '受付確認QR', template: 'https://example.com/checkin?id={{参加者番号}}', x: 135, y: 30, size: 45 }
+                    ]
+                },
+                certificate: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '修了証',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '修 了 証', x: 20, y: 25, width: 170, height: 15, fontSize: 26, align: 'center', bold: true },
+                        { id: 'el_name', type: 'label', name: '氏名', text: '{{氏名}} 殿', x: 20, y: 55, width: 170, height: 12, fontSize: 18, align: 'center' },
+                        { id: 'el_body', type: 'label', name: '本文', text: '{{講座名}} を修了したことを証明します。', x: 20, y: 75, width: 170, height: 14, fontSize: 12, align: 'center' },
+                        { id: 'el_qr', type: 'qr', name: '真贋確認QR', template: 'https://example.com/verify?id={{修了証番号}}', x: 150, y: 155, size: 30 }
+                    ]
+                },
+                parkingPermit: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: '駐車場利用証',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '駐車場利用証', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
+                        { id: 'el_info', type: 'label', name: '利用者情報', text: '{{氏名}} 様\n車両番号: {{車両番号}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '車両照会QR', template: 'https://example.com/parking?no={{車両番号}}', x: 150, y: 15, size: 40 }
+                    ]
+                },
+                coupon: {
+                    orientation: 'l',
+                    firstElementId: 'el_title',
+                    label: 'クーポン・優待券',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: 'SPECIAL COUPON', x: 20, y: 15, width: 170, height: 12, fontSize: 18, align: 'left', bold: true },
+                        { id: 'el_info', type: 'label', name: '内容', text: '{{氏名}} 様限定\n{{特典内容}}', x: 20, y: 35, width: 110, height: 22, fontSize: 13, border: true, bg: '#f9fafb' },
+                        { id: 'el_qr', type: 'qr', name: '利用確認QR', template: 'https://example.com/coupon?id={{クーポンID}}', x: 150, y: 15, size: 40 }
+                    ]
+                },
+                invoiceCoverLetter: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '請求書送付状',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '請求書在中', x: 20, y: 20, width: 170, height: 12, fontSize: 16, align: 'right', bold: true },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 45, width: 170, height: 10, fontSize: 14, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: 'いつもお世話になっております。\n{{請求月}}分の請求書を同封いたしましたので、ご確認をお願いいたします。', x: 20, y: 60, width: 170, height: 22, fontSize: 11, align: 'left' }
+                    ]
+                },
+                reunionNotice: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '同窓会・OB会案内',
+                    elements: [
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '同窓会開催のご案内', x: 20, y: 20, width: 170, height: 12, fontSize: 18, align: 'center', bold: true },
+                        { id: 'el_dest', type: 'label', name: '宛先', text: '{{氏名}} 様', x: 20, y: 40, width: 170, height: 10, fontSize: 13, align: 'left' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '久しぶりに皆さまで集まる会を開催いたします。\n下記QRコードより出欠のご回答をお願いいたします。', x: 20, y: 55, width: 170, height: 22, fontSize: 11, align: 'left' },
+                        { id: 'el_qr', type: 'qr', name: '出欠回答QR', template: 'https://example.com/rsvp?id={{氏名}}', x: 135, y: 85, size: 40 }
+                    ]
+                }
+            };
+
+            // テンプレートのアイコン・説明・カテゴリ（プリセット本体とは分離。既存プリセットの中身は変更しない）
+            const TEMPLATE_GALLERY_META = {
+                attendanceTicket:   { icon: 'qr_code_2',          desc: '出欠確認QR付き',                    category: '受付・会員' },
+                membershipCard:     { icon: 'card_membership',    desc: '入館・入場確認QR付き',              category: '受付・会員' },
+                seminarAttendance:  { icon: 'event_available',    desc: '受付確認QR付き',                    category: '受付・会員' },
+                clinicSlip:         { icon: 'local_hospital',     desc: '予約確認QR付き',                    category: '受付・会員' },
+                renewalNotice:      { icon: 'autorenew',          desc: '保険・契約の更新手続きQR付き',       category: '案内状・通知' },
+                assemblyNotice:     { icon: 'apartment',          desc: '管理組合・自治会向け／QRなし',       category: '案内状・通知' },
+                reunionNotice:      { icon: 'groups',             desc: '出欠回答QR付き',                    category: '案内状・通知' },
+                invoiceCoverLetter: { icon: 'receipt_long',       desc: '士業・経理向け／QRなし',             category: '案内状・通知' },
+                mailingLabel:       { icon: 'mail',               desc: '氏名・住所のみ／QRなし',             category: 'ラベル・証明' },
+                nameBadge:          { icon: 'badge',              desc: '氏名・所属を大きく表示／QRなし',     category: 'ラベル・証明' },
+                certificate:        { icon: 'workspace_premium',  desc: '真贋確認QR付き',                    category: 'ラベル・証明' },
+                parkingPermit:      { icon: 'local_parking',      desc: '車両照会QR付き',                    category: 'ラベル・証明' },
+                coupon:             { icon: 'confirmation_number',desc: '利用確認QR付き',                    category: 'ラベル・証明' }
+            };
+            const TEMPLATE_GALLERY_CATEGORY_ORDER = ['受付・会員', '案内状・通知', 'ラベル・証明'];
+
+            // デザイナー要素配列を、簡易サムネイル用のcanvasに描画（メインのrenderCanvasとは独立した軽量版）
+            function renderTemplateThumbnail(canvas, preset) {
+                const ctx = canvas.getContext('2d');
+                const isP = preset.orientation === 'p';
+                const pageW = isP ? 210 : 297, pageH = isP ? 297 : 210;
+                const pixelRatio = 3;
+                canvas.width = pageW * pixelRatio; canvas.height = pageH * pixelRatio;
+                canvas.style.aspectRatio = `${pageW} / ${pageH}`;
+                const scale = canvas.width / pageW;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const mockRow = {
+                    氏名: '山田 太郎', 住所: '東京都千代田区1-1-1', 郵便番号: '100-0001', クラス: 'Aクラス',
+                    会員種別: 'レギュラー', 診察科: '内科', 証券番号: 'P-0001', 部屋番号: '101号室',
+                    講座名: '基礎研修', 修了証番号: 'C-0001', 車両番号: '品川300 あ 12-34',
+                    特典内容: '10%OFF', 請求月: '1月', 所属: '〇〇株式会社', 参加者番号: 'S-0001'
+                };
+
+                preset.elements.forEach(el => {
+                    const rx = (el.x || 0) * scale;
+                    const ry = (el.y || 0) * scale;
+                    const rw = (el.type === 'qr' ? (el.size || 35) : (el.width || 50)) * scale;
+                    const rh = (el.type === 'qr' ? (el.size || 35) : (el.height || 10)) * scale;
+
+                    if (el.type === 'label') {
+                        if (el.bg) { ctx.fillStyle = el.bg; ctx.fillRect(rx, ry, rw, rh); }
+                        if (el.border) { ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1; ctx.strokeRect(rx, ry, rw, rh); }
+                        const text = (el.text || '').replace(/\{\{(.+?)\}\}/g, (m, k) => mockRow[k] !== undefined ? mockRow[k] : m);
+                        const lines = text.split('\n');
+                        const fontSize = (el.fontSize || 12) * scale * 0.35;
+                        ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px sans-serif`;
+                        ctx.fillStyle = el.color || '#111827';
+                        ctx.textBaseline = 'top';
+                        lines.forEach((line, i) => {
+                            let tx = rx + 4;
+                            if (el.align === 'center') tx = rx + rw / 2;
+                            if (el.align === 'right') tx = rx + rw - 4;
+                            ctx.textAlign = el.align || 'left';
+                            ctx.fillText(line, tx, ry + 4 + (i * fontSize * 1.3));
+                        });
+                    } else if (el.type === 'qr') {
+                        ctx.fillStyle = '#ffffff'; ctx.fillRect(rx, ry, rw, rh);
+                        ctx.strokeStyle = '#111111'; ctx.lineWidth = 2; ctx.strokeRect(rx, ry, rw, rh);
+                        ctx.fillStyle = '#1f2937'; ctx.font = `bold ${11 * scale * 0.35}px sans-serif`;
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                        ctx.fillText('QR', rx + rw / 2, ry + rh / 2);
+                    } else if (el.type === 'box') {
+                        ctx.fillStyle = '#111827';
+                        ctx.fillRect(rx, ry, rw, rh);
+                    }
+                });
+            }
+
+            function applyGalleryTemplate(key) {
+                if (key === 'custom') {
+                    if (els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
+                    showToast('下のモード切り替えから、自分で組むモードを選んでください。', 'success');
+                    return;
+                }
+                const preset = TEMPLATE_GALLERY_PRESETS[key];
+                if (!preset) return;
+
+                switchAppMode('designer');
+                els.desOrientation.value = preset.orientation;
+                designerElements = JSON.parse(JSON.stringify(preset.elements));
+                selectedElementId = preset.firstElementId;
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                if (els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
+                showToast(`テンプレート『${preset.label}』を読み込みました。CSVを読み込むと必要な列がタグに表示されます。`, 'success');
+            }
+
+            // 「①何を作りますか」に直接カードで並んでいるテンプレートは、モーダル側では重複表示しない
+            const TEMPLATE_GALLERY_REPRESENTATIVE_KEYS = ['mailingLabel', 'attendanceTicket', 'nameBadge'];
+
+            function renderTemplatePickerBody() {
+                if (!els.templatePickerBody || els.templatePickerBody.dataset.rendered) return;
+                els.templatePickerBody.dataset.rendered = '1';
+
+                TEMPLATE_GALLERY_CATEGORY_ORDER.forEach(category => {
+                    const keysInCategory = Object.keys(TEMPLATE_GALLERY_PRESETS).filter(k => TEMPLATE_GALLERY_META[k] && TEMPLATE_GALLERY_META[k].category === category && !TEMPLATE_GALLERY_REPRESENTATIVE_KEYS.includes(k));
+                    if (keysInCategory.length === 0) return;
+
+                    const section = document.createElement('div');
+                    const heading = document.createElement('h4');
+                    heading.className = 'text-xs font-bold text-gray-500 mb-2.5';
+                    heading.textContent = category;
+                    section.appendChild(heading);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3';
+
+                    keysInCategory.forEach(key => {
+                        const preset = TEMPLATE_GALLERY_PRESETS[key];
+                        const meta = TEMPLATE_GALLERY_META[key];
+                        const card = document.createElement('button');
+                        card.type = 'button';
+                        card.className = 'template-picker-card text-left border border-gray-200 rounded-xl overflow-hidden hover:border-primary hover:shadow-md transition-all bg-white';
+                        card.innerHTML = `
+                            <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
+                            <div class="p-2.5">
+                                <span class="material-icons text-gray-500 text-base align-middle mr-1">${meta.icon}</span>
+                                <span class="text-xs font-semibold text-gray-900">${preset.label}</span>
+                                <p class="text-[10px] text-gray-400 mt-0.5">${meta.desc}</p>
+                            </div>
+                        `;
+                        card.addEventListener('click', () => applyGalleryTemplate(key));
+                        grid.appendChild(card);
+                        renderTemplateThumbnail(card.querySelector('canvas'), preset);
+                    });
+
+                    section.appendChild(grid);
+                    els.templatePickerBody.appendChild(section);
+                });
+            }
+
+            // マイテンプレート（ユーザー保存分）は開くたびに最新の状態で描き直す
+            function applyMyTemplate(name) {
+                const templates = loadMyTemplates();
+                const t = templates[name];
+                if (!t) return;
+                switchAppMode('designer');
+                els.desOrientation.value = t.orientation;
+                designerElements = JSON.parse(JSON.stringify(t.elements));
+                selectedElementId = designerElements[0] ? designerElements[0].id : null;
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                if (els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
+                showToast(`マイテンプレート『${name}』を読み込みました。`, 'success');
+            }
+
+            function renderMyTemplatesInPicker() {
+                if (!els.templatePickerMySection) return;
+                const templates = loadMyTemplates();
+                const names = Object.keys(templates);
+                els.templatePickerMySection.innerHTML = '';
+                if (names.length === 0) return;
+
+                const heading = document.createElement('h4');
+                heading.className = 'text-xs font-bold text-gray-500 mb-2.5';
+                heading.textContent = 'マイテンプレート';
+                els.templatePickerMySection.appendChild(heading);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3';
+                names.forEach(name => {
+                    const t = templates[name];
+                    const card = document.createElement('button');
+                    card.type = 'button';
+                    card.className = 'template-picker-card text-left border border-gray-200 rounded-xl overflow-hidden hover:border-primary hover:shadow-md transition-all bg-white';
+                    card.innerHTML = `
+                        <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
+                        <div class="p-2.5">
+                            <span class="material-icons text-gray-500 text-base align-middle mr-1">bookmark</span>
+                            <span class="text-xs font-semibold text-gray-900">${name}</span>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => applyMyTemplate(name));
+                    grid.appendChild(card);
+                    renderTemplateThumbnail(card.querySelector('canvas'), t);
+                });
+                els.templatePickerMySection.appendChild(grid);
+            }
+
+            if (els.openTemplatePickerBtn) {
+                els.openTemplatePickerBtn.addEventListener('click', () => {
+                    renderTemplatePickerBody();
+                    renderMyTemplatesInPicker();
+                    els.templatePickerModal.classList.remove('hidden');
+                });
+            }
+            if (els.closeTemplatePickerBtn) {
+                els.closeTemplatePickerBtn.addEventListener('click', () => els.templatePickerModal.classList.add('hidden'));
+            }
+            if (els.templatePickerModal) {
+                els.templatePickerModal.addEventListener('click', (e) => {
+                    if (e.target === els.templatePickerModal) els.templatePickerModal.classList.add('hidden');
+                });
+            }
+            document.querySelectorAll('.template-select-btn').forEach(btn => {
+                btn.addEventListener('click', () => applyGalleryTemplate(btn.dataset.template));
+            });
+
             if (els.customFontInput) {
                 els.customFontInput.addEventListener('change', async (e) => {
                     const file = e.target.files[0]; if (!file) return;
@@ -1180,6 +1756,7 @@
                         useCenterText: els.useCenterText.checked,
                         centerTextColumn: els.centerTextColumn.value,
                         pdfOrientation: els.pdfOrientation.value,
+                        pdfPaperSize: els.pdfPaperSize.value,
                         qrSize: parseFloat(els.qrSize.value) || 30,
                         qrX: parseFloat(els.qrX.value) || 20,
                         qrY: parseFloat(els.qrY.value) || 20
@@ -1207,7 +1784,7 @@
                 const now = new Date();
                 const timeTag = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
                 a.href = url;
-                a.download = `QR_Document_Studio_Settings_${timeTag}.json`;
+                a.download = `Atena_Studio_Settings_${timeTag}.json`;
                 document.body.appendChild(a);
                 a.click();
                 URL.revokeObjectURL(url);
@@ -1242,6 +1819,7 @@
                             }
                             if (oc.centerTextColumn !== undefined) els.centerTextColumn.value = oc.centerTextColumn;
                             if (oc.pdfOrientation !== undefined) els.pdfOrientation.value = oc.pdfOrientation;
+                            if (oc.pdfPaperSize !== undefined) els.pdfPaperSize.value = oc.pdfPaperSize;
                             if (oc.qrSize !== undefined) els.qrSize.value = oc.qrSize;
                             if (oc.qrX !== undefined) els.qrX.value = oc.qrX;
                             if (oc.qrY !== undefined) els.qrY.value = oc.qrY;
@@ -1300,14 +1878,26 @@
                 reader.readAsText(file);
             }
 
-            if (els.exportConfigBtn) els.exportConfigBtn.addEventListener('click', exportSettingsJSON);
+            if (els.exportConfigBtn) els.exportConfigBtn.addEventListener('click', () => { exportSettingsJSON(); els.settingsMenuDropdown.classList.add('hidden'); });
             if (els.importConfigBtn) {
                 els.importConfigBtn.addEventListener('click', () => {
                     if (csvData.length === 0) {
                         showToast('先にCSVファイルを読み込んでください。', 'error');
                         return;
                     }
+                    els.settingsMenuDropdown.classList.add('hidden');
                     els.configFileInput.click();
+                });
+            }
+            if (els.settingsMenuBtn) {
+                els.settingsMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    els.settingsMenuDropdown.classList.toggle('hidden');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!els.settingsMenuDropdown.classList.contains('hidden') && !els.settingsMenuDropdown.contains(e.target) && e.target !== els.settingsMenuBtn) {
+                        els.settingsMenuDropdown.classList.add('hidden');
+                    }
                 });
             }
             if (els.configFileInput) els.configFileInput.addEventListener('change', importSettingsJSON);
@@ -1375,11 +1965,489 @@
             if(els.bgPdfClearBtn) {
                 els.bgPdfClearBtn.addEventListener('click', () => {
                     bgPdfBytes = null; bgPdfCanvas = null; bgPdfPageCount = 0;
-                    if(els.bgPdfBtn) els.bgPdfBtn.classList.remove('hidden'); 
+                    if(els.bgPdfBtn) els.bgPdfBtn.classList.remove('hidden');
                     if(els.bgPdfClearBtn) els.bgPdfClearBtn.classList.add('hidden');
                     checkPageCount(); drawPreview();
                     showToast('背景PDFをクリアしました。QRコードのみのPDFを生成します。', 'success');
                 });
+            }
+
+            // UTMパラメータ付与機能
+            if (els.useUtmParams) {
+                els.useUtmParams.addEventListener('change', (e) => {
+                    if (els.utmParamsConfig) els.utmParamsConfig.classList.toggle('hidden', !e.target.checked);
+                    updateTemplatePreview();
+                });
+            }
+            [els.utmSource, els.utmMedium, els.utmCampaign].forEach(el => {
+                if (el) el.addEventListener('input', updateTemplatePreview);
+            });
+
+            function appendUtmParams(urlText) {
+                if (!els.useUtmParams || !els.useUtmParams.checked || !urlText) return urlText;
+                if (!/^https?:\/\//i.test(urlText)) return urlText;
+                const params = [
+                    ['utm_source', els.utmSource.value.trim()],
+                    ['utm_medium', els.utmMedium.value.trim()],
+                    ['utm_campaign', els.utmCampaign.value.trim()]
+                ].filter(([, v]) => v !== '');
+                if (params.length === 0) return urlText;
+                const query = params.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+                return urlText + (urlText.includes('?') ? '&' : '?') + query;
+            }
+
+            // ロゴ／角印の自動合成機能
+            if (els.useLogo) {
+                els.useLogo.addEventListener('change', (e) => {
+                    if (els.logoConfig) els.logoConfig.classList.toggle('hidden', !e.target.checked);
+                });
+            }
+            if (els.logoFileInput) {
+                els.logoFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        logoImageBytes = this.result;
+                        els.logoFileNameDisplay.textContent = file.name;
+                        els.logoFileNameDisplay.classList.add('text-primary', 'font-semibold');
+                        showToast(`ロゴ画像『${file.name}』を読み込みました。`, 'success');
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // 見本CSVダウンロード機能（現在のテンプレート/帳票要素から必要な列を推定）
+            function collectTemplateColumns() {
+                const cols = [];
+                const addFromText = (text) => {
+                    if (!text) return;
+                    [...text.matchAll(/\{\{(.+?)\}\}/g)].forEach(m => { if (!cols.includes(m[1])) cols.push(m[1]); });
+                };
+                if (currentAppMode === 'designer') {
+                    designerElements.forEach(el => {
+                        addFromText(el.text);
+                        addFromText(el.template);
+                        if (el.type === 'table' && Array.isArray(el.columns)) {
+                            el.columns.forEach(c => { if (c && !cols.includes(c)) cols.push(c); });
+                        }
+                    });
+                } else if (currentAppMode === 'zip') {
+                    addFromText(els.zipDataTemplate ? els.zipDataTemplate.value : '');
+                } else {
+                    addFromText(els.dataTemplate ? els.dataTemplate.value : '');
+                }
+                return cols;
+            }
+
+            function downloadSampleCsv() {
+                let cols = csvHeaders.length > 0 ? csvHeaders : collectTemplateColumns();
+                if (cols.length === 0) cols = ['氏名', '住所', 'ID', 'URL'];
+
+                const sampleValues = {
+                    '氏名': ['山田太郎', '佐藤花子'], '住所': ['東京都千代田区1-1-1', '大阪府大阪市2-2-2'],
+                    'ID': ['0001', '0002'], 'URL': ['https://example.com/1', 'https://example.com/2']
+                };
+                const rows = [0, 1].map(i => {
+                    const row = {};
+                    cols.forEach(col => { row[col] = (sampleValues[col] && sampleValues[col][i]) || `サンプル${i + 1}`; });
+                    return row;
+                });
+
+                const csvStr = Papa.unparse(rows);
+                downloadTextFile('﻿' + csvStr, 'サンプル.csv', 'text/csv;charset=utf-8');
+                showToast('見本CSVをダウンロードしました。', 'success');
+            }
+            if (els.downloadSampleCsvBtn) els.downloadSampleCsvBtn.addEventListener('click', downloadSampleCsv);
+
+            // ===== 名簿のバージョン管理（IndexedDB。ブラウザ内のみ、どこにも送信しない） =====
+            const LIST_DB_NAME = 'qrDocStudioListDB';
+            const LIST_DB_VERSION = 1;
+            let _listDbPromise = null;
+
+            function openListDB() {
+                if (_listDbPromise) return _listDbPromise;
+                _listDbPromise = new Promise((resolve, reject) => {
+                    const req = indexedDB.open(LIST_DB_NAME, LIST_DB_VERSION);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('listVersions')) db.createObjectStore('listVersions', { keyPath: 'id' });
+                        if (!db.objectStoreNames.contains('recipients')) db.createObjectStore('recipients', { keyPath: 'recipientId' });
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = (e) => reject(e.target.error);
+                });
+                return _listDbPromise;
+            }
+            function idbGetAll(storeName) {
+                return openListDB().then(db => new Promise((resolve, reject) => {
+                    const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                }));
+            }
+            function idbPut(storeName, value) {
+                return openListDB().then(db => new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    tx.objectStore(storeName).put(value);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                }));
+            }
+            function idbPutAll(storeName, values) {
+                return openListDB().then(db => new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    values.forEach(v => store.put(v));
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                }));
+            }
+            function idbClearAll(storeNames) {
+                return openListDB().then(db => new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeNames, 'readwrite');
+                    storeNames.forEach(name => tx.objectStore(name).clear());
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                }));
+            }
+
+            function renderListVersionColumnSelect() {
+                if (!els.listVersionIdColumn) return;
+                const prev = els.listVersionIdColumn.value;
+                els.listVersionIdColumn.innerHTML = '';
+                if (csvHeaders.length === 0) {
+                    els.listVersionIdColumn.innerHTML = '<option value="">CSV読み込み後に選択してください</option>';
+                    if (els.saveListVersionBtn) els.saveListVersionBtn.disabled = true;
+                    return;
+                }
+                csvHeaders.forEach(h => els.listVersionIdColumn.add(new Option(h, h)));
+                if (csvHeaders.includes(prev)) els.listVersionIdColumn.value = prev;
+                if (els.saveListVersionBtn) els.saveListVersionBtn.disabled = false;
+            }
+
+            async function saveListVersion() {
+                const idColumn = els.listVersionIdColumn.value;
+                if (!idColumn) return showToast('一意キーとなる列を選択してください。', 'error');
+                if (csvData.length === 0) return showToast('先にCSVを読み込んでください。', 'error');
+
+                const seenIds = new Set();
+                let addedCount = 0, changedCount = 0, unchangedCount = 0, duplicateCount = 0;
+                const existingRecipients = await idbGetAll('recipients');
+                const existingMap = new Map(existingRecipients.map(r => [r.recipientId, r]));
+                const now = new Date().toISOString();
+                const toPut = [];
+
+                for (const row of csvData) {
+                    const recipientId = String(row[idColumn] ?? '').trim();
+                    if (!recipientId) continue;
+                    if (seenIds.has(recipientId)) { duplicateCount++; continue; }
+                    seenIds.add(recipientId);
+
+                    const existing = existingMap.get(recipientId);
+                    if (!existing) {
+                        addedCount++;
+                        toPut.push({ recipientId, data: row, status: '未設定', firstSeenAt: now, lastSeenAt: now, presentInLatestImport: true, history: [] });
+                    } else {
+                        const isChanged = JSON.stringify(existing.data) !== JSON.stringify(row);
+                        if (isChanged) changedCount++; else unchangedCount++;
+                        toPut.push(Object.assign({}, existing, { data: row, lastSeenAt: now, presentInLatestImport: true }));
+                    }
+                }
+
+                const removedRecipients = existingRecipients.filter(r => !seenIds.has(r.recipientId) && r.presentInLatestImport !== false);
+                removedRecipients.forEach(r => toPut.push(Object.assign({}, r, { presentInLatestImport: false })));
+
+                await idbPutAll('recipients', toPut);
+
+                const versionRecord = {
+                    id: now,
+                    importedAt: now,
+                    idColumn,
+                    headers: csvHeaders,
+                    rowCount: csvData.length,
+                    rows: csvData,
+                    diff: { added: addedCount, changed: changedCount, unchanged: unchangedCount, removed: removedRecipients.length, duplicate: duplicateCount }
+                };
+                await idbPut('listVersions', versionRecord);
+
+                const displayTime = now.slice(0, 16).replace('T', ' ');
+                els.listVersionDiffSummary.classList.remove('hidden');
+                els.listVersionDiffSummary.innerHTML = `保存しました（${displayTime}）　追加 <b class="text-primary">${addedCount}</b>／変更 <b class="text-primary">${changedCount}</b>／変更なし ${unchangedCount}／リストから消えた人 ${removedRecipients.length}` + (duplicateCount ? `／ID重複のためスキップ ${duplicateCount}` : '');
+                showToast('名簿をバージョンとして保存しました。', 'success');
+                await renderListVersionHistory();
+            }
+
+            async function renderListVersionHistory() {
+                if (!els.listVersionHistory) return;
+                const versions = await idbGetAll('listVersions');
+                versions.sort((a, b) => b.importedAt.localeCompare(a.importedAt));
+                if (versions.length === 0) {
+                    els.listVersionHistory.innerHTML = 'まだバージョンが保存されていません。';
+                    return;
+                }
+                els.listVersionHistory.innerHTML = '';
+                versions.forEach(v => {
+                    const d = v.diff || {};
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between bg-surfaceDim px-2.5 py-1.5 rounded-lg';
+                    const displayTime = v.importedAt.slice(0, 16).replace('T', ' ');
+                    row.innerHTML = `<span>${displayTime}　${v.rowCount}件　<span class="text-gray-400">(追加${d.added ?? '-'}/変更${d.changed ?? '-'}/削除${d.removed ?? '-'})</span></span><button type="button" data-version-id="${v.id}" class="restore-version-btn text-primary hover:underline font-medium">この時点に復元</button>`;
+                    els.listVersionHistory.appendChild(row);
+                });
+                els.listVersionHistory.querySelectorAll('.restore-version-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const versions2 = await idbGetAll('listVersions');
+                        const target = versions2.find(v => v.id === btn.dataset.versionId);
+                        if (!target) return;
+                        applyLoadedCsvData(target.rows, target.headers);
+                        els.listVersionIdColumn.value = target.idColumn;
+                        showToast(`${target.importedAt.slice(0, 16).replace('T', ' ')}時点の名簿を復元しました。`, 'success');
+                    });
+                });
+            }
+            if (els.saveListVersionBtn) els.saveListVersionBtn.addEventListener('click', saveListVersion);
+
+            async function exportBackup() {
+                const [versions, recipients] = await Promise.all([idbGetAll('listVersions'), idbGetAll('recipients')]);
+                if (versions.length === 0 && recipients.length === 0) return showToast('保存されているバージョンがありません。', 'error');
+                const payload = { exportedAt: new Date().toISOString(), app: 'Atena Studio', backupVersion: 1, listVersions: versions, recipients: recipients };
+                downloadTextFile(JSON.stringify(payload, null, 2), `名簿バックアップ_${Date.now()}.json`, 'application/json');
+                showToast('バックアップを書き出しました。', 'success');
+            }
+            if (els.exportBackupBtn) els.exportBackupBtn.addEventListener('click', exportBackup);
+
+            if (els.importBackupBtn) els.importBackupBtn.addEventListener('click', () => els.importBackupInput.click());
+            if (els.importBackupInput) {
+                els.importBackupInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                        try {
+                            const payload = JSON.parse(reader.result);
+                            if (!Array.isArray(payload.listVersions) || !Array.isArray(payload.recipients)) throw new Error('invalid format');
+                            if (!confirm(`現在ブラウザに保存されている名簿の履歴を、このバックアップの内容（バージョン${payload.listVersions.length}件）で置き換えます。よろしいですか？`)) return;
+                            await idbClearAll(['listVersions', 'recipients']);
+                            await idbPutAll('listVersions', payload.listVersions);
+                            await idbPutAll('recipients', payload.recipients);
+                            await renderListVersionHistory();
+                            showToast('バックアップを復元しました。', 'success');
+                        } catch (err) {
+                            console.error(err);
+                            showToast('バックアップファイルの読み込みに失敗しました。', 'error');
+                        } finally {
+                            els.importBackupInput.value = '';
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+            }
+
+            renderListVersionHistory();
+
+            // 座標プリセット機能（localStorageに保存）
+            const COORD_PRESET_KEY = 'qrOverlayCoordPresets';
+            function loadCoordPresets() {
+                try { return JSON.parse(localStorage.getItem(COORD_PRESET_KEY)) || {}; }
+                catch (e) { return {}; }
+            }
+            function saveCoordPresets(presets) {
+                localStorage.setItem(COORD_PRESET_KEY, JSON.stringify(presets));
+            }
+            function renderCoordPresetOptions() {
+                if (!els.coordPresetSelect) return;
+                const presets = loadCoordPresets();
+                const currentVal = els.coordPresetSelect.value;
+                els.coordPresetSelect.innerHTML = '<option value="">プリセットを選択...</option>';
+                Object.keys(presets).forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name; opt.textContent = name;
+                    els.coordPresetSelect.appendChild(opt);
+                });
+                if (presets[currentVal]) els.coordPresetSelect.value = currentVal;
+            }
+            if (els.coordPresetSaveBtn) {
+                els.coordPresetSaveBtn.addEventListener('click', () => {
+                    const name = prompt('プリセット名を入力してください（例: 請求書用）');
+                    if (!name) return;
+                    const presets = loadCoordPresets();
+                    presets[name] = {
+                        pdfOrientation: els.pdfOrientation.value,
+                        pdfPaperSize: els.pdfPaperSize.value,
+                        qrSize: parseFloat(els.qrSize.value) || 30,
+                        qrX: parseFloat(els.qrX.value) || 20,
+                        qrY: parseFloat(els.qrY.value) || 20
+                    };
+                    saveCoordPresets(presets);
+                    renderCoordPresetOptions();
+                    els.coordPresetSelect.value = name;
+                    showToast(`プリセット『${name}』を保存しました。`, 'success');
+                });
+            }
+            if (els.coordPresetDeleteBtn) {
+                els.coordPresetDeleteBtn.addEventListener('click', () => {
+                    const name = els.coordPresetSelect.value;
+                    if (!name) return showToast('削除するプリセットを選択してください。', 'error');
+                    const presets = loadCoordPresets();
+                    delete presets[name];
+                    saveCoordPresets(presets);
+                    renderCoordPresetOptions();
+                    showToast(`プリセット『${name}』を削除しました。`, 'success');
+                });
+            }
+            if (els.coordPresetSelect) {
+                els.coordPresetSelect.addEventListener('change', () => {
+                    const name = els.coordPresetSelect.value;
+                    if (!name) return;
+                    const presets = loadCoordPresets();
+                    const p = presets[name];
+                    if (!p) return;
+                    els.pdfOrientation.value = p.pdfOrientation;
+                    if (p.pdfPaperSize) els.pdfPaperSize.value = p.pdfPaperSize;
+                    els.qrSize.value = p.qrSize;
+                    els.qrX.value = p.qrX;
+                    els.qrY.value = p.qrY;
+                    updateTemplatePreview();
+                    drawPreview();
+                    showToast(`プリセット『${name}』を適用しました。`, 'success');
+                });
+                renderCoordPresetOptions();
+            }
+
+            // マイテンプレート（デザイナーモードで組んだ帳票レイアウトを名前を付けて保存・再利用）
+            const MY_TEMPLATE_KEY = 'atenaMyDesignerTemplates';
+            function loadMyTemplates() {
+                try { return JSON.parse(localStorage.getItem(MY_TEMPLATE_KEY)) || {}; }
+                catch (e) { return {}; }
+            }
+            function saveMyTemplatesStore(templates) {
+                localStorage.setItem(MY_TEMPLATE_KEY, JSON.stringify(templates));
+            }
+            function renderMyTemplateOptions() {
+                if (!els.myTemplateSelect) return;
+                const templates = loadMyTemplates();
+                const currentVal = els.myTemplateSelect.value;
+                els.myTemplateSelect.innerHTML = '<option value="">選択...</option>';
+                Object.keys(templates).forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name; opt.textContent = name;
+                    els.myTemplateSelect.appendChild(opt);
+                });
+                if (templates[currentVal]) els.myTemplateSelect.value = currentVal;
+            }
+            if (els.myTemplateSaveBtn) {
+                els.myTemplateSaveBtn.addEventListener('click', () => {
+                    if (designerElements.length === 0) return showToast('保存する要素がありません。先に帳票要素を追加してください。', 'error');
+                    const name = prompt('マイテンプレート名を入力してください（例: 自社請求書フォーマット）');
+                    if (!name) return;
+                    const templates = loadMyTemplates();
+                    templates[name] = {
+                        orientation: els.desOrientation.value,
+                        elements: JSON.parse(JSON.stringify(designerElements))
+                    };
+                    saveMyTemplatesStore(templates);
+                    renderMyTemplateOptions();
+                    els.myTemplateSelect.value = name;
+                    showToast(`マイテンプレート『${name}』を保存しました。次回もここから呼び出せます。`, 'success');
+                });
+            }
+            if (els.myTemplateDeleteBtn) {
+                els.myTemplateDeleteBtn.addEventListener('click', () => {
+                    const name = els.myTemplateSelect.value;
+                    if (!name) return showToast('削除するマイテンプレートを選択してください。', 'error');
+                    const templates = loadMyTemplates();
+                    delete templates[name];
+                    saveMyTemplatesStore(templates);
+                    renderMyTemplateOptions();
+                    showToast(`マイテンプレート『${name}』を削除しました。`, 'success');
+                });
+            }
+            if (els.myTemplateSelect) {
+                els.myTemplateSelect.addEventListener('change', () => {
+                    const name = els.myTemplateSelect.value;
+                    if (!name) return;
+                    const templates = loadMyTemplates();
+                    const t = templates[name];
+                    if (!t) return;
+                    els.desOrientation.value = t.orientation;
+                    designerElements = JSON.parse(JSON.stringify(t.elements));
+                    selectedElementId = designerElements[0] ? designerElements[0].id : null;
+                    renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                    showToast(`マイテンプレート『${name}』を呼び出しました。`, 'success');
+                });
+                renderMyTemplateOptions();
+            }
+
+            function applyLoadedCsvData(rows, headers) {
+                csvData = rows; csvHeaders = headers;
+                if (csvData.length === 0 || csvHeaders.length === 0) return showToast('データが見つかりません。', 'error');
+                els.recordCount.textContent = csvData.length.toLocaleString(); els.fileStats.classList.remove('hidden');
+                els.headerTags.innerHTML = ''; els.desHeaderTags.innerHTML = ''; els.zipHeaderTags.innerHTML = '';
+                els.filenameColumn.innerHTML = ''; els.centerTextColumn.innerHTML = ''; els.zipCenterTextColumn.innerHTML = '';
+
+                csvHeaders.forEach(header => {
+                    // モード1用タグ
+                    const tagBtn = document.createElement('button');
+                    tagBtn.className = 'bg-white hover:bg-primaryContainer/50 text-gray-700 hover:text-primary border border-gray-200 text-xs px-2.5 py-1 rounded-full cursor-pointer shrink-0 shadow-sm transition-all';
+                    tagBtn.textContent = header; tagBtn.onclick = () => {
+                        const textarea = els.dataTemplate; const start = textarea.selectionStart;
+                        textarea.value = textarea.value.substring(0, start) + `{{${header}}}` + textarea.value.substring(textarea.selectionEnd);
+                        textarea.focus(); textarea.selectionEnd = start + `{{${header}}}`.length; updateTemplatePreview();
+                    };
+                    els.headerTags.appendChild(tagBtn);
+
+                    // モード2用タグ
+                    const desTag = document.createElement('button');
+                    desTag.className = 'bg-white hover:bg-teal-50 text-teal-800 border border-teal-200 text-[11px] px-2.5 py-0.5 rounded-full shadow-sm shrink-0 transition-all';
+                    desTag.textContent = `{{${header}}}`;
+                    desTag.onclick = () => {
+                        const curEl = designerElements.find(el => el.id === selectedElementId);
+                        if (curEl && (curEl.type === 'label' || curEl.type === 'qr')) {
+                            const field = curEl.type === 'label' ? 'text' : 'template';
+                            curEl[field] = (curEl[field] || '') + `{{${header}}}`;
+                            renderElementEditor();
+                            drawPreview();
+                        } else {
+                            showToast('テキストまたはQR要素を選択してください。', 'error');
+                        }
+                    };
+                    els.desHeaderTags.appendChild(desTag);
+
+                    // モード3(ZIP)用タグ
+                    const zipTag = document.createElement('button');
+                    zipTag.className = 'bg-white hover:bg-primaryContainer/50 text-gray-700 hover:text-primary border border-gray-200 text-xs px-2.5 py-1 rounded-full cursor-pointer shrink-0 shadow-sm transition-all';
+                    zipTag.textContent = header; zipTag.onclick = () => {
+                        const textarea = els.zipDataTemplate; const start = textarea.selectionStart;
+                        textarea.value = textarea.value.substring(0, start) + `{{${header}}}` + textarea.value.substring(textarea.selectionEnd);
+                        textarea.focus(); textarea.selectionEnd = start + `{{${header}}}`.length; updateZipTemplatePreview();
+                    };
+                    els.zipHeaderTags.appendChild(zipTag);
+
+                    els.filenameColumn.add(new Option(header, header));
+                    els.centerTextColumn.add(new Option(header, header));
+                    els.zipCenterTextColumn.add(new Option(header, header));
+                });
+
+                if(els.dataTemplate.value === "") els.dataTemplate.value = `{{${csvHeaders[0]}}}`;
+                if(els.zipDataTemplate.value === "") els.zipDataTemplate.value = `{{${csvHeaders[0]}}}`;
+
+                updateTemplatePreview();
+                updateZipTemplatePreview();
+                els.templateSection.classList.remove('opacity-50', 'pointer-events-none');
+                els.outputSection.classList.remove('opacity-50', 'pointer-events-none');
+                if (els.logoSection) els.logoSection.classList.remove('opacity-50', 'pointer-events-none');
+                els.previewContainer.classList.remove('opacity-50');
+
+                // CSV読み込み完了に伴い「設定読込」ボタンを活性化
+                if (els.importConfigBtn) {
+                    els.importConfigBtn.disabled = false;
+                    els.importConfigBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'text-gray-600');
+                    els.importConfigBtn.classList.add('text-gray-800', 'hover:bg-surfaceDim');
+                    els.importConfigBtn.title = "設定ファイル(JSON)を読み込む";
+                }
+
+                updateNamingRuleUI();
+                updateGenerateButton(); checkPageCount(); drawPreview();
+                renderListVersionColumnSelect();
             }
 
             function handleFileUpload(e) {
@@ -1388,75 +2456,8 @@
                 Papa.parse(file, {
                     header: true, skipEmptyLines: true, encoding: els.csvEncoding.value,
                     complete: function(results) {
-                        csvData = results.data; csvHeaders = results.meta.fields || [];
-                        if (csvData.length === 0 || csvHeaders.length === 0) return showToast('データが見つかりません。', 'error');
-                        els.recordCount.textContent = csvData.length.toLocaleString(); els.fileStats.classList.remove('hidden');
-                        els.headerTags.innerHTML = ''; els.desHeaderTags.innerHTML = ''; els.zipHeaderTags.innerHTML = '';
-                        els.filenameColumn.innerHTML = ''; els.centerTextColumn.innerHTML = ''; els.zipCenterTextColumn.innerHTML = '';
-                        
-                        csvHeaders.forEach(header => {
-                            // モード1用タグ
-                            const tagBtn = document.createElement('button');
-                            tagBtn.className = 'bg-white hover:bg-primaryContainer/50 text-gray-700 hover:text-primary border border-gray-200 text-xs px-2.5 py-1 rounded-full cursor-pointer shrink-0 shadow-sm transition-all';
-                            tagBtn.textContent = header; tagBtn.onclick = () => {
-                                const textarea = els.dataTemplate; const start = textarea.selectionStart;
-                                textarea.value = textarea.value.substring(0, start) + `{{${header}}}` + textarea.value.substring(textarea.selectionEnd);
-                                textarea.focus(); textarea.selectionEnd = start + `{{${header}}}`.length; updateTemplatePreview();
-                            };
-                            els.headerTags.appendChild(tagBtn);
-
-                            // モード2用タグ
-                            const desTag = document.createElement('button');
-                            desTag.className = 'bg-white hover:bg-teal-50 text-teal-800 border border-teal-200 text-[11px] px-2.5 py-0.5 rounded-full shadow-sm shrink-0 transition-all';
-                            desTag.textContent = `{{${header}}}`;
-                            desTag.onclick = () => {
-                                const curEl = designerElements.find(el => el.id === selectedElementId);
-                                if (curEl && (curEl.type === 'label' || curEl.type === 'qr')) {
-                                    const field = curEl.type === 'label' ? 'text' : 'template';
-                                    curEl[field] = (curEl[field] || '') + `{{${header}}}`;
-                                    renderElementEditor();
-                                    drawPreview();
-                                } else {
-                                    showToast('テキストまたはQR要素を選択してください。', 'error');
-                                }
-                            };
-                            els.desHeaderTags.appendChild(desTag);
-
-                            // モード3(ZIP)用タグ
-                            const zipTag = document.createElement('button');
-                            zipTag.className = 'bg-white hover:bg-primaryContainer/50 text-gray-700 hover:text-primary border border-gray-200 text-xs px-2.5 py-1 rounded-full cursor-pointer shrink-0 shadow-sm transition-all';
-                            zipTag.textContent = header; zipTag.onclick = () => {
-                                const textarea = els.zipDataTemplate; const start = textarea.selectionStart;
-                                textarea.value = textarea.value.substring(0, start) + `{{${header}}}` + textarea.value.substring(textarea.selectionEnd);
-                                textarea.focus(); textarea.selectionEnd = start + `{{${header}}}`.length; updateZipTemplatePreview();
-                            };
-                            els.zipHeaderTags.appendChild(zipTag);
-
-                            els.filenameColumn.add(new Option(header, header));
-                            els.centerTextColumn.add(new Option(header, header));
-                            els.zipCenterTextColumn.add(new Option(header, header));
-                        });
-
-                        if(els.dataTemplate.value === "") els.dataTemplate.value = `{{${csvHeaders[0]}}}`;
-                        if(els.zipDataTemplate.value === "") els.zipDataTemplate.value = `{{${csvHeaders[0]}}}`;
-
-                        updateTemplatePreview();
-                        updateZipTemplatePreview();
-                        els.templateSection.classList.remove('opacity-50', 'pointer-events-none');
-                        els.outputSection.classList.remove('opacity-50', 'pointer-events-none');
-                        els.previewContainer.classList.remove('opacity-50');
-
-                        // CSV読み込み完了に伴い「設定読込」ボタンを活性化
-                        if (els.importConfigBtn) {
-                            els.importConfigBtn.disabled = false;
-                            els.importConfigBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'text-gray-600');
-                            els.importConfigBtn.classList.add('text-gray-800', 'hover:bg-white');
-                            els.importConfigBtn.title = "設定ファイル(JSON)を読み込む";
-                        }
-
-                        updateNamingRuleUI();
-                        updateGenerateButton(); checkPageCount(); drawPreview(); 
-                        showToast(`CSV(${csvData.length}件)を読み込みました。`, 'success');
+                        applyLoadedCsvData(results.data, results.meta.fields || []);
+                        if (csvData.length > 0) showToast(`CSV(${csvData.length}件)を読み込みました。`, 'success');
                     }
                 });
             }
@@ -1474,10 +2475,11 @@
                 }
                 
                 const shouldEncode = els.urlEncodeVars.checked;
-                const previewText = template.replace(/\{\{(.+?)\}\}/g, (m, key) => {
+                let previewText = template.replace(/\{\{(.+?)\}\}/g, (m, key) => {
                     let val = csvData[0][key] !== undefined ? String(csvData[0][key]) : "";
                     return (shouldEncode && val !== "") ? encodeURIComponent(val) : val;
                 });
+                previewText = appendUtmParams(previewText);
                 els.templatePreview.textContent = previewText || "(空)";
                 els.templatePreview.classList.remove('text-gray-400');
 
@@ -1552,12 +2554,23 @@
             let dragOffsetMm = { x: 0, y: 0 };
             let initialResizeState = null;
 
+            // 用紙サイズ定義（縦向き基準のmm）。A4以外もオーバーレイ/デザイナー両モードで選べるようにする
+            const PAPER_SIZES_MM = {
+                A4: { w: 210, h: 297 },
+                A3: { w: 297, h: 420 },
+                B5: { w: 176, h: 250 },
+                POSTCARD: { w: 100, h: 148 }
+            };
+            const PAPER_SIZE_LABELS = { A4: 'A4', A3: 'A3', B5: 'B5', POSTCARD: 'はがき' };
             function getPaperDimensions() {
                 if (currentAppMode === 'zip') {
                     return { paperW: 200, paperH: 200 };
                 }
-                const isP = (currentAppMode === 'designer' ? els.desOrientation.value : els.pdfOrientation.value) === 'p';
-                return { paperW: isP ? 210 : 297, paperH: isP ? 297 : 210 };
+                const isDesigner = currentAppMode === 'designer';
+                const sizeKey = (isDesigner ? els.desPaperSize.value : els.pdfPaperSize.value) || 'A4';
+                const isP = (isDesigner ? els.desOrientation.value : els.pdfOrientation.value) === 'p';
+                const base = PAPER_SIZES_MM[sizeKey] || PAPER_SIZES_MM.A4;
+                return isP ? { paperW: base.w, paperH: base.h } : { paperW: base.h, paperH: base.w };
             }
 
             function getMmCoordsFromEvent(e, canvas) {
@@ -1967,7 +2980,7 @@
                 });
             }
 
-            ['pdfOrientation', 'qrSize', 'qrX', 'qrY', 'desOrientation'].forEach(id => {
+            ['pdfOrientation', 'pdfPaperSize', 'qrSize', 'qrX', 'qrY', 'desOrientation', 'desPaperSize'].forEach(id => {
                 if(els[id]) els[id].addEventListener('input', () => {
                     if (els.expandedPreviewModal && !els.expandedPreviewModal.classList.contains('hidden')) {
                         syncMainToExp();
@@ -2059,12 +3072,12 @@
 
                 if (currentAppMode === 'overlay') {
                     isP = els.pdfOrientation.value === 'p';
-                    a4W = isP ? 210 : 297; a4H = isP ? 297 : 210;
-                    if (canvas === els.previewCanvas) els.previewSizeText.textContent = isP ? "A4 縦" : "A4 横";
+                    ({ paperW: a4W, paperH: a4H } = getPaperDimensions());
+                    if (canvas === els.previewCanvas) els.previewSizeText.textContent = `${PAPER_SIZE_LABELS[els.pdfPaperSize.value] || els.pdfPaperSize.value} ${isP ? "縦" : "横"}`;
                 } else if (currentAppMode === 'designer') {
                     isP = els.desOrientation.value === 'p';
-                    a4W = isP ? 210 : 297; a4H = isP ? 297 : 210;
-                    if (canvas === els.previewCanvas) els.previewSizeText.textContent = `${els.desPaperSize.value} ${isP ? "縦" : "横"}`;
+                    ({ paperW: a4W, paperH: a4H } = getPaperDimensions());
+                    if (canvas === els.previewCanvas) els.previewSizeText.textContent = `${PAPER_SIZE_LABELS[els.desPaperSize.value] || els.desPaperSize.value} ${isP ? "縦" : "横"}`;
                 } else {
                     a4W = 200; a4H = 200;
                     const px = parseInt(els.zipQrSize.value) || 300;
@@ -2106,7 +3119,7 @@
                         { x: rx + rw / 2, y: ry + rh }
                     ];
                     ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = '#0b57d0';
+                    ctx.strokeStyle = '#2D2A6E';
                     ctx.lineWidth = 2;
                     handles.forEach(h => {
                         ctx.fillRect(h.x - hSize / 2, h.y - hSize / 2, hSize, hSize);
@@ -2123,11 +3136,11 @@
                     if (overlayPreviewQrImage.src && overlayPreviewQrImage.complete && overlayPreviewQrImage.naturalWidth > 0) {
                         ctx.drawImage(overlayPreviewQrImage, rX, rY, rW, rH);
                     } else {
-                        ctx.fillStyle = 'rgba(11, 87, 208, 0.12)'; ctx.strokeStyle = '#0b57d0'; ctx.lineWidth = 2;
+                        ctx.fillStyle = 'rgba(45, 42, 110, 0.08)'; ctx.strokeStyle = '#2D2A6E'; ctx.lineWidth = 2;
                         ctx.fillRect(rX, rY, rW, rH); ctx.strokeRect(rX, rY, rW, rH);
                     }
 
-                    ctx.strokeStyle = '#0b57d0'; ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#2D2A6E'; ctx.lineWidth = 2;
                     ctx.setLineDash([4, 2]); ctx.strokeRect(rX - 2, rY - 2, rW + 4, rH + 4); ctx.setLineDash([]);
                     drawHandles(rX - 2, rY - 2, rW + 4, rH + 4);
 
@@ -2198,7 +3211,7 @@
                         }
 
                         if (isSel) {
-                            ctx.strokeStyle = '#0b57d0';
+                            ctx.strokeStyle = '#2D2A6E';
                             ctx.lineWidth = 2;
                             ctx.setLineDash([4, 2]);
                             ctx.strokeRect(rx - 2, ry - 2, rw + 4, rh + 4);
@@ -2215,7 +3228,7 @@
                     } else {
                         ctx.fillStyle = '#f8fafd';
                         ctx.fillRect(qrMargin, qrMargin, qrDrawSize, qrDrawSize);
-                        ctx.fillStyle = '#747775';
+                        ctx.fillStyle = '#6b7280';
                         ctx.font = `${13 * scale}px sans-serif`;
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
@@ -2561,9 +3574,36 @@
                 }
             }
 
+            // Resources辞書のXObjectエントリを「置換」ではなく「追加」でマージするヘルパー
+            // (既存の背景PDFに埋め込まれた画像や、ロゴ・QRなど複数のXObjectを同一ページに共存させるため)
+            function registerPageXObject(pdfDoc, page, name, xobjRef) {
+                const { PDFName, PDFDict } = PDFLib;
+                let resources = page.node.Resources();
+                if (!resources) {
+                    resources = pdfDoc.context.obj({});
+                    page.node.set(PDFName.of('Resources'), resources);
+                }
+                let xobjGroup = resources.get(PDFName.of('XObject'));
+                if (xobjGroup && typeof xobjGroup.lookup === 'function') xobjGroup = pdfDoc.context.lookup(xobjGroup);
+                if (!xobjGroup || !(xobjGroup instanceof PDFDict)) {
+                    xobjGroup = pdfDoc.context.obj({});
+                    resources.set(PDFName.of('XObject'), xobjGroup);
+                }
+                xobjGroup.set(PDFName.of(name), xobjRef);
+            }
+
+            function downloadTextFile(content, filename, mimeType) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = filename;
+                document.body.appendChild(a); a.click();
+                URL.revokeObjectURL(url); document.body.removeChild(a);
+            }
+
             // モード1: 既存PDFへの非破壊Form XObjectスタンプオーバーレイ
             async function generatePDFOverlay() {
-                const { PDFDocument, StandardFonts, PDFName, PDFNumber } = PDFLib; 
+                const { PDFDocument, StandardFonts, PDFName, PDFNumber } = PDFLib;
                 let pdfDoc;
                 let hasBg = false;
 
@@ -2583,20 +3623,36 @@
                 }
 
                 const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                const size = parseFloat(els.qrSize.value) || 30; 
-                const xPos = parseFloat(els.qrX.value) || 0; 
+                const size = parseFloat(els.qrSize.value) || 30;
+                const xPos = parseFloat(els.qrX.value) || 0;
                 const yPos = parseFloat(els.qrY.value) || 0;
-                
+
                 const mm2pt = 2.83465;
                 const ptSize = size * mm2pt;
                 const ptX = xPos * mm2pt;
 
-                const isP = els.pdfOrientation.value === 'p';
-                const a4W = (isP ? 210 : 297) * mm2pt;
-                const a4H = (isP ? 297 : 210) * mm2pt;
+                const { paperW, paperH } = getPaperDimensions();
+                const a4W = paperW * mm2pt;
+                const a4H = paperH * mm2pt;
 
                 const total = csvData.length; const CHUNK_SIZE = 25; const shouldEncode = els.urlEncodeVars.checked;
                 const template = els.dataTemplate.value;
+
+                // ロゴ／角印の事前埋め込み（全ページで使い回すため1回だけ実行）
+                let logoImg = null, logoPtWidth = 0, logoPtHeight = 0, logoPtX = 0, logoYmm = 0;
+                if (els.useLogo && els.useLogo.checked && logoImageBytes) {
+                    logProgress('ロゴ画像を埋め込んでいます...');
+                    logoImg = await pdfDoc.embedPng(logoImageBytes.slice(0));
+                    const logoWidthMm = parseFloat(els.logoWidth.value) || 25;
+                    logoPtWidth = logoWidthMm * mm2pt;
+                    logoPtHeight = logoPtWidth * (logoImg.height / logoImg.width);
+                    logoPtX = (parseFloat(els.logoX.value) || 0) * mm2pt;
+                    logoYmm = parseFloat(els.logoY.value) || 0;
+                }
+
+                // 検品用CSVの対応表（ページ番号 ⇔ 埋め込みデータ）
+                const wantsVerificationCsv = els.exportVerificationCsv && els.exportVerificationCsv.checked;
+                const verificationRows = [];
 
                 logProgress(`全 ${total} 件のQRコード生成および合成処理を開始します...`);
                 const r2 = (n) => Math.round(n * 100) / 100;
@@ -2608,8 +3664,14 @@
                         const globalIndex = i + j;
                         let page = (hasBg && globalIndex < pdfDoc.getPageCount()) ? pdfDoc.getPage(globalIndex) : pdfDoc.addPage([a4W, a4H]);
 
-                        const textData = template.replace(/\{\{(.+?)\}\}/g, (m, key) => { let v = chunk[j][key] !== undefined ? String(chunk[j][key]) : ""; return (shouldEncode && v) ? encodeURIComponent(v) : v; });
-                        
+                        if (logoImg) {
+                            const logoPtY = page.getHeight() - (logoYmm * mm2pt) - logoPtHeight;
+                            page.drawImage(logoImg, { x: logoPtX, y: logoPtY, width: logoPtWidth, height: logoPtHeight });
+                        }
+
+                        let textData = template.replace(/\{\{(.+?)\}\}/g, (m, key) => { let v = chunk[j][key] !== undefined ? String(chunk[j][key]) : ""; return (shouldEncode && v) ? encodeURIComponent(v) : v; });
+                        textData = appendUtmParams(textData);
+
                         if (textData) {
                             try {
                                 const centerText = els.useCenterText.checked ? chunk[j][els.centerTextColumn.value] : null;
@@ -2636,19 +3698,7 @@
                                 xobjStream.dict = xobjDict;
                                 const xobjRef = pdfDoc.context.register(xobjStream);
 
-                                const oldResources = page.node.Resources();
-                                const newResources = pdfDoc.context.obj({});
-                                if (oldResources) {
-                                    const entries = oldResources.entries();
-                                    for (let k = 0; k < entries.length; k++) {
-                                        const [key, val] = entries[k];
-                                        if (key.asString() !== '/XObject') newResources.set(key, val);
-                                    }
-                                }
-                                const newXObjDict = pdfDoc.context.obj({});
-                                newXObjDict.set(PDFName.of('QR'), xobjRef);
-                                newResources.set(PDFName.of('XObject'), newXObjDict);
-                                page.node.set(PDFName.of('Resources'), newResources);
+                                registerPageXObject(pdfDoc, page, 'QR', xobjRef);
 
                                 const invokeOps = `q 1 0 0 1 ${r2(ptX)} ${r2(ptY)} cm /QR Do Q\n`;
                                 const invokeBytes = new TextEncoder().encode(invokeOps);
@@ -2656,15 +3706,19 @@
                                 invokeStream.dict.set(PDFName.of('Length'), PDFNumber.of(invokeBytes.byteLength));
                                 const invokeRef = pdfDoc.context.register(invokeStream);
                                 page.node.addContentStream(invokeRef);
+
+                                if (wantsVerificationCsv) {
+                                    verificationRows.push(Object.assign({ ページ番号: globalIndex + 1 }, chunk[j], { QR埋込内容: textData }));
+                                }
                             } catch (err) {
                                 console.error('QR生成エラー:', err);
                             }
                         }
                     }
-                    updateProgress(Math.min(i + CHUNK_SIZE, total), total); 
-                    await new Promise(resolve => setTimeout(resolve, 5)); 
+                    updateProgress(Math.min(i + CHUNK_SIZE, total), total);
+                    await new Promise(resolve => setTimeout(resolve, 5));
                 }
-                
+
                 const renderTime = ((performance.now() - renderStartTime) / 1000).toFixed(2);
                 logProgress(`全QRコードの配置・合成が完了しました。(所要時間: ${renderTime}秒)`);
 
@@ -2672,8 +3726,16 @@
                     const totalPages = pdfDoc.getPageCount();
                     for (let i = totalPages - 1; i >= total; i--) pdfDoc.removePage(i);
                 }
-                
+
                 await saveAndDownloadPDF(pdfDoc, 'QR_Codes_Output.pdf');
+
+                if (wantsVerificationCsv && verificationRows.length > 0) {
+                    logProgress('検品用CSVを出力しています...');
+                    const csvStr = Papa.unparse(verificationRows);
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    downloadTextFile('﻿' + csvStr, 'QR_Codes_Verification.csv', 'text/csv;charset=utf-8');
+                    logProgress('検品用CSVの出力が完了しました。');
+                }
             }
 
             // モード2: 【超極小・エラー完全解消版】新規デザイン帳票作成 ＆ CSV一括差し込み印刷
@@ -2695,9 +3757,9 @@
                 const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
                 const mm2pt = 2.83465;
-                const isP = els.desOrientation.value === 'p';
-                const pW = (isP ? 210 : 297) * mm2pt;
-                const pH = (isP ? 297 : 210) * mm2pt;
+                const { paperW, paperH } = getPaperDimensions();
+                const pW = paperW * mm2pt;
+                const pH = paperH * mm2pt;
                 const r2 = (n) => Math.round(n * 100) / 100;
 
                 const total = csvData.length;

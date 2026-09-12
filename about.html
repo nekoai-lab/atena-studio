@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atena Studio について</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232D2A6E'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z' fill='%23ffffff'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z' fill='%23C9971F' transform='translate(30,30)'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        primary: '#2D2A6E',
+                        primaryHover: '#3D3A8E',
+                        primaryContainer: '#ECEAFA',
+                        onPrimaryContainer: '#2D2A6E',
+                        surfaceDim: '#f5f5f5',
+                        outlineVariant: '#e5e7eb',
+                        accent: '#C9971F'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { background-color: #ffffff; }
+        h1, h2, h3 { letter-spacing: -0.02em; }
+        .btn-primary {
+            background-color: #2D2A6E; color: #fff; transition: background-color .2s, box-shadow .2s, transform .1s;
+        }
+        .btn-primary:hover { background-color: #3D3A8E; box-shadow: 0 4px 12px rgba(45,42,110,.2); }
+        .btn-primary:active { transform: scale(0.98); }
+        .feature-card { transition: box-shadow .2s, border-color .2s; }
+        .feature-card:hover { border-color: #2D2A6E; box-shadow: 0 4px 12px rgba(45,42,110,.08); }
+    </style>
+</head>
+<body class="text-[#1f1f1f] antialiased">
+
+    <!-- ナビゲーション -->
+    <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-5 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg width="30" height="30" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
+                </svg>
+                <span class="text-xl font-semibold text-primary" style="font-family: 'Quicksand', sans-serif;">Atena Studio</span>
+            </div>
+            <a href="index.html" class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold">今すぐ使う（無料）</a>
+        </div>
+    </header>
+
+    <!-- ヒーロー -->
+    <section class="max-w-5xl mx-auto px-5 pt-16 pb-14 text-center">
+        <span class="inline-block text-[11px] font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-5">無料・サーバー不要・登録不要</span>
+        <h1 class="text-3xl sm:text-5xl font-bold tracking-[-0.03em] mb-5 leading-tight">
+            名簿から、個別の書類を、<br class="hidden sm:block">まとめて作る。
+        </h1>
+        <p class="text-sm sm:text-base text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
+            宛名ラベル、QRコード付き受講票、名札、会員証まで。<br class="hidden sm:block">
+            CSVを読み込むだけで、一人ひとり違う書類を一括生成します。ブラウザだけで完結し、データはどこにも送信されません。
+        </p>
+        <a href="index.html" class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-lg text-sm font-semibold">
+            <span class="material-icons text-[18px]">arrow_forward</span>
+            今すぐ無料で試す
+        </a>
+    </section>
+
+    <!-- 対象ユーザー -->
+    <section class="bg-surfaceDim py-14">
+        <div class="max-w-5xl mx-auto px-5">
+            <h2 class="text-xl sm:text-2xl font-bold text-center mb-2">こんな業務に</h2>
+            <p class="text-xs text-gray-500 text-center mb-8">名簿があって、一人ひとりに違う紙を配る仕事なら、だいたい当てはまります。</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">school</span>
+                    <span class="text-xs font-medium">塾・スクール</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">apartment</span>
+                    <span class="text-xs font-medium">賃貸・マンション管理</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">local_hospital</span>
+                    <span class="text-xs font-medium">クリニック</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">shield</span>
+                    <span class="text-xs font-medium">保険代理店・士業</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">fitness_center</span>
+                    <span class="text-xs font-medium">ジム・会員制サービス</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">event</span>
+                    <span class="text-xs font-medium">イベント・セミナー運営</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">groups</span>
+                    <span class="text-xs font-medium">同窓会・自治会</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-1.5 block">tune</span>
+                    <span class="text-xs font-medium">その他、自分で自由に設計</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使い方 -->
+    <section class="max-w-5xl mx-auto px-5 py-16">
+        <h2 class="text-xl sm:text-2xl font-bold text-center mb-10">使い方は4ステップ</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            <div>
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">1</div>
+                <h3 class="text-sm font-semibold mb-1.5">何を作るか選ぶ</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">宛名ラベル・QR付き受講票・名札など13種のテンプレートから選ぶか、自分でゼロから組めます。</p>
+            </div>
+            <div>
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">2</div>
+                <h3 class="text-sm font-semibold mb-1.5">名簿（CSV）を読み込む</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">氏名・住所などが入ったCSVを読み込みます。フォーマットに迷ったら見本CSVをダウンロードできます。</p>
+            </div>
+            <div>
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">3</div>
+                <h3 class="text-sm font-semibold mb-1.5">帳票の中身を決める</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">CSVの列をテキストやQRコードに割り当てます。QRコードは任意の要素の一つで、必須ではありません。</p>
+            </div>
+            <div>
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">4</div>
+                <h3 class="text-sm font-semibold mb-1.5">配置を整えて一括生成</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">位置とサイズを調整したら、ボタン一つでCSVの件数分のPDFを一括出力します。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主な機能 -->
+    <section class="bg-surfaceDim py-16">
+        <div class="max-w-5xl mx-auto px-5">
+            <h2 class="text-xl sm:text-2xl font-bold text-center mb-10">主な機能</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">grid_view</span>
+                    <h3 class="text-sm font-semibold mb-1">テンプレートギャラリー</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">宛名ラベル・受講票・名札・会員証・診察券・修了証など、13種類の帳票をミニプレビュー付きで選べます。</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">bookmark</span>
+                    <h3 class="text-sm font-semibold mb-1">マイテンプレート</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">自分で組んだ帳票レイアウトを名前を付けて保存。次回から同じ形式ですぐ作れます。</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">layers</span>
+                    <h3 class="text-sm font-semibold mb-1">既存PDFへの非破壊合成</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">今使っている帳票フォーマットを壊さず、QRコードやロゴだけをスタンプのように重ねて合成します。</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">history</span>
+                    <h3 class="text-sm font-semibold mb-1">名簿のバージョン管理</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">名簿を取り込むたびに前回との差分（追加・変更・削除）を確認。過去の状態にも復元できます。</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">link</span>
+                    <h3 class="text-sm font-semibold mb-1">UTMパラメータ自動付与</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">QRコードのリンク先に自動でutm_source等を付与。紙媒体からの反応も計測できます。</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
+                    <span class="material-icons text-primary text-2xl mb-2 block">fact_check</span>
+                    <h3 class="text-sm font-semibold mb-1">検品用CSV</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">PDF生成と同時に「何ページ目に誰のデータを入れたか」の対応表を出力し、検品の手間を減らします。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- プライバシー -->
+    <section class="max-w-3xl mx-auto px-5 py-16 text-center">
+        <span class="material-icons text-primary text-3xl mb-3">lock</span>
+        <h2 class="text-lg font-bold mb-3">データはブラウザの外に出ません</h2>
+        <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">
+            読み込んだ名簿も、生成した書類も、すべてブラウザの中だけで処理されます。サーバーへのアップロードは一切行われないので、個人情報を含む名簿でも安心して使えます。
+        </p>
+    </section>
+
+    <!-- カスタマイズ相談 -->
+    <section class="bg-surfaceDim py-16">
+        <div class="max-w-2xl mx-auto px-5 text-center">
+            <span class="inline-block text-[11px] font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">ビジネス利用・カスタマイズ</span>
+            <h2 class="text-lg sm:text-xl font-bold mb-3">自社専用にカスタマイズしたい場合は</h2>
+            <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
+                自社のテンプレートに合わせたい、複数人で名簿を共有したい、外部システムと連携したいなど、業務に合わせた個別カスタマイズのご相談を承っています。
+            </p>
+            <a href="https://marcrevix.com/contact/" target="_blank" rel="noopener" class="btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold">
+                <span class="material-icons text-[18px]">mail_outline</span>
+                カスタマイズのご相談はこちらから
+            </a>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="border-t border-gray-100 py-10">
+        <div class="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-[11px] text-gray-400">
+                本ツールは <a href="https://github.com/kotakahashi-4u/qr-pdf-overlay" class="underline hover:text-primary">kotakahashi-4u/qr-pdf-overlay</a> をベースに、月ねこ(Tsukineko)が機能拡張したものです。
+            </p>
+            <a href="index.html" class="btn-primary px-5 py-2 rounded-lg text-xs font-semibold">今すぐ使う（無料）</a>
+        </div>
+    </footer>
+
+</body>
+</html>
