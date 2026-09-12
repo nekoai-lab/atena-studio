@@ -663,6 +663,16 @@
                                 </div>
                             </div>
 
+                            <!-- 書体の組み合わせプリセット（見出し／本文をまとめて切り替え） -->
+                            <div class="mb-3.5 bg-surfaceDim p-2.5 rounded-xl border border-gray-200">
+                                <p class="text-[11px] font-bold text-gray-600 mb-1.5">書体の組み合わせ（すべてのテキスト要素にまとめて適用）:</p>
+                                <div id="fontPairingPresets" class="flex flex-wrap gap-1.5">
+                                    <button type="button" data-pairing="modern" class="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:border-primary hover:text-primary text-gray-600 bg-white font-medium">モダン</button>
+                                    <button type="button" data-pairing="formal" class="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:border-primary hover:text-primary text-gray-600 bg-white font-medium">フォーマル</button>
+                                    <button type="button" data-pairing="soft" class="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:border-primary hover:text-primary text-gray-600 bg-white font-medium">やわらか</button>
+                                </div>
+                            </div>
+
                             <!-- 要素リスト＆詳細プロパティエディタ -->
                             <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
                                 <div class="md:col-span-5 border border-gray-200 rounded-xl p-2 h-64 overflow-y-auto space-y-1.5 bg-surfaceDim" id="elementListContainer"></div>
@@ -874,64 +884,91 @@
                     <div id="expElementSelectorBlock" class="bg-surfaceDim p-3 rounded-2xl border border-gray-200 hidden">
                         <label class="block text-[11px] font-bold text-gray-700 mb-1">編集対象の要素</label>
                         <select id="expTargetElementSelect" class="m3-input w-full px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white font-medium text-primary"></select>
-                        <p class="text-[10px] text-gray-400 mt-1">※プレビュー上の要素を直接クリックしても選択できます</p>
+                        <p class="text-[10px] text-gray-400 mt-1">※プレビュー上の要素を直接クリックしても選択できます（テキストはダブルクリックでその場編集）</p>
+                        <button type="button" id="expOpenTemplatePickerBtn" class="mt-2 w-full text-[11px] text-primary hover:bg-primaryContainer/60 rounded-lg flex items-center justify-center gap-1 py-1.5 border border-primary/30">
+                            <span class="material-icons text-sm">grid_view</span> 別のテンプレートから選び直す
+                        </button>
+                    </div>
+
+                    <div id="expTextStyleBlock" class="bg-surfaceDim p-4 rounded-2xl border border-gray-200 hidden">
+                        <label class="text-xs font-bold text-gray-800 border-b border-gray-200 pb-1.5 mb-3 block">文字の設定</label>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-0.5">文字サイズ (pt)</label>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" id="expFontSizeDecrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 shrink-0 rounded-lg flex items-center justify-center text-xs leading-none">−</button>
+                                    <input type="number" id="expFontSizeInput" class="m3-input w-full px-1 py-1 border rounded text-xs text-center font-mono">
+                                    <button type="button" id="expFontSizeIncrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 shrink-0 rounded-lg flex items-center justify-center text-xs leading-none">＋</button>
+                                </div>
+                                <div id="expFontSizePresets" class="flex flex-wrap gap-1 mt-1.5"></div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-0.5">書体</label>
+                                <select id="expFontFamilySelect" class="m3-input w-full px-2 py-1.5 border border-gray-300 text-xs outline-none bg-white"></select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="bg-surfaceDim p-4 rounded-2xl border border-gray-200">
-                        <div class="flex items-center justify-between border-b border-gray-200 pb-1.5 mb-3">
+                        <div class="flex items-center justify-between pb-1.5 mb-1">
                             <label class="text-xs font-bold text-gray-800">サイズと座標</label>
                             <span id="expCurrentElementBadge" class="text-[10px] bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full font-medium truncate max-w-[120px]">選択中</span>
                         </div>
-                        
-                        <div class="space-y-3">
-                            <div>
-                                <div class="flex justify-between mb-1 items-end">
-                                    <label id="expSizeLabel" class="text-[11px] font-medium text-gray-600">幅 / サイズ (mm)</label>
-                                    <span id="expQrSizeVal" class="text-xs font-mono text-primary font-bold">30</span>
+                        <p class="text-[10px] text-gray-400 mb-2">※通常はプレビュー上のドラッグ移動・ハンドルでのリサイズで調整できます</p>
+
+                        <details>
+                            <summary class="text-[11px] text-primary cursor-pointer select-none py-1">数値で微調整（詳細設定）</summary>
+
+                            <div class="space-y-3 mt-2 border-t border-gray-200 pt-3">
+                                <div>
+                                    <div class="flex justify-between mb-1 items-end">
+                                        <label id="expSizeLabel" class="text-[11px] font-medium text-gray-600">幅 / サイズ (mm)</label>
+                                        <span id="expQrSizeVal" class="text-xs font-mono text-primary font-bold">30</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button id="expSizeDecrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 rounded-lg flex items-center justify-center" title="1mm縮小"><span class="material-icons text-gray-700 text-xs">remove</span></button>
+                                        <input type="range" id="expQrSize" min="5" max="297" value="30" class="flex-grow accent-primary cursor-pointer">
+                                        <button id="expSizeIncrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 rounded-lg flex items-center justify-center" title="1mm拡大"><span class="material-icons text-gray-700 text-xs">add</span></button>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <button id="expSizeDecrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 rounded-lg flex items-center justify-center" title="1mm縮小"><span class="material-icons text-gray-700 text-xs">remove</span></button>
-                                    <input type="range" id="expQrSize" min="5" max="297" value="30" class="flex-grow accent-primary cursor-pointer">
-                                    <button id="expSizeIncrease" class="bg-white hover:bg-gray-100 border border-gray-300 w-7 h-7 rounded-lg flex items-center justify-center" title="1mm拡大"><span class="material-icons text-gray-700 text-xs">add</span></button>
+
+                                <div id="expHeightBlock" class="hidden">
+                                    <div class="flex justify-between mb-1 items-end">
+                                        <label class="text-[11px] font-medium text-gray-600">高さ (mm)</label>
+                                        <span id="expHeightVal" class="text-xs font-mono text-primary font-bold">10</span>
+                                    </div>
+                                    <input type="range" id="expHeight" min="1" max="297" value="10" class="w-full accent-primary cursor-pointer">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-1 items-end">
+                                        <label class="text-[11px] font-medium text-gray-600">X座標 (mm)</label>
+                                        <span id="expQrXVal" class="text-xs font-mono text-primary font-bold">20</span>
+                                    </div>
+                                    <input type="range" id="expQrX" min="0" max="297" value="20" class="w-full accent-primary cursor-pointer">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-1 items-end">
+                                        <label class="text-[11px] font-medium text-gray-600">Y座標 (mm)</label>
+                                        <span id="expQrYVal" class="text-xs font-mono text-primary font-bold">20</span>
+                                    </div>
+                                    <input type="range" id="expQrY" min="0" max="210" value="20" class="w-full accent-primary cursor-pointer">
                                 </div>
                             </div>
 
-                            <div id="expHeightBlock" class="hidden">
-                                <div class="flex justify-between mb-1 items-end">
-                                    <label class="text-[11px] font-medium text-gray-600">高さ (mm)</label>
-                                    <span id="expHeightVal" class="text-xs font-mono text-primary font-bold">10</span>
+                            <div class="mt-4 pt-3 border-t border-gray-200">
+                                <label class="block text-[11px] font-medium text-gray-600 mb-1.5 text-center">位置微調整 (1mm)</label>
+                                <div class="grid grid-cols-3 gap-1 w-28 mx-auto">
+                                    <div></div>
+                                    <button id="expNudgeUp" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="上"><span class="material-icons text-gray-700 text-xs">arrow_upward</span></button>
+                                    <div></div>
+                                    <button id="expNudgeLeft" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="左"><span class="material-icons text-gray-700 text-xs">arrow_back</span></button>
+                                    <button id="expNudgeDown" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="下"><span class="material-icons text-gray-700 text-xs">arrow_downward</span></button>
+                                    <button id="expNudgeRight" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="右"><span class="material-icons text-gray-700 text-xs">arrow_forward</span></button>
                                 </div>
-                                <input type="range" id="expHeight" min="1" max="297" value="10" class="w-full accent-primary cursor-pointer">
                             </div>
-                            
-                            <div>
-                                <div class="flex justify-between mb-1 items-end">
-                                    <label class="text-[11px] font-medium text-gray-600">X座標 (mm)</label>
-                                    <span id="expQrXVal" class="text-xs font-mono text-primary font-bold">20</span>
-                                </div>
-                                <input type="range" id="expQrX" min="0" max="297" value="20" class="w-full accent-primary cursor-pointer">
-                            </div>
-                            
-                            <div>
-                                <div class="flex justify-between mb-1 items-end">
-                                    <label class="text-[11px] font-medium text-gray-600">Y座標 (mm)</label>
-                                    <span id="expQrYVal" class="text-xs font-mono text-primary font-bold">20</span>
-                                </div>
-                                <input type="range" id="expQrY" min="0" max="210" value="20" class="w-full accent-primary cursor-pointer">
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pt-3 border-t border-gray-200">
-                            <label class="block text-[11px] font-medium text-gray-600 mb-1.5 text-center">位置微調整 (1mm)</label>
-                            <div class="grid grid-cols-3 gap-1 w-28 mx-auto">
-                                <div></div>
-                                <button id="expNudgeUp" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="上"><span class="material-icons text-gray-700 text-xs">arrow_upward</span></button>
-                                <div></div>
-                                <button id="expNudgeLeft" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="左"><span class="material-icons text-gray-700 text-xs">arrow_back</span></button>
-                                <button id="expNudgeDown" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="下"><span class="material-icons text-gray-700 text-xs">arrow_downward</span></button>
-                                <button id="expNudgeRight" class="bg-white hover:bg-gray-100 border border-gray-300 p-1.5 rounded-lg flex items-center justify-center" title="右"><span class="material-icons text-gray-700 text-xs">arrow_forward</span></button>
-                            </div>
-                        </div>
+                        </details>
                     </div>
 
                     <div class="bg-surfaceDim p-3.5 rounded-2xl border border-gray-200">
@@ -1065,7 +1102,15 @@
                 expSizeLabel: document.getElementById('expSizeLabel'),
                 expHeightBlock: document.getElementById('expHeightBlock'),
                 expHeight: document.getElementById('expHeight'),
-                expHeightVal: document.getElementById('expHeightVal')
+                expHeightVal: document.getElementById('expHeightVal'),
+                expOpenTemplatePickerBtn: document.getElementById('expOpenTemplatePickerBtn'),
+                expTextStyleBlock: document.getElementById('expTextStyleBlock'),
+                expFontSizeInput: document.getElementById('expFontSizeInput'),
+                expFontSizeDecrease: document.getElementById('expFontSizeDecrease'),
+                expFontSizeIncrease: document.getElementById('expFontSizeIncrease'),
+                expFontSizePresets: document.getElementById('expFontSizePresets'),
+                expFontFamilySelect: document.getElementById('expFontFamilySelect'),
+                fontPairingPresets: document.getElementById('fontPairingPresets')
             };
 
             if (els.modalCloseBtn) {
@@ -1140,6 +1185,39 @@
                 `;
             }
 
+            // 書体プリセット（Web配信フォントに依存せず、主要OSに標準搭載の日本語フォントで系統を切り替える）
+            const FONT_FAMILY_PRESETS = [
+                { key: 'gothic', label: 'ゴシック', css: "'Hiragino Kaku Gothic ProN', 'Yu Gothic Medium', 'YuGothic', 'Meiryo', sans-serif" },
+                { key: 'mincho', label: '明朝', css: "'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'MS Mincho', serif" },
+                { key: 'round', label: '丸ゴシック', css: "'Hiragino Maru Gothic ProN', 'UD Digi Kyokasho N-B', 'Yu Gothic Medium', sans-serif" }
+            ];
+            function getFontFamilyCss(key) {
+                return (FONT_FAMILY_PRESETS.find(f => f.key === key) || FONT_FAMILY_PRESETS[0]).css;
+            }
+            function fontFamilySelectOptionsHtml(selectedKey) {
+                return FONT_FAMILY_PRESETS.map(f => `<option value="${f.key}" ${(selectedKey || 'gothic') === f.key ? 'selected' : ''}>${f.label}</option>`).join('');
+            }
+
+            // 書体の組み合わせプリセット（帳票内の文字要素をまとめて「見出し／本文」で塗り分ける）
+            const FONT_PAIRING_PRESETS = [
+                { key: 'modern', label: 'モダン', heading: { fontFamily: 'gothic', bold: true }, body: { fontFamily: 'gothic', bold: false } },
+                { key: 'formal', label: 'フォーマル', heading: { fontFamily: 'mincho', bold: true }, body: { fontFamily: 'gothic', bold: false } },
+                { key: 'soft', label: 'やわらか', heading: { fontFamily: 'round', bold: true }, body: { fontFamily: 'round', bold: false } }
+            ];
+            function applyFontPairingPreset(presetKey) {
+                const preset = FONT_PAIRING_PRESETS.find(p => p.key === presetKey);
+                if (!preset) return;
+                const labelEls = designerElements.filter(el => el.type === 'label');
+                if (!labelEls.length) return;
+                const maxFontSize = Math.max(...labelEls.map(el => el.fontSize || 12));
+                labelEls.forEach(el => {
+                    const style = (el.fontSize || 12) >= maxFontSize ? preset.heading : preset.body;
+                    el.fontFamily = style.fontFamily;
+                    el.bold = style.bold;
+                });
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+            }
+
             function renderElementEditor() {
                 if (!els.elementPropertyEditor) return;
                 const el = designerElements.find(e => e.id === selectedElementId);
@@ -1180,8 +1258,16 @@
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">表示テキスト (CSVタグ可)</label>
                             <textarea id="propText" rows="3" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${el.text || ''}</textarea>
                         </div>
-                        <div class="grid grid-cols-3 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>${fontSizeControlHtml('propFontSize', el.fontSize || 12)}</div>
+                            <div>
+                                <label class="block text-[11px] text-gray-600 mb-0.5">書体</label>
+                                <select id="propFontFamily" class="m3-input w-full px-2 py-1 border rounded text-xs bg-white">
+                                    ${fontFamilySelectOptionsHtml(el.fontFamily)}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[11px] text-gray-600">配置</label>
                                 <select id="propAlign" class="m3-input w-full px-2 py-1 border rounded text-xs bg-white">
@@ -1243,6 +1329,7 @@
                 bindProp('propText', dom => { el.text = dom.value; });
                 bindProp('propTemplate', dom => { el.template = dom.value; });
                 bindProp('propFontSize', dom => { el.fontSize = parseFloat(dom.value) || 10; });
+                bindProp('propFontFamily', dom => { el.fontFamily = dom.value; });
                 bindProp('propAlign', dom => { el.align = dom.value; });
                 bindProp('propBold', dom => { el.bold = dom.checked; });
                 bindProp('propBorder', dom => { el.border = dom.checked; });
@@ -1278,7 +1365,7 @@
 
             els.addLabelBtn.onclick = () => {
                 const newId = 'el_' + Date.now();
-                designerElements.push({ id: newId, type: 'label', name: 'テキスト要素', text: '新しいテキスト', x: 25, y: 50, width: 80, height: 10, fontSize: 12, align: 'left', bold: false, color: '#111827', border: false });
+                designerElements.push({ id: newId, type: 'label', name: 'テキスト要素', text: '新しいテキスト', x: 25, y: 50, width: 80, height: 10, fontSize: 12, fontFamily: 'gothic', align: 'left', bold: false, color: '#111827', border: false });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
             els.addTableBtn.onclick = () => {
@@ -2593,6 +2680,22 @@
             let dragOffsetMm = { x: 0, y: 0 };
             let initialResizeState = null;
 
+            // スマートガイド：ドラッグ中に表示する整列補助線（ページ中央・他要素の端／中心）
+            let activeSnapGuides = { v: [], h: [] };
+            function snapAxis(pos, size, candidates, thresholdMm) {
+                const points = [pos, pos + size / 2, pos + size];
+                let best = null;
+                points.forEach((p, idx) => {
+                    candidates.forEach(c => {
+                        const diff = Math.abs(p - c);
+                        if (diff <= thresholdMm && (!best || diff < best.diff)) best = { diff, idx, candidate: c };
+                    });
+                });
+                if (!best) return null;
+                const offsetForIdx = [0, size / 2, size][best.idx];
+                return { value: best.candidate - offsetForIdx, guide: best.candidate };
+            }
+
             // 用紙サイズ定義（縦向き基準のmm）。A4以外もオーバーレイ/デザイナー両モードで選べるようにする
             const PAPER_SIZES_MM = {
                 A4: { w: 210, h: 297 },
@@ -2725,6 +2828,7 @@
                 ta.style.width = `${ew * scaleX}px`;
                 ta.style.height = `${eh * scaleY}px`;
                 ta.style.fontSize = `${(el.fontSize || 12) * scaleY}px`;
+                ta.style.fontFamily = getFontFamilyCss(el.fontFamily);
                 ta.value = el.text || '';
                 ta.classList.remove('hidden');
                 editingInlineElementId = el.id;
@@ -2738,6 +2842,16 @@
                 editingInlineElementId = null;
             }
 
+            // その場編集オーバーレイの表示中に、サイドパネルから文字サイズ／書体を変更した際の見た目を同期
+            function refreshInlineEditorStyle(el) {
+                if (!els.inlineTextEditor || editingInlineElementId !== el.id) return;
+                const canvasRect = els.expandedPreviewCanvas.getBoundingClientRect();
+                const { paperH } = getPaperDimensions();
+                const scaleY = canvasRect.height / paperH;
+                els.inlineTextEditor.style.fontSize = `${(el.fontSize || 12) * scaleY}px`;
+                els.inlineTextEditor.style.fontFamily = getFontFamilyCss(el.fontFamily);
+            }
+
             if (els.inlineTextEditor) {
                 els.inlineTextEditor.addEventListener('input', (e) => {
                     const el = designerElements.find(item => item.id === editingInlineElementId);
@@ -2749,7 +2863,10 @@
                     syncMainToExp();
                     drawPreview();
                 });
-                els.inlineTextEditor.addEventListener('blur', () => closeInlineTextEditor());
+                els.inlineTextEditor.addEventListener('blur', (e) => {
+                    if (e.relatedTarget && e.relatedTarget.closest('#expTextStyleBlock')) return;
+                    closeInlineTextEditor();
+                });
                 els.inlineTextEditor.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') { e.stopPropagation(); els.inlineTextEditor.blur(); }
                 });
@@ -2919,14 +3036,35 @@
                         const { mmX, mmY } = getMmCoordsFromEvent(e, canvas);
                         const { paperW, paperH } = getPaperDimensions();
 
+                        const canvasRect = canvas.getBoundingClientRect();
+                        const thresholdMmX = 6 / (canvasRect.width / paperW);
+                        const thresholdMmY = 6 / (canvasRect.height / paperH);
+                        activeSnapGuides = { v: [], h: [] };
+
                         if (currentAppMode === 'designer') {
                             const el = designerElements.find(item => item.id === selectedElementId);
                             if (el) {
                                 const ew = el.type === 'qr' ? (el.size || 35) : (el.width || 50);
                                 const eh = el.type === 'qr' ? (el.size || 35) : (el.height || (el.type === 'table' ? (el.rowHeight || 8) * 2 : 10));
-                                
+
                                 let newX = Math.round(mmX - dragOffsetMm.x);
                                 let newY = Math.round(mmY - dragOffsetMm.y);
+
+                                const xCandidates = [paperW / 2];
+                                const yCandidates = [paperH / 2];
+                                designerElements.forEach(other => {
+                                    if (other.id === el.id) return;
+                                    const ox = other.x || 0, oy = other.y || 0;
+                                    const ow = other.type === 'qr' ? (other.size || 35) : (other.width || 50);
+                                    const oh = other.type === 'qr' ? (other.size || 35) : (other.height || (other.type === 'table' ? (other.rowHeight || 8) * 2 : 10));
+                                    xCandidates.push(ox, ox + ow / 2, ox + ow);
+                                    yCandidates.push(oy, oy + oh / 2, oy + oh);
+                                });
+                                const snapX = snapAxis(newX, ew, xCandidates, thresholdMmX);
+                                if (snapX) { newX = Math.round(snapX.value); activeSnapGuides.v.push(snapX.guide); }
+                                const snapY = snapAxis(newY, eh, yCandidates, thresholdMmY);
+                                if (snapY) { newY = Math.round(snapY.value); activeSnapGuides.h.push(snapY.guide); }
+
                                 newX = Math.max(0, Math.min(paperW - ew, newX));
                                 newY = Math.max(0, Math.min(paperH - eh, newY));
 
@@ -2939,6 +3077,12 @@
                             const qs = parseFloat(els.qrSize.value) || 30;
                             let newX = Math.round(mmX - dragOffsetMm.x);
                             let newY = Math.round(mmY - dragOffsetMm.y);
+
+                            const snapX = snapAxis(newX, qs, [paperW / 2], thresholdMmX);
+                            if (snapX) { newX = Math.round(snapX.value); activeSnapGuides.v.push(snapX.guide); }
+                            const snapY = snapAxis(newY, qs, [paperH / 2], thresholdMmY);
+                            if (snapY) { newY = Math.round(snapY.value); activeSnapGuides.h.push(snapY.guide); }
+
                             newX = Math.max(0, Math.min(paperW - qs, newX));
                             newY = Math.max(0, Math.min(paperH - qs, newY));
 
@@ -2980,6 +3124,10 @@
                     }
                     if (isDraggingElement) {
                         isDraggingElement = false;
+                    }
+                    if (activeSnapGuides.v.length || activeSnapGuides.h.length) {
+                        activeSnapGuides = { v: [], h: [] };
+                        drawPreview();
                     }
                     if (isExpPanning) {
                         isExpPanning = false;
@@ -3044,8 +3192,18 @@
                         }
                         els.expQrX.value = el.x || 0; els.expQrXVal.textContent = el.x || 0;
                         els.expQrY.value = el.y || 0; els.expQrYVal.textContent = el.y || 0;
+
+                        if (el.type === 'label' && els.expTextStyleBlock) {
+                            els.expTextStyleBlock.classList.remove('hidden');
+                            if (els.expFontSizeInput) els.expFontSizeInput.value = el.fontSize || 12;
+                            if (els.expFontFamilySelect) els.expFontFamilySelect.value = el.fontFamily || 'gothic';
+                        } else if (els.expTextStyleBlock) {
+                            els.expTextStyleBlock.classList.add('hidden');
+                        }
                     }
                     els.expPdfOrientation.value = els.desOrientation.value;
+                } else if (els.expTextStyleBlock) {
+                    els.expTextStyleBlock.classList.add('hidden');
                 }
                 updateExpMaxValues();
             }
@@ -3083,6 +3241,75 @@
                     renderElementEditor();
                     syncMainToExp();
                     drawPreview();
+                });
+            }
+
+            // 拡大プレビュー：モーダルを閉じずにテンプレートページを呼び出す
+            if (els.expOpenTemplatePickerBtn) {
+                els.expOpenTemplatePickerBtn.addEventListener('click', () => {
+                    closeInlineTextEditor();
+                    if (els.openTemplatePickerBtn) els.openTemplatePickerBtn.click();
+                });
+            }
+
+            // 拡大プレビュー：選択中のテキスト要素の文字サイズ／書体をその場で変更
+            if (els.expFontSizePresets) {
+                els.expFontSizePresets.innerHTML = FONT_SIZE_PRESETS.map(sz =>
+                    `<button type="button" class="text-[10px] px-1.5 py-0.5 rounded-full border border-gray-200 hover:border-primary hover:text-primary text-gray-500" data-size="${sz}">${sz}</button>`
+                ).join('');
+            }
+            if (els.expFontFamilySelect) {
+                els.expFontFamilySelect.innerHTML = fontFamilySelectOptionsHtml();
+            }
+            function getSelectedLabelElement() {
+                if (currentAppMode !== 'designer') return null;
+                const el = designerElements.find(e => e.id === selectedElementId);
+                return (el && el.type === 'label') ? el : null;
+            }
+            function applyExpFontSize(newSize) {
+                const el = getSelectedLabelElement();
+                if (!el) return;
+                el.fontSize = Math.max(4, Math.round(newSize));
+                if (els.expFontSizeInput) els.expFontSizeInput.value = el.fontSize;
+                const propFontSizeDom = document.getElementById('propFontSize');
+                if (propFontSizeDom) propFontSizeDom.value = el.fontSize;
+                refreshInlineEditorStyle(el);
+                drawPreview();
+                if (editingInlineElementId === el.id) els.inlineTextEditor.focus();
+            }
+            if (els.expFontSizeInput) {
+                els.expFontSizeInput.addEventListener('input', (e) => applyExpFontSize(parseFloat(e.target.value) || 12));
+            }
+            if (els.expFontSizeDecrease) {
+                els.expFontSizeDecrease.addEventListener('click', () => applyExpFontSize((parseFloat(els.expFontSizeInput.value) || 12) - 1));
+            }
+            if (els.expFontSizeIncrease) {
+                els.expFontSizeIncrease.addEventListener('click', () => applyExpFontSize((parseFloat(els.expFontSizeInput.value) || 12) + 1));
+            }
+            if (els.expFontSizePresets) {
+                els.expFontSizePresets.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-size]');
+                    if (btn) applyExpFontSize(parseFloat(btn.dataset.size));
+                });
+            }
+            if (els.expFontFamilySelect) {
+                els.expFontFamilySelect.addEventListener('change', (e) => {
+                    const el = getSelectedLabelElement();
+                    if (!el) return;
+                    el.fontFamily = e.target.value;
+                    const propFontFamilyDom = document.getElementById('propFontFamily');
+                    if (propFontFamilyDom) propFontFamilyDom.value = el.fontFamily;
+                    refreshInlineEditorStyle(el);
+                    drawPreview();
+                    if (editingInlineElementId === el.id) els.inlineTextEditor.focus();
+                });
+            }
+
+            // 帳票要素の追加・編集：書体の組み合わせプリセットをまとめて適用
+            if (els.fontPairingPresets) {
+                els.fontPairingPresets.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-pairing]');
+                    if (btn) applyFontPairingPreset(btn.dataset.pairing);
                 });
             }
 
@@ -3234,6 +3461,23 @@
                     });
                 };
 
+                const drawSnapGuides = (guideScale) => {
+                    if (!isExpanded || (!activeSnapGuides.v.length && !activeSnapGuides.h.length)) return;
+                    ctx.save();
+                    ctx.strokeStyle = '#EC4899';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([6, 4]);
+                    activeSnapGuides.v.forEach(vx => {
+                        const px = vx * guideScale;
+                        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, canvas.height); ctx.stroke();
+                    });
+                    activeSnapGuides.h.forEach(hy => {
+                        const py = hy * guideScale;
+                        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(canvas.width, py); ctx.stroke();
+                    });
+                    ctx.restore();
+                };
+
                 if (currentAppMode === 'overlay') {
                     const size = parseFloat(els.qrSize.value) || 30;
                     const x = parseFloat(els.qrX.value) || 0;
@@ -3250,6 +3494,7 @@
                     ctx.strokeStyle = '#2D2A6E'; ctx.lineWidth = 2;
                     ctx.setLineDash([4, 2]); ctx.strokeRect(rX - 2, rY - 2, rW + 4, rH + 4); ctx.setLineDash([]);
                     drawHandles(rX - 2, rY - 2, rW + 4, rH + 4);
+                    drawSnapGuides(scale);
 
                 } else if (currentAppMode === 'designer') {
                     const mockRow = csvData[0] || {};
@@ -3268,7 +3513,7 @@
                             let text = (el.text || '').replace(/\{\{(.+?)\}\}/g, (m, k) => mockRow[k] !== undefined ? mockRow[k] : m);
                             const lines = text.split('\n');
                             const fontSize = (el.fontSize || 12) * scale * 0.35;
-                            ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px sans-serif`;
+                            ctx.font = `${el.bold ? 'bold ' : ''}${fontSize}px ${getFontFamilyCss(el.fontFamily)}`;
                             ctx.fillStyle = el.color || '#111827';
                             ctx.textBaseline = 'top';
 
@@ -3326,6 +3571,7 @@
                             drawHandles(rx - 2, ry - 2, rw + 4, rh + 4);
                         }
                     });
+                    drawSnapGuides(scale);
                 } else if (currentAppMode === 'zip') {
                     // ZIP画像プレビュー: 中央にZIP専用データで生成されたQRコードを高品位描画
                     const qrMargin = 15 * scale;
@@ -3888,7 +4134,7 @@
                         textRenderCtx.clearRect(0, 0, textRenderCanvas.width, textRenderCanvas.height);
                         
                         const fontSizePx = (el.fontSize || 12) * scaleFactor * 1.1;
-                        textRenderCtx.font = `${el.bold ? 'bold ' : ''}${fontSizePx}px sans-serif`;
+                        textRenderCtx.font = `${el.bold ? 'bold ' : ''}${fontSizePx}px ${getFontFamilyCss(el.fontFamily)}`;
                         textRenderCtx.fillStyle = el.color || '#111827';
                         textRenderCtx.textBaseline = 'top';
 
@@ -3950,7 +4196,7 @@
                                         textRenderCtx.clearRect(0, 0, textRenderCanvas.width, textRenderCanvas.height);
                                         
                                         const fontSizePx = (el.fontSize || 12) * scaleFactor * 1.1;
-                                        textRenderCtx.font = `${el.bold ? 'bold ' : ''}${fontSizePx}px sans-serif`;
+                                        textRenderCtx.font = `${el.bold ? 'bold ' : ''}${fontSizePx}px ${getFontFamilyCss(el.fontFamily)}`;
                                         textRenderCtx.fillStyle = el.color || '#111827';
                                         textRenderCtx.textBaseline = 'top';
 
