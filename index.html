@@ -859,7 +859,9 @@
             <div class="flex flex-col md:flex-row flex-grow overflow-hidden">
                 <div id="expandedCanvasContainer" class="flex-grow bg-[#e8eaed] p-3 sm:p-6 flex items-center justify-center overflow-hidden checkerboard relative min-h-[50vh] md:min-h-0 order-1 md:order-2 shadow-inner cursor-grab select-none">
                     <canvas id="expandedPreviewCanvas" class="shadow-2xl bg-white max-w-full max-h-full object-contain transition-transform duration-100 origin-center rounded" style="aspect-ratio: 297 / 210;"></canvas>
-                    
+
+                    <textarea id="inlineTextEditor" class="hidden absolute z-20 resize-none border-2 border-primary rounded bg-white/95 shadow-lg p-0.5 leading-tight font-sans text-gray-900 focus:outline-none" spellcheck="false"></textarea>
+
                     <div class="absolute bottom-4 right-4 flex bg-surface rounded-full shadow-md border border-gray-200 z-10 overflow-hidden p-0.5">
                         <button id="expZoomOutBtn" class="w-8 h-8 hover:bg-gray-100 text-gray-700 rounded-full flex items-center justify-center"><span class="material-icons text-base">remove</span></button>
                         <button id="expZoomResetBtn" class="px-2.5 h-8 text-[11px] font-mono font-bold text-gray-700 hover:bg-gray-100 rounded-full flex items-center justify-center" title="リセット">100%</button>
@@ -1051,6 +1053,7 @@
                 previewCanvasWrapper: document.getElementById('previewCanvasWrapper'),
                 expandedPreviewModal: document.getElementById('expandedPreviewModal'), closeExpandedModalBtn: document.getElementById('closeExpandedModalBtn'), expandedPreviewCanvas: document.getElementById('expandedPreviewCanvas'),
                 expandedCanvasContainer: document.getElementById('expandedCanvasContainer'), expZoomOutBtn: document.getElementById('expZoomOutBtn'), expZoomResetBtn: document.getElementById('expZoomResetBtn'), expZoomInBtn: document.getElementById('expZoomInBtn'),
+                inlineTextEditor: document.getElementById('inlineTextEditor'),
                 expQrSize: document.getElementById('expQrSize'), expQrX: document.getElementById('expQrX'), expQrY: document.getElementById('expQrY'),
                 expQrSizeVal: document.getElementById('expQrSizeVal'), expQrXVal: document.getElementById('expQrXVal'), expQrYVal: document.getElementById('expQrYVal'),
                 expPdfOrientation: document.getElementById('expPdfOrientation'),
@@ -1120,6 +1123,23 @@
                 });
             }
 
+            const FONT_SIZE_PRESETS = [10, 12, 14, 16, 20, 24, 32, 48];
+            function fontSizeControlHtml(id, value) {
+                return `
+                    <div>
+                        <label class="block text-[11px] text-gray-600 mb-0.5">文字サイズ (pt)</label>
+                        <div class="flex items-center gap-1">
+                            <button type="button" class="font-size-step m3-btn-outlined w-6 h-6 shrink-0 rounded flex items-center justify-center text-xs leading-none" data-target="${id}" data-delta="-1">−</button>
+                            <input type="number" id="${id}" value="${value}" class="m3-input w-full px-1 py-1 border rounded text-xs text-center font-mono">
+                            <button type="button" class="font-size-step m3-btn-outlined w-6 h-6 shrink-0 rounded flex items-center justify-center text-xs leading-none" data-target="${id}" data-delta="1">＋</button>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            ${FONT_SIZE_PRESETS.map(sz => `<button type="button" class="font-size-preset text-[10px] px-1.5 py-0.5 rounded-full border border-gray-200 hover:border-primary hover:text-primary text-gray-500" data-target="${id}" data-size="${sz}">${sz}</button>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
             function renderElementEditor() {
                 if (!els.elementPropertyEditor) return;
                 const el = designerElements.find(e => e.id === selectedElementId);
@@ -1161,7 +1181,7 @@
                             <textarea id="propText" rows="3" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${el.text || ''}</textarea>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
-                            <div><label class="block text-[11px] text-gray-600">文字サイズ(pt)</label><input type="number" id="propFontSize" value="${el.fontSize || 12}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                            <div>${fontSizeControlHtml('propFontSize', el.fontSize || 12)}</div>
                             <div>
                                 <label class="block text-[11px] text-gray-600">配置</label>
                                 <select id="propAlign" class="m3-input w-full px-2 py-1 border rounded text-xs bg-white">
@@ -1195,7 +1215,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="block text-[11px] text-gray-600">1行の高さ (mm)</label><input type="number" id="propRowHeight" value="${el.rowHeight || 8}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
-                            <div><label class="block text-[11px] text-gray-600">文字サイズ (pt)</label><input type="number" id="propFontSize" value="${el.fontSize || 10}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                            <div>${fontSizeControlHtml('propFontSize', el.fontSize || 10)}</div>
                         </div>
                     `;
                 }
@@ -1235,6 +1255,25 @@
                 });
                 bindProp('propHeaders', dom => { el.headers = dom.value.split(',').map(s => s.trim()).filter(Boolean); });
                 bindProp('propColumns', dom => { el.columns = dom.value.split(',').map(s => s.trim()).filter(Boolean); });
+            }
+
+            // 文字サイズのステッパー／よく使うサイズボタン（要素フォームは再生成されるため、委譲で1度だけ登録）
+            if (els.elementForm) {
+                els.elementForm.addEventListener('click', (e) => {
+                    const stepBtn = e.target.closest('.font-size-step');
+                    const presetBtn = e.target.closest('.font-size-preset');
+                    if (!stepBtn && !presetBtn) return;
+                    const btn = stepBtn || presetBtn;
+                    const input = document.getElementById(btn.dataset.target);
+                    if (!input) return;
+                    if (stepBtn) {
+                        const next = (parseFloat(input.value) || 0) + parseFloat(stepBtn.dataset.delta);
+                        input.value = Math.max(4, Math.round(next));
+                    } else {
+                        input.value = presetBtn.dataset.size;
+                    }
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
             }
 
             els.addLabelBtn.onclick = () => {
@@ -2663,21 +2702,88 @@
                 updateExpTransform();
             }
             
-            if(els.expZoomInBtn) els.expZoomInBtn.addEventListener('click', () => { expZoom = Math.min(expZoom + 0.5, 5); updateExpTransform(); });
-            if(els.expZoomOutBtn) els.expZoomOutBtn.addEventListener('click', () => { expZoom = Math.max(expZoom - 0.5, 0.2); updateExpTransform(); });
-            if(els.expZoomResetBtn) els.expZoomResetBtn.addEventListener('click', resetExpZoomPan);
+            if(els.expZoomInBtn) els.expZoomInBtn.addEventListener('click', () => { closeInlineTextEditor(); expZoom = Math.min(expZoom + 0.5, 5); updateExpTransform(); });
+            if(els.expZoomOutBtn) els.expZoomOutBtn.addEventListener('click', () => { closeInlineTextEditor(); expZoom = Math.max(expZoom - 0.5, 0.2); updateExpTransform(); });
+            if(els.expZoomResetBtn) els.expZoomResetBtn.addEventListener('click', () => { closeInlineTextEditor(); resetExpZoomPan(); });
+
+            // 文字要素のその場編集（ダブルクリックで開く簡易オーバーレイ）
+            let editingInlineElementId = null;
+            function openInlineTextEditor(el) {
+                if (!els.inlineTextEditor || !els.expandedPreviewCanvas || !els.expandedCanvasContainer) return;
+                const canvas = els.expandedPreviewCanvas;
+                const canvasRect = canvas.getBoundingClientRect();
+                const containerRect = els.expandedCanvasContainer.getBoundingClientRect();
+                const { paperW, paperH } = getPaperDimensions();
+                const scaleX = canvasRect.width / paperW;
+                const scaleY = canvasRect.height / paperH;
+                const ew = el.width || 50;
+                const eh = el.height || 10;
+
+                const ta = els.inlineTextEditor;
+                ta.style.left = `${canvasRect.left - containerRect.left + (el.x || 0) * scaleX}px`;
+                ta.style.top = `${canvasRect.top - containerRect.top + (el.y || 0) * scaleY}px`;
+                ta.style.width = `${ew * scaleX}px`;
+                ta.style.height = `${eh * scaleY}px`;
+                ta.style.fontSize = `${(el.fontSize || 12) * scaleY}px`;
+                ta.value = el.text || '';
+                ta.classList.remove('hidden');
+                editingInlineElementId = el.id;
+                ta.focus();
+                ta.select();
+            }
+
+            function closeInlineTextEditor() {
+                if (!els.inlineTextEditor || els.inlineTextEditor.classList.contains('hidden')) return;
+                els.inlineTextEditor.classList.add('hidden');
+                editingInlineElementId = null;
+            }
+
+            if (els.inlineTextEditor) {
+                els.inlineTextEditor.addEventListener('input', (e) => {
+                    const el = designerElements.find(item => item.id === editingInlineElementId);
+                    if (!el) return;
+                    el.text = e.target.value;
+                    renderElementList();
+                    const propTextDom = document.getElementById('propText');
+                    if (propTextDom) propTextDom.value = el.text;
+                    syncMainToExp();
+                    drawPreview();
+                });
+                els.inlineTextEditor.addEventListener('blur', () => closeInlineTextEditor());
+                els.inlineTextEditor.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') { e.stopPropagation(); els.inlineTextEditor.blur(); }
+                });
+                els.inlineTextEditor.addEventListener('mousedown', (e) => e.stopPropagation());
+            }
             
             if(els.expandedCanvasContainer && els.expandedPreviewCanvas) {
                 els.expandedCanvasContainer.addEventListener('wheel', (e) => {
                     e.preventDefault();
+                    closeInlineTextEditor();
                     const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
                     expZoom = Math.max(0.2, Math.min(expZoom + zoomDelta, 5));
                     if(els.expandedPreviewCanvas) els.expandedPreviewCanvas.style.transition = 'none';
                     updateExpTransform();
                 }, { passive: false });
-            
+
+                // ダブルクリックでテキスト要素をその場編集
+                els.expandedCanvasContainer.addEventListener('dblclick', (e) => {
+                    if (currentAppMode !== 'designer' || e.target.closest('button') || e.target.closest('select') || e.target.closest('#inlineTextEditor')) return;
+                    const canvas = els.expandedPreviewCanvas;
+                    const { mmX, mmY } = getMmCoordsFromEvent(e, canvas);
+                    const hitEl = hitTestElement(mmX, mmY);
+                    if (hitEl && hitEl.type === 'label') {
+                        selectedElementId = hitEl.id;
+                        renderElementList();
+                        renderElementEditor();
+                        drawPreview();
+                        openInlineTextEditor(hitEl);
+                    }
+                });
+
                 els.expandedCanvasContainer.addEventListener('mousedown', (e) => {
-                    if(e.button !== 0 || e.target.closest('button') || e.target.closest('select')) return;
+                    if(e.button !== 0 || e.target.closest('button') || e.target.closest('select') || e.target.closest('#inlineTextEditor')) return;
+                    closeInlineTextEditor();
 
                     const canvas = els.expandedPreviewCanvas;
                     const { mmX, mmY } = getMmCoordsFromEvent(e, canvas);
@@ -3000,6 +3106,7 @@
             
             if(els.closeExpandedModalBtn) {
                 els.closeExpandedModalBtn.addEventListener('click', () => {
+                    closeInlineTextEditor();
                     els.expandedPreviewModal.classList.add('hidden');
                 });
             }
