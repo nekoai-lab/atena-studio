@@ -183,19 +183,18 @@
             color: #2D2A6E;
         }
 
-        /* セグメントボタン（nav-pill-group） */
-        .m3-segmented-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        /* ヘッダー：作業モードの下線タブ */
+        .header-tab {
+            transition: color 0.15s ease, border-color 0.15s ease;
             color: #6b7280;
+            border-bottom: 2px solid transparent;
         }
-        .m3-segmented-btn.active {
-            background-color: #2D2A6E;
-            color: #ffffff !important;
+        .header-tab.active {
+            color: #2D2A6E;
+            border-bottom-color: #2D2A6E;
             font-weight: 600;
-            box-shadow: 0 1px 2px rgba(45, 42, 110, 0.15);
         }
-        .m3-segmented-btn:not(.active):hover {
-            background-color: #ECEAFA;
+        .header-tab:not(.active):hover {
             color: #2D2A6E;
         }
 
@@ -239,73 +238,74 @@
 </head>
 <body class="font-roboto text-[#1f1f1f] antialiased h-screen flex flex-col overflow-hidden bg-surfaceDim">
 
-    <!-- Google Workspace風 Top App Bar -->
-    <header class="bg-surface border-b border-[#e0e2ec] shadow-sm z-20 relative flex items-center flex-wrap gap-y-2 justify-between px-4 sm:px-6 py-2.5">
-        <a href="about.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity" title="Atena Studioのトップページへ">
-            <svg width="36" height="36" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
-            </svg>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 id="headerTitle" class="text-lg sm:text-xl font-semibold text-[#2D2A6E]" style="font-family: 'Quicksand', sans-serif;">Atena Studio</h1>
-                    <span class="text-[10px] font-medium bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full" style="font-family: 'Inter', sans-serif;">無料版</span>
-                </div>
-                <p class="text-[11px] text-gray-500 hidden sm:block">名簿から、宛名ラベル・QR付き書類・名札などをまとめて作成</p>
-            </div>
-        </a>
+    <!-- Google Workspace風 Top App Bar（上段64px：ブランド／下段48px：作業モードタブ） -->
+    <header class="bg-white border-b border-gray-200 z-20 relative">
+        <div class="h-16 flex items-center justify-between gap-3 px-4 sm:px-8">
+            <a href="about.html" class="flex items-center gap-2.5 hover:opacity-80 transition-opacity min-w-0" title="Atena Studioのトップページへ">
+                <svg width="32" height="32" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
+                </svg>
+                <h1 id="headerTitle" class="text-[22px] font-medium text-[#2D2A6E] truncate" style="font-family: 'Quicksand', sans-serif;">Atena Studio</h1>
+                <span class="text-[10px] font-medium bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full shrink-0" style="font-family: 'Inter', sans-serif;">無料版</span>
+            </a>
 
-        <div class="flex items-center gap-3">
-            <!-- 最上位モード切り替えメニュー（M3 Segmented Button Pill） -->
-            <div class="flex flex-col items-end gap-1">
-                <nav class="flex items-center p-1 rounded-full bg-surfaceContainer border border-outlineVariant/60">
-                    <button class="m3-segmented-btn main-mode-btn active px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="overlay">
-                        <span class="material-icons sm:mr-1.5 text-[16px]">layers</span> <span class="hidden sm:inline">背景PDFに合成</span>
-                    </button>
-                    <button class="m3-segmented-btn main-mode-btn px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="designer">
-                        <span class="material-icons sm:mr-1.5 text-[16px]">design_services</span> <span class="hidden sm:inline">新規帳票デザイン</span>
-                    </button>
-                    <button class="m3-segmented-btn main-mode-btn px-2.5 sm:px-4 py-1.5 text-xs rounded-full flex items-center whitespace-nowrap focus:outline-none" data-mode="zip">
-                        <span class="material-icons sm:mr-1.5 text-[16px]">archive</span> <span class="hidden sm:inline">QR画像一括出力</span>
-                    </button>
-                </nav>
-                <p class="text-[10px] text-gray-400 hidden sm:block">↑ 現在のモード。下の①でテンプレートを選ぶと自動で切り替わります</p>
-            </div>
+            <div class="flex items-center gap-4 shrink-0">
+                <a href="about.html" target="_blank" class="hidden sm:flex items-center gap-1 text-[13px] text-gray-500 hover:text-primary whitespace-nowrap" style="font-family: 'Inter', sans-serif;">
+                    <span class="material-icons text-[16px]">help_outline</span> 使い方・機能紹介
+                </a>
 
-            <a href="about.html" target="_blank" class="hidden sm:inline text-[11px] text-gray-400 hover:text-primary underline underline-offset-2 whitespace-nowrap" style="font-family: 'Inter', sans-serif;">使い方・機能紹介</a>
-
-            <!-- 設定の保存/読込（頻度が低いため折りたたみメニューに格納） -->
-            <div class="relative hidden sm:block">
-                <button id="settingsMenuBtn" type="button" class="w-9 h-9 rounded-full hover:bg-surfaceContainer flex items-center justify-center text-gray-500" title="設定の書き出し・読み込み">
-                    <span class="material-icons text-xl">more_vert</span>
-                </button>
-                <div id="settingsMenuDropdown" class="hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 z-30">
-                    <input type="file" id="configFileInput" accept=".json" class="hidden">
-                    <button id="openCompanyProfileBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
-                        <span class="material-icons text-[18px] text-gray-500">apartment</span>
-                        <span>
-                            <span class="block text-xs font-medium text-gray-800">自社情報を登録</span>
-                            <span class="block text-[10px] text-gray-400">会社名・住所・ロゴなどを保存</span>
-                        </span>
+                <!-- 設定・保存/読込・QR画像一括出力（頻度が低いため折りたたみメニューに格納） -->
+                <div class="relative">
+                    <button id="settingsMenuBtn" type="button" class="w-9 h-9 rounded-full hover:bg-surfaceDim flex items-center justify-center text-gray-500" title="その他の操作">
+                        <span class="material-icons text-xl">more_vert</span>
                     </button>
-                    <div class="my-1 border-t border-gray-100"></div>
-                    <button id="exportConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
-                        <span class="material-icons text-[18px] text-gray-500">download</span>
-                        <span>
-                            <span class="block text-xs font-medium text-gray-800">設定を書き出す</span>
-                            <span class="block text-[10px] text-gray-400">今の設定をJSONファイルに保存</span>
-                        </span>
-                    </button>
-                    <button id="importConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 transition-all opacity-50 cursor-not-allowed text-gray-600" disabled title="CSVファイル読み込み後に設定JSONを読み込めます">
-                        <span class="material-icons text-[18px] text-gray-400">upload_file</span>
-                        <span>
-                            <span class="block text-xs font-medium">設定を読み込む</span>
-                            <span class="block text-[10px] text-gray-400">CSV読込後に使えます</span>
-                        </span>
-                    </button>
+                    <div id="settingsMenuDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 z-30">
+                        <input type="file" id="configFileInput" accept=".json" class="hidden">
+                        <button id="switchToZipModeBtn" class="main-mode-btn w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim" data-mode="zip">
+                            <span class="material-icons text-[18px] text-gray-500">archive</span>
+                            <span>
+                                <span class="block text-xs font-medium text-gray-800">QR画像を一括出力</span>
+                                <span class="block text-[10px] text-gray-400">PDFではなくQR画像そのものをZIPで出力</span>
+                            </span>
+                        </button>
+                        <div class="my-1 border-t border-gray-100"></div>
+                        <button id="openCompanyProfileBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
+                            <span class="material-icons text-[18px] text-gray-500">apartment</span>
+                            <span>
+                                <span class="block text-xs font-medium text-gray-800">自社情報を登録</span>
+                                <span class="block text-[10px] text-gray-400">会社名・住所・ロゴなどを保存</span>
+                            </span>
+                        </button>
+                        <div class="my-1 border-t border-gray-100"></div>
+                        <button id="exportConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 hover:bg-surfaceDim">
+                            <span class="material-icons text-[18px] text-gray-500">download</span>
+                            <span>
+                                <span class="block text-xs font-medium text-gray-800">設定を書き出す</span>
+                                <span class="block text-[10px] text-gray-400">今の設定をJSONファイルに保存</span>
+                            </span>
+                        </button>
+                        <button id="importConfigBtn" class="w-full text-left px-3.5 py-2 rounded-lg flex items-center gap-2.5 transition-all opacity-50 cursor-not-allowed text-gray-600" disabled title="CSVファイル読み込み後に設定JSONを読み込めます">
+                            <span class="material-icons text-[18px] text-gray-400">upload_file</span>
+                            <span>
+                                <span class="block text-xs font-medium">設定を読み込む</span>
+                                <span class="block text-[10px] text-gray-400">CSV読込後に使えます</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- 作業モード（下線タブ） -->
+        <nav class="h-12 flex items-center gap-6 px-4 sm:px-8 border-t border-gray-100 overflow-x-auto">
+            <button class="header-tab main-mode-btn active h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="overlay">
+                <span class="material-icons text-[18px]">layers</span> 背景PDFに合成
+            </button>
+            <button class="header-tab main-mode-btn h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="designer">
+                <span class="material-icons text-[18px]">design_services</span> 新規帳票デザイン
+            </button>
+        </nav>
     </header>
 
     <main class="flex-grow overflow-y-auto relative p-4 sm:p-6">
@@ -1285,6 +1285,7 @@
                 configFileInput: document.getElementById('configFileInput'),
                 importConfigBtn: document.getElementById('importConfigBtn'),
                 settingsMenuBtn: document.getElementById('settingsMenuBtn'), settingsMenuDropdown: document.getElementById('settingsMenuDropdown'),
+                switchToZipModeBtn: document.getElementById('switchToZipModeBtn'),
                 exportConfigBtn: document.getElementById('exportConfigBtn'),
                 csvFileInput: document.getElementById('csvFileInput'), csvEncoding: document.getElementById('csvEncoding'), fileNameDisplay: document.getElementById('fileNameDisplay'), fileStats: document.getElementById('fileStats'), recordCount: document.getElementById('recordCount'),
                 downloadSampleCsvBtn: document.getElementById('downloadSampleCsvBtn'),
@@ -2718,6 +2719,7 @@
                 reader.readAsText(file);
             }
 
+            if (els.switchToZipModeBtn) els.switchToZipModeBtn.addEventListener('click', () => { els.settingsMenuDropdown.classList.add('hidden'); });
             if (els.exportConfigBtn) els.exportConfigBtn.addEventListener('click', () => { exportSettingsJSON(); els.settingsMenuDropdown.classList.add('hidden'); });
             if (els.importConfigBtn) {
                 els.importConfigBtn.addEventListener('click', () => {
