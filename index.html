@@ -2390,6 +2390,10 @@
             // 「①何を作りますか」に直接カードで並んでいるテンプレートは、モーダル側では重複表示しない
             const TEMPLATE_GALLERY_REPRESENTATIVE_KEYS = ['mailingLabel', 'attendanceTicket', 'nameBadge'];
 
+            // 経理・取引書類は「CSV1行=明細1行」までしか対応しておらず、無料版での実用性が低いため有料プラン限定として選択をロックする
+            // （実装を変えず、複数明細行対応にはサーバー導入が必要という判断からの措置。ROADMAP.md参照）
+            const PREMIUM_TEMPLATE_KEYS = ['quotation', 'purchaseOrder', 'deliveryNote', 'receiptOfGoods', 'invoiceBill', 'paymentReceipt'];
+
             function renderTemplatePickerBody() {
                 if (!els.templatePickerBody || els.templatePickerBody.dataset.rendered) return;
                 els.templatePickerBody.dataset.rendered = '1';
@@ -2400,8 +2404,9 @@
 
                     const section = document.createElement('div');
                     const heading = document.createElement('h4');
-                    heading.className = 'text-xs font-bold text-gray-500 mb-2.5';
-                    heading.textContent = category;
+                    heading.className = 'text-xs font-bold text-gray-500 mb-2.5 flex items-center gap-1.5';
+                    const categoryIsPremium = keysInCategory.every(k => PREMIUM_TEMPLATE_KEYS.includes(k));
+                    heading.innerHTML = `${category}${categoryIsPremium ? '<span class="text-[9px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded-full">有料プラン</span>' : ''}`;
                     section.appendChild(heading);
 
                     const grid = document.createElement('div');
@@ -2410,18 +2415,33 @@
                     keysInCategory.forEach(key => {
                         const preset = TEMPLATE_GALLERY_PRESETS[key];
                         const meta = TEMPLATE_GALLERY_META[key];
+                        const isPremium = PREMIUM_TEMPLATE_KEYS.includes(key);
                         const card = document.createElement('button');
                         card.type = 'button';
                         card.className = 'template-picker-card text-left border border-gray-200 rounded-xl overflow-hidden hover:border-primary hover:shadow-md transition-all bg-white';
                         card.innerHTML = `
-                            <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
+                            <div class="bg-surfaceDim p-2 relative">
+                                <canvas class="w-full block rounded shadow-sm bg-white${isPremium ? ' opacity-40' : ''}"></canvas>
+                                ${isPremium ? `
+                                <div class="absolute inset-2 flex flex-col items-center justify-center gap-1 bg-white/50 rounded">
+                                    <span class="material-icons text-gray-500 text-xl">lock</span>
+                                    <span class="text-[10px] font-semibold text-gray-700 bg-white px-2 py-0.5 rounded-full border border-gray-200">有料プラン</span>
+                                </div>` : ''}
+                            </div>
                             <div class="p-2.5">
                                 <span class="material-icons text-gray-500 text-base align-middle mr-1">${meta.icon}</span>
                                 <span class="text-xs font-semibold text-gray-900">${preset.label}</span>
+                                ${isPremium ? '<span class="text-[9px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded-full ml-1 align-middle">有料</span>' : ''}
                                 <p class="text-[10px] text-gray-400 mt-0.5">${meta.desc}</p>
                             </div>
                         `;
-                        card.addEventListener('click', () => applyGalleryTemplate(key));
+                        if (isPremium) {
+                            card.addEventListener('click', () => {
+                                showToast('経理・取引書類テンプレートは有料プラン向けです。ご利用のご相談はページ下部の「カスタマイズのご相談」から承っています。', 'error');
+                            });
+                        } else {
+                            card.addEventListener('click', () => applyGalleryTemplate(key));
+                        }
                         grid.appendChild(card);
                         renderTemplateThumbnail(card.querySelector('canvas'), preset);
                     });
