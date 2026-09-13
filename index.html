@@ -880,24 +880,43 @@
 
         </div>
 
-        <!-- ビジネス利用・カスタマイズ相談（about.htmlと同内容） -->
-        <section class="bg-surfaceDim py-16 mt-8 -mx-4 sm:-mx-6">
-            <div class="max-w-2xl mx-auto px-5 text-center">
-                <span class="inline-block text-[11px] font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">ビジネス利用・カスタマイズ</span>
-                <h2 class="text-lg sm:text-xl font-bold mb-3">自社専用にカスタマイズしたい場合は</h2>
-                <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
-                    自社のテンプレートに合わせたい、複数人で名簿を共有したい、外部システムと連携したいなど、業務に合わせた個別カスタマイズのご相談を承っています。
-                </p>
-                <a href="https://marcrevix.com/contact/" target="_blank" rel="noopener" class="m3-btn-filled inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold">
-                    <span class="material-icons text-[18px]">mail_outline</span>
-                    カスタマイズのご相談はこちらから
-                </a>
-            </div>
-        </section>
+        <!-- 編集エリアとフッターの区切り（40px） -->
+        <div class="h-10" aria-hidden="true"></div>
 
-        <!-- フッター -->
-        <footer class="py-6 text-center">
-            <p class="text-[11px] text-gray-400">License: Marcrevix ／ 作者: Tsukineko</p>
+        <!-- フッター（編集エリアとは独立。固定表示はせず、通常のスクロールで表示） -->
+        <footer class="bg-white border-t border-[#DDE1E8] -mx-4 sm:-mx-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <!-- 業務に合わせたカスタマイズ相談（コンパクトな横並び） -->
+                <div class="py-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="flex items-start gap-3 flex-grow">
+                        <div class="w-9 h-9 rounded-lg bg-primaryContainer flex items-center justify-center shrink-0">
+                            <span class="material-icons text-primary text-xl">apartment</span>
+                        </div>
+                        <div>
+                            <h2 class="text-[16px] sm:text-[17px] font-semibold text-gray-900" style="font-family: 'Quicksand', sans-serif;">業務に合わせたカスタマイズ</h2>
+                            <p class="text-[13px] text-[#667085] mt-0.5">専用テンプレート・チーム共有・外部システム連携など、ご相談いただけます。</p>
+                        </div>
+                    </div>
+                    <a href="https://marcrevix.com/contact/" target="_blank" rel="noopener" class="h-11 px-5 rounded-lg border border-primary text-primary bg-white hover:bg-primaryContainer/40 inline-flex items-center justify-center gap-2 text-sm font-semibold whitespace-nowrap shrink-0 transition-colors" style="font-family: 'Inter', sans-serif;">
+                        <span class="material-icons text-[18px]">mail_outline</span>
+                        カスタマイズを相談
+                    </a>
+                </div>
+
+                <!-- 最下段：ブランド／ライセンス表記 -->
+                <div class="border-t border-gray-100 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <svg width="18" height="18" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
+                        </svg>
+                        <span class="text-[12px] font-medium text-gray-700" style="font-family: 'Quicksand', sans-serif;">Atena Studio</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[12px] text-gray-400">License: Marcrevix ／ 作者: Tsukineko</span>
+                    </div>
+                </div>
+            </div>
         </footer>
     </main>
 
