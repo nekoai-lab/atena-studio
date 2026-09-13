@@ -1006,9 +1006,15 @@
                     <span class="material-icons text-primary text-xl">zoom_out_map</span> 配置プレビュー拡大・微調整
                     <span class="ml-2 text-[11px] font-normal text-gray-500 hidden sm:inline">※要素のドラッグ移動 ＆ 四隅ハンドルでの自由リサイズに対応</span>
                 </h3>
-                <button id="closeExpandedModalBtn" class="text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-200 focus:outline-none">
-                    <span class="material-icons text-2xl">close</span>
-                </button>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center bg-surface rounded-full border border-gray-200 overflow-hidden">
+                        <button id="expUndoBtn" type="button" class="w-8 h-8 hover:bg-gray-100 text-gray-700 disabled:opacity-30 disabled:hover:bg-transparent flex items-center justify-center" title="元に戻す (Ctrl/Cmd+Z)" disabled><span class="material-icons text-base">undo</span></button>
+                        <button id="expRedoBtn" type="button" class="w-8 h-8 hover:bg-gray-100 text-gray-700 disabled:opacity-30 disabled:hover:bg-transparent flex items-center justify-center border-l border-gray-200" title="やり直す (Ctrl/Cmd+Shift+Z)" disabled><span class="material-icons text-base">redo</span></button>
+                    </div>
+                    <button id="closeExpandedModalBtn" class="text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-200 focus:outline-none">
+                        <span class="material-icons text-2xl">close</span>
+                    </button>
+                </div>
             </div>
             
             <div class="flex flex-col md:flex-row flex-grow overflow-hidden">
@@ -1029,7 +1035,15 @@
                     <div id="expElementSelectorBlock" class="bg-surfaceDim p-3 rounded-2xl border border-gray-200 hidden">
                         <label class="block text-[11px] font-bold text-gray-700 mb-1">編集対象の要素</label>
                         <select id="expTargetElementSelect" class="m3-input w-full px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white font-medium text-primary"></select>
-                        <p class="text-[10px] text-gray-400 mt-1">※プレビュー上の要素を直接クリックしても選択できます（テキストはダブルクリックでその場編集）</p>
+                        <div class="flex gap-1.5 mt-1.5">
+                            <button type="button" id="expDuplicateBtn" class="flex-1 text-[11px] text-gray-600 hover:bg-white hover:text-primary hover:border-primary/40 rounded-lg flex items-center justify-center gap-1 py-1.5 border border-gray-300" title="この要素を複製 (Ctrl/Cmd+D)">
+                                <span class="material-icons text-sm">content_copy</span> 複製
+                            </button>
+                            <button type="button" id="expDeleteBtn" class="flex-1 text-[11px] text-gray-600 hover:bg-red-50 hover:text-red-500 hover:border-red-200 rounded-lg flex items-center justify-center gap-1 py-1.5 border border-gray-300" title="この要素を削除 (Delete)">
+                                <span class="material-icons text-sm">delete</span> 削除
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1.5">※プレビュー上の要素を直接クリックしても選択できます（テキストはダブルクリックでその場編集／選択中はDeleteキーで削除・矢印キーで1mm移動）</p>
                         <button type="button" id="expOpenTemplatePickerBtn" class="mt-2 w-full text-[11px] text-primary hover:bg-primaryContainer/60 rounded-lg flex items-center justify-center gap-1 py-1.5 border border-primary/30">
                             <span class="material-icons text-sm">grid_view</span> 別のテンプレートから選び直す
                         </button>
@@ -1170,6 +1184,96 @@
             ];
             let selectedElementId = 'el_title';
 
+            // 元に戻す／やり直す：designerElementsのスナップショット方式。
+            // 連続した操作（ドラッグ・スライダー・タイピング）は同じキーで一定時間内なら1回分にまとめる
+            let elementsUndoStack = [];
+            let elementsRedoStack = [];
+            let lastUndoCoalesceKey = null;
+            let lastUndoPushAt = 0;
+            const UNDO_COALESCE_MS = 700;
+            const UNDO_STACK_LIMIT = 60;
+
+            function cloneDesignerElements() {
+                return JSON.parse(JSON.stringify(designerElements));
+            }
+            function pushUndoSnapshot(coalesceKey) {
+                const now = Date.now();
+                if (coalesceKey && coalesceKey === lastUndoCoalesceKey && (now - lastUndoPushAt) < UNDO_COALESCE_MS) {
+                    lastUndoPushAt = now;
+                    return;
+                }
+                elementsUndoStack.push(cloneDesignerElements());
+                if (elementsUndoStack.length > UNDO_STACK_LIMIT) elementsUndoStack.shift();
+                elementsRedoStack = [];
+                lastUndoCoalesceKey = coalesceKey || null;
+                lastUndoPushAt = now;
+                updateUndoRedoButtonsState();
+            }
+            function applyDesignerSnapshot(snapshot) {
+                designerElements = snapshot;
+                if (!designerElements.find(e => e.id === selectedElementId)) {
+                    selectedElementId = designerElements.length ? designerElements[0].id : null;
+                }
+                renderElementList();
+                renderElementEditor();
+                syncMainToExp();
+                drawPreview();
+            }
+            function undoDesignerChange() {
+                if (elementsUndoStack.length === 0) return;
+                elementsRedoStack.push(cloneDesignerElements());
+                applyDesignerSnapshot(elementsUndoStack.pop());
+                lastUndoCoalesceKey = null;
+                updateUndoRedoButtonsState();
+                showToast('元に戻しました。', 'success');
+            }
+            function redoDesignerChange() {
+                if (elementsRedoStack.length === 0) return;
+                elementsUndoStack.push(cloneDesignerElements());
+                applyDesignerSnapshot(elementsRedoStack.pop());
+                lastUndoCoalesceKey = null;
+                updateUndoRedoButtonsState();
+                showToast('やり直しました。', 'success');
+            }
+            function updateUndoRedoButtonsState() {
+                if (els.expUndoBtn) els.expUndoBtn.disabled = elementsUndoStack.length === 0;
+                if (els.expRedoBtn) els.expRedoBtn.disabled = elementsRedoStack.length === 0;
+            }
+            function deleteDesignerElement(id) {
+                const idx = designerElements.findIndex(e => e.id === id);
+                if (idx === -1) return;
+                pushUndoSnapshot();
+                designerElements.splice(idx, 1);
+                if (selectedElementId === id) selectedElementId = designerElements[0]?.id || null;
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+            }
+            function duplicateDesignerElement(id) {
+                const el = designerElements.find(e => e.id === id);
+                if (!el) return;
+                pushUndoSnapshot();
+                const clone = JSON.parse(JSON.stringify(el));
+                clone.id = 'el_' + Date.now();
+                clone.name = (el.name || '要素') + 'のコピー';
+                clone.x = Math.min((el.x || 0) + 8, 280);
+                clone.y = Math.min((el.y || 0) + 8, 190);
+                designerElements.push(clone);
+                selectedElementId = clone.id;
+                renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+            }
+            function nudgeDesignerElement(id, dxMm, dyMm) {
+                const el = designerElements.find(e => e.id === id);
+                if (!el) return;
+                pushUndoSnapshot('nudge_' + id);
+                const { paperW, paperH } = getPaperDimensions();
+                const ew = el.type === 'qr' ? (el.size || 35) : (el.width || 50);
+                const eh = el.type === 'qr' ? (el.size || 35) : (el.height || (el.type === 'table' ? (el.rowHeight || 8) * 2 : 10));
+                el.x = Math.max(0, Math.min(paperW - ew, Math.round((el.x || 0) + dxMm)));
+                el.y = Math.max(0, Math.min(paperH - eh, Math.round((el.y || 0) + dyMm)));
+                renderElementEditor();
+                syncMainToExp();
+                drawPreview();
+            }
+
             const els = {
                 // モードボタンの取得セレクタを修正（.main-mode-btn と .m3-segmented-btn[data-mode] の両方に対応）
                 mainModeBtns: document.querySelectorAll('.main-mode-btn, .m3-segmented-btn[data-mode]'),
@@ -1254,6 +1358,8 @@
                 expSizeDecrease: document.getElementById('expSizeDecrease'), expSizeIncrease: document.getElementById('expSizeIncrease'),
                 expElementSelectorBlock: document.getElementById('expElementSelectorBlock'),
                 expTargetElementSelect: document.getElementById('expTargetElementSelect'),
+                expUndoBtn: document.getElementById('expUndoBtn'), expRedoBtn: document.getElementById('expRedoBtn'),
+                expDuplicateBtn: document.getElementById('expDuplicateBtn'), expDeleteBtn: document.getElementById('expDeleteBtn'),
                 expCurrentElementBadge: document.getElementById('expCurrentElementBadge'),
                 expSizeLabel: document.getElementById('expSizeLabel'),
                 expHeightBlock: document.getElementById('expHeightBlock'),
@@ -1324,7 +1430,7 @@
             function renderElementList() {
                 if (!els.elementListContainer) return;
                 els.elementListContainer.innerHTML = '';
-                designerElements.forEach((el, index) => {
+                designerElements.forEach((el) => {
                     const card = document.createElement('div');
                     const isSel = el.id === selectedElementId;
                     card.className = `element-card p-2.5 rounded-xl border text-xs cursor-pointer flex items-center justify-between transition-all ${isSel ? 'selected shadow-sm' : 'bg-white border-gray-200 hover:border-gray-300'}`;
@@ -1346,9 +1452,7 @@
                     `;
                     card.onclick = (e) => {
                         if (e.target.closest('.delete-btn')) {
-                            designerElements.splice(index, 1);
-                            if (selectedElementId === el.id) selectedElementId = designerElements[0]?.id || null;
-                            renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
+                            deleteDesignerElement(el.id);
                             return;
                         }
                         selectedElementId = el.id;
@@ -1499,6 +1603,7 @@
                 if (!preset) return;
                 const labelEls = designerElements.filter(el => el.type === 'label');
                 if (!labelEls.length) return;
+                pushUndoSnapshot();
                 const maxFontSize = Math.max(...labelEls.map(el => el.fontSize || 12));
                 labelEls.forEach(el => {
                     const style = (el.fontSize || 12) >= maxFontSize ? preset.heading : preset.body;
@@ -1525,6 +1630,7 @@
             ];
             function applyColorPalette(hex) {
                 if (!hex) return;
+                pushUndoSnapshot('colorPalette');
                 designerElements.forEach(el => {
                     if (el.type === 'box') {
                         el.color = hex;
@@ -1650,7 +1756,7 @@
 
                 const bindProp = (id, fn) => {
                     const dom = document.getElementById(id);
-                    if (dom) dom.addEventListener('input', (e) => { fn(e.target); syncMainToExp(); drawPreview(); });
+                    if (dom) dom.addEventListener('input', (e) => { pushUndoSnapshot('prop_' + id); fn(e.target); syncMainToExp(); drawPreview(); });
                 };
 
                 bindProp('propName', dom => { el.name = dom.value; renderElementList(); });
@@ -1706,27 +1812,32 @@
             }
 
             els.addLabelBtn.onclick = () => {
+                pushUndoSnapshot();
                 const newId = 'el_' + Date.now();
                 designerElements.push({ id: newId, type: 'label', name: 'テキスト要素', text: '新しいテキスト', x: 25, y: 50, width: 80, height: 10, fontSize: 12, fontFamily: 'gothic', align: 'left', bold: false, color: '#111827', border: false });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
             els.addTableBtn.onclick = () => {
+                pushUndoSnapshot();
                 const newId = 'el_' + Date.now();
                 designerElements.push({ id: newId, type: 'table', name: 'テーブル要素', x: 20, y: 90, width: 170, height: 16, rowHeight: 8, fontSize: 10, headers: ['項目1', '項目2'], columns: [csvHeaders[0] || '列1', csvHeaders[1] || '列2'] });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
             els.addBoxBtn.onclick = () => {
+                pushUndoSnapshot();
                 const newId = 'el_' + Date.now();
                 designerElements.push({ id: newId, type: 'box', name: '区切り枠/線', x: 20, y: 80, width: 170, height: 1, border: true });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
             els.addQrBtn.onclick = () => {
+                pushUndoSnapshot();
                 const newId = 'el_' + Date.now();
                 designerElements.push({ id: newId, type: 'qr', name: 'QRコード', template: '{{' + (csvHeaders[0] || 'ID') + '}}', x: 140, y: 30, size: 40 });
                 selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
             };
             if (els.addLogoBtn) {
                 els.addLogoBtn.onclick = () => {
+                    pushUndoSnapshot();
                     const newId = 'el_' + Date.now();
                     designerElements.push({ id: newId, type: 'logo', name: 'ロゴ画像', x: 20, y: 15, width: 35, height: 20 });
                     selectedElementId = newId; renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
@@ -2208,6 +2319,7 @@
 
                 switchAppMode('designer');
                 els.desOrientation.value = preset.orientation;
+                pushUndoSnapshot();
                 designerElements = JSON.parse(JSON.stringify(preset.elements));
                 selectedElementId = preset.firstElementId;
                 applyCompanyInfoToDesign(true); // 自社情報が登録済みなら会社名・ロゴ等を自動で差し込む
@@ -2268,6 +2380,7 @@
                 if (!t) return;
                 switchAppMode('designer');
                 els.desOrientation.value = t.orientation;
+                pushUndoSnapshot();
                 designerElements = JSON.parse(JSON.stringify(t.elements));
                 selectedElementId = designerElements[0] ? designerElements[0].id : null;
                 applyCompanyInfoToDesign(true);
@@ -3142,6 +3255,7 @@
                     companyContact: [profile.tel ? `TEL: ${profile.tel}` : '', profile.email].filter(Boolean).join('　'),
                     invoiceRegNo: profile.invoiceRegNo ? `登録番号: ${profile.invoiceRegNo}` : ''
                 };
+                if (!silent) pushUndoSnapshot();
                 let applied = false;
                 designerElements.forEach(el => {
                     if (el.type === 'label' && el.dataBind && FIELD_MAP[el.dataBind]) {
@@ -3609,6 +3723,13 @@
             let dragOffsetMm = { x: 0, y: 0 };
             let initialResizeState = null;
 
+            // クリックしただけで要素が数mmずれてしまう事故（特にテキストのその場編集をダブルクリックで開く際に発生）を防ぐため、
+            // 実際にドラッグを開始するのはマウスが一定距離動いてから（それまでは「選択」扱いのみ）
+            const DRAG_START_THRESHOLD_PX = 4;
+            let dragArmed = false;
+            let dragArmedClient = { x: 0, y: 0 };
+            let pendingDragOffsetMm = { x: 0, y: 0 };
+
             // スマートガイド：ドラッグ中に表示する整列補助線（ページ中央・他要素の端／中心）
             let activeSnapGuides = { v: [], h: [] };
             function snapAxis(pos, size, candidates, thresholdMm) {
@@ -3742,6 +3863,7 @@
             let editingInlineElementId = null;
             function openInlineTextEditor(el) {
                 if (!els.inlineTextEditor || !els.expandedPreviewCanvas || !els.expandedCanvasContainer) return;
+                pushUndoSnapshot();
                 const canvas = els.expandedPreviewCanvas;
                 const canvasRect = canvas.getBoundingClientRect();
                 const containerRect = els.expandedCanvasContainer.getBoundingClientRect();
@@ -3836,6 +3958,7 @@
 
                     const handle = hitTestResizeHandle(mmX, mmY);
                     if (handle) {
+                        if (currentAppMode === 'designer') pushUndoSnapshot();
                         isResizingElement = true;
                         activeResizeHandle = handle;
 
@@ -3867,15 +3990,16 @@
 
                     const hitEl = hitTestElement(mmX, mmY);
                     if (hitEl) {
-                        isDraggingElement = true;
-                        if (currentAppMode === 'designer') {
+                        // クリックした時点では「選択」のみ行い、実際にドラッグ移動を始めるのは
+                        // マウスがDRAG_START_THRESHOLD_PXを超えて動いてから（ダブルクリックでの文字編集時に要素が微妙にずれる事故を防止）
+                        dragArmed = true;
+                        dragArmedClient = { x: e.clientX, y: e.clientY };
+                        pendingDragOffsetMm = { x: mmX - (hitEl.x || 0), y: mmY - (hitEl.y || 0) };
+                        if (currentAppMode === 'designer' && selectedElementId !== hitEl.id) {
                             selectedElementId = hitEl.id;
-                            dragOffsetMm = { x: mmX - (hitEl.x || 0), y: mmY - (hitEl.y || 0) };
                             renderElementList();
                             renderElementEditor();
                             syncMainToExp();
-                        } else if (currentAppMode === 'overlay') {
-                            dragOffsetMm = { x: mmX - (hitEl.x || 0), y: mmY - (hitEl.y || 0) };
                         }
                         canvas.style.cursor = 'move';
                         drawPreview();
@@ -3891,6 +4015,14 @@
             
                 window.addEventListener('mousemove', (e) => {
                     const canvas = els.expandedPreviewCanvas;
+
+                    if (dragArmed && !isDraggingElement) {
+                        const movedPx = Math.hypot(e.clientX - dragArmedClient.x, e.clientY - dragArmedClient.y);
+                        if (movedPx < DRAG_START_THRESHOLD_PX) return;
+                        isDraggingElement = true;
+                        if (currentAppMode === 'designer') pushUndoSnapshot();
+                        dragOffsetMm = pendingDragOffsetMm;
+                    }
 
                     if (isResizingElement && initialResizeState) {
                         const { mmX, mmY } = getMmCoordsFromEvent(e, canvas);
@@ -4051,6 +4183,7 @@
                         initialResizeState = null;
                         activeResizeHandle = null;
                     }
+                    dragArmed = false;
                     if (isDraggingElement) {
                         isDraggingElement = false;
                     }
@@ -4067,6 +4200,55 @@
                     if (els.expandedPreviewCanvas) els.expandedPreviewCanvas.style.cursor = 'default';
                 });
             }
+
+            // キーボードショートカット（帳票デザインモード限定）：
+            // Ctrl/Cmd+Z 元に戻す・Shift+Z/Y やり直す（要素編集全般で有効）
+            // Delete/Backspaceで選択要素を削除・Ctrl/Cmd+Dで複製・矢印キーで1mm移動（Shiftで10mm）は
+            // 拡大プレビューを開いている間のみ有効（誤ってページ操作を乗っ取らないように）
+            window.addEventListener('keydown', (e) => {
+                if (currentAppMode !== 'designer') return;
+                const isMod = e.metaKey || e.ctrlKey;
+
+                if (isMod && e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    if (e.shiftKey) redoDesignerChange(); else undoDesignerChange();
+                    return;
+                }
+                if (isMod && e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    redoDesignerChange();
+                    return;
+                }
+
+                const modalOpen = els.expandedPreviewModal && !els.expandedPreviewModal.classList.contains('hidden');
+                if (!modalOpen || !selectedElementId) return;
+
+                const activeTag = document.activeElement ? document.activeElement.tagName : '';
+                const isEditableFocus = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT' || (document.activeElement && document.activeElement.isContentEditable);
+                if (isEditableFocus) return;
+
+                if (e.key === 'Delete' || e.key === 'Backspace') {
+                    e.preventDefault();
+                    deleteDesignerElement(selectedElementId);
+                    return;
+                }
+                if (isMod && e.key.toLowerCase() === 'd') {
+                    e.preventDefault();
+                    duplicateDesignerElement(selectedElementId);
+                    return;
+                }
+
+                const step = e.shiftKey ? 10 : 1;
+                let dx = 0, dy = 0;
+                if (e.key === 'ArrowUp') dy = -step;
+                else if (e.key === 'ArrowDown') dy = step;
+                else if (e.key === 'ArrowLeft') dx = -step;
+                else if (e.key === 'ArrowRight') dx = step;
+                if (dx || dy) {
+                    e.preventDefault();
+                    nudgeDesignerElement(selectedElementId, dx, dy);
+                }
+            });
 
             function updateExpMaxValues() {
                 const { paperW, paperH } = getPaperDimensions();
@@ -4173,6 +4355,22 @@
                 });
             }
 
+            // 拡大プレビュー：元に戻す／やり直す／複製／削除
+            if (els.expUndoBtn) els.expUndoBtn.addEventListener('click', undoDesignerChange);
+            if (els.expRedoBtn) els.expRedoBtn.addEventListener('click', redoDesignerChange);
+            if (els.expDuplicateBtn) {
+                els.expDuplicateBtn.addEventListener('click', () => {
+                    closeInlineTextEditor();
+                    if (selectedElementId) duplicateDesignerElement(selectedElementId);
+                });
+            }
+            if (els.expDeleteBtn) {
+                els.expDeleteBtn.addEventListener('click', () => {
+                    closeInlineTextEditor();
+                    if (selectedElementId) deleteDesignerElement(selectedElementId);
+                });
+            }
+
             // 拡大プレビュー：モーダルを閉じずにテンプレートページを呼び出す
             if (els.expOpenTemplatePickerBtn) {
                 els.expOpenTemplatePickerBtn.addEventListener('click', () => {
@@ -4198,6 +4396,7 @@
             function applyExpFontSize(newSize) {
                 const el = getSelectedLabelElement();
                 if (!el) return;
+                pushUndoSnapshot('expFontSize_' + el.id);
                 el.fontSize = Math.max(4, Math.round(newSize));
                 if (els.expFontSizeInput) els.expFontSizeInput.value = el.fontSize;
                 const propFontSizeDom = document.getElementById('propFontSize');
@@ -4225,6 +4424,7 @@
                 els.expFontFamilySelect.addEventListener('change', (e) => {
                     const el = getSelectedLabelElement();
                     if (!el) return;
+                    pushUndoSnapshot();
                     el.fontFamily = e.target.value;
                     const propFontFamilyDom = document.getElementById('propFontFamily');
                     if (propFontFamilyDom) propFontFamilyDom.value = el.fontFamily;
@@ -4293,6 +4493,7 @@
 
             ['expQrSize', 'expQrX', 'expQrY', 'expHeight'].forEach(id => {
                 if(els[id]) els[id].addEventListener('input', (e) => {
+                    if (currentAppMode === 'designer') pushUndoSnapshot(id + '_' + selectedElementId);
                     const valSpan = document.getElementById(id + 'Val');
                     if (valSpan) valSpan.textContent = e.target.value;
                     syncExpToMain();
@@ -4309,33 +4510,36 @@
             }
 
             function nudge(axis, amount) {
+                if (currentAppMode === 'designer') pushUndoSnapshot('expNudge' + axis + '_' + selectedElementId);
                 if (axis === 'x') {
                     let val = parseFloat(els.expQrX.value) + amount;
-                    if(val >= 0 && val <= parseFloat(els.expQrX.max)) { 
+                    if(val >= 0 && val <= parseFloat(els.expQrX.max)) {
                         els.expQrX.value = val; els.expQrXVal.textContent = val; syncExpToMain(); drawPreview();
                     }
                 } else {
                     let val = parseFloat(els.expQrY.value) + amount;
-                    if(val >= 0 && val <= parseFloat(els.expQrY.max)) { 
+                    if(val >= 0 && val <= parseFloat(els.expQrY.max)) {
                         els.expQrY.value = val; els.expQrYVal.textContent = val; syncExpToMain(); drawPreview();
                     }
                 }
             }
-            
-            if(els.expNudgeUp) els.expNudgeUp.addEventListener('click', () => nudge('y', -1)); 
+
+            if(els.expNudgeUp) els.expNudgeUp.addEventListener('click', () => nudge('y', -1));
             if(els.expNudgeDown) els.expNudgeDown.addEventListener('click', () => nudge('y', 1));
             if(els.expNudgeLeft) els.expNudgeLeft.addEventListener('click', () => nudge('x', -1));
             if(els.expNudgeRight) els.expNudgeRight.addEventListener('click', () => nudge('x', 1));
 
             if(els.expSizeDecrease) els.expSizeDecrease.addEventListener('click', () => {
+                if (currentAppMode === 'designer') pushUndoSnapshot('expSize_' + selectedElementId);
                 let val = parseFloat(els.expQrSize.value) - 1;
-                if(val >= parseFloat(els.expQrSize.min)) { 
+                if(val >= parseFloat(els.expQrSize.min)) {
                     els.expQrSize.value = val; els.expQrSizeVal.textContent = val; syncExpToMain(); drawPreview();
                 }
             });
             if(els.expSizeIncrease) els.expSizeIncrease.addEventListener('click', () => {
+                if (currentAppMode === 'designer') pushUndoSnapshot('expSize_' + selectedElementId);
                 let val = parseFloat(els.expQrSize.value) + 1;
-                if(val <= parseFloat(els.expQrSize.max)) { 
+                if(val <= parseFloat(els.expQrSize.max)) {
                     els.expQrSize.value = val; els.expQrSizeVal.textContent = val; syncExpToMain(); drawPreview();
                 }
             });
