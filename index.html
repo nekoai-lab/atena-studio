@@ -247,16 +247,15 @@
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#C9971F" transform="translate(30,30)"/>
             </svg>
             <div>
-                <h1 id="headerTitle" class="text-lg sm:text-xl text-[#2D2A6E] flex items-center gap-2" style="font-family: 'Quicksand', sans-serif;">
-                    <span class="font-semibold">Atena Studio</span>
+                <div class="flex items-center gap-2">
+                    <h1 id="headerTitle" class="text-lg sm:text-xl font-semibold text-[#2D2A6E]" style="font-family: 'Quicksand', sans-serif;">Atena Studio</h1>
                     <span class="text-[10px] font-medium bg-primaryContainer text-onPrimaryContainer px-2 py-0.5 rounded-full" style="font-family: 'Inter', sans-serif;">無料版</span>
-                    <a href="about.html" target="_blank" class="text-[10px] text-gray-400 hover:text-primary underline underline-offset-2 font-normal" style="font-family: 'Inter', sans-serif;">使い方・機能紹介</a>
-                </h1>
+                </div>
                 <p class="text-[11px] text-gray-500 hidden sm:block">名簿から、宛名ラベル・QR付き書類・名札などをまとめて作成</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
             <!-- 最上位モード切り替えメニュー（M3 Segmented Button Pill） -->
             <div class="flex flex-col items-end gap-1">
                 <nav class="flex items-center p-1 rounded-full bg-surfaceContainer border border-outlineVariant/60">
@@ -272,6 +271,8 @@
                 </nav>
                 <p class="text-[10px] text-gray-400 hidden sm:block">↑ 現在のモード。下の①でテンプレートを選ぶと自動で切り替わります</p>
             </div>
+
+            <a href="about.html" target="_blank" class="hidden sm:inline text-[11px] text-gray-400 hover:text-primary underline underline-offset-2 whitespace-nowrap" style="font-family: 'Inter', sans-serif;">使い方・機能紹介</a>
 
             <!-- 設定の保存/読込（頻度が低いため折りたたみメニューに格納） -->
             <div class="relative hidden sm:block">
