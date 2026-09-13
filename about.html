@@ -20,29 +20,36 @@
                         onPrimaryContainer: '#2D2A6E',
                         surfaceDim: '#f5f5f5',
                         outlineVariant: '#e5e7eb',
-                        accent: '#C9971F'
+                        accent: '#C9971F',
+                        body: '#252936',
+                        muted: '#667085'
                     }
                 }
             }
         };
     </script>
     <style>
-        body { background-color: #ffffff; }
+        body { background-color: #ffffff; color: #252936; }
         h1, h2, h3 { letter-spacing: -0.02em; }
         .btn-primary {
-            background-color: #2D2A6E; color: #fff; transition: background-color .2s, box-shadow .2s, transform .1s;
+            background-color: #2D2A6E; color: #fff; transition: background-color .2s, transform .1s;
         }
-        .btn-primary:hover { background-color: #3D3A8E; box-shadow: 0 4px 12px rgba(45,42,110,.2); }
+        .btn-primary:hover { background-color: #3D3A8E; }
         .btn-primary:active { transform: scale(0.98); }
-        .feature-card { transition: box-shadow .2s, border-color .2s; }
-        .feature-card:hover { border-color: #2D2A6E; box-shadow: 0 4px 12px rgba(45,42,110,.08); }
+        .btn-outline {
+            background-color: #fff; color: #2D2A6E; border: 1px solid #2D2A6E; transition: background-color .2s;
+        }
+        .btn-outline:hover { background-color: #ECEAFA; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .details-chevron { transform: rotate(180deg); }
     </style>
 </head>
-<body class="text-[#1f1f1f] antialiased">
+<body class="antialiased">
 
     <!-- ナビゲーション -->
     <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-gray-100">
-        <div class="max-w-5xl mx-auto px-5 py-3 flex items-center justify-between">
+        <div class="max-w-[1040px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <svg width="30" height="30" viewBox="0 0 100 100" class="shrink-0" aria-label="Atena Studio ロゴ">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M8,22 a14,14 0 0 1 14,-14 h32 a14,14 0 0 1 14,14 v32 a14,14 0 0 1 -14,14 h-32 a14,14 0 0 1 -14,-14 z M20,22 a2,2 0 0 1 2,-2 h20 a2,2 0 0 1 2,2 v20 a2,2 0 0 1 -2,2 h-20 a2,2 0 0 1 -2,-2 z" fill="#2D2A6E"/>
@@ -54,13 +61,13 @@
         </div>
     </header>
 
-    <!-- ヒーロー -->
-    <section class="max-w-5xl mx-auto px-5 pt-16 pb-14 text-center">
+    <!-- ① ファーストビュー -->
+    <section class="max-w-[1040px] mx-auto px-4 sm:px-8 pt-14 sm:pt-16 pb-10 sm:pb-14 text-center">
         <span class="inline-block text-[11px] font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-5">無料・サーバー不要・登録不要</span>
         <h1 class="text-3xl sm:text-5xl font-bold tracking-[-0.03em] mb-5 leading-tight">
             名簿から、個別の書類を、<br class="hidden sm:block">まとめて作る。
         </h1>
-        <p class="text-sm sm:text-base text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
+        <p class="text-sm sm:text-base text-muted max-w-xl mx-auto mb-8 leading-relaxed">
             宛名ラベル、QRコード付き受講票、名札、会員証まで。<br class="hidden sm:block">
             CSVを読み込むだけで、一人ひとり違う書類を一括生成します。ブラウザだけで完結し、データはどこにも送信されません。
         </p>
@@ -70,193 +77,303 @@
         </a>
     </section>
 
-    <!-- 対象ユーザー -->
-    <section class="bg-surfaceDim py-14">
-        <div class="max-w-5xl mx-auto px-5">
-            <h2 class="text-xl sm:text-2xl font-bold text-center mb-2">こんな業務に</h2>
-            <p class="text-xs text-gray-500 text-center mb-8">名簿があって、一人ひとりに違う紙を配る仕事なら、だいたい当てはまります。</p>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">school</span>
-                    <span class="text-xs font-medium">塾・スクール</span>
+    <!-- ② 作れるもの：完成イメージ3点 -->
+    <section class="bg-surfaceDim py-8 sm:py-16">
+        <div class="max-w-[1040px] mx-auto px-4 sm:px-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-2">つくるものから、選べます。</h2>
+            <p class="text-sm text-muted text-center mb-10">名簿の情報を、一人ひとりの書類に。</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <div class="rounded-xl border border-gray-200 overflow-hidden aspect-[4/3] bg-white">
+                        <img
+                            src="assets/feature-address-labels.webp"
+                            srcset="assets/feature-address-labels-480.webp 480w, assets/feature-address-labels.webp 960w"
+                            sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
+                            width="960" height="720"
+                            alt="宛名ラベルの利用イメージ"
+                            loading="lazy"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm font-semibold mt-3 mb-1">宛名ラベル</h3>
+                    <p class="text-xs text-muted leading-relaxed">住所と氏名をまとめて差し込み</p>
                 </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">apartment</span>
-                    <span class="text-xs font-medium">賃貸・マンション管理</span>
+                <div>
+                    <div class="rounded-xl border border-gray-200 overflow-hidden aspect-[4/3] bg-white">
+                        <img
+                            src="assets/feature-event-badge.webp"
+                            srcset="assets/feature-event-badge-480.webp 480w, assets/feature-event-badge.webp 960w"
+                            sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
+                            width="960" height="720"
+                            alt="QRコード付き参加証の利用イメージ"
+                            loading="lazy"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm font-semibold mt-3 mb-1">受講票・名札</h3>
+                    <p class="text-xs text-muted leading-relaxed">一人ひとりの名前やQRを反映</p>
                 </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">local_hospital</span>
-                    <span class="text-xs font-medium">クリニック</span>
-                </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">shield</span>
-                    <span class="text-xs font-medium">保険代理店・士業</span>
-                </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">fitness_center</span>
-                    <span class="text-xs font-medium">ジム・会員制サービス</span>
-                </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">event</span>
-                    <span class="text-xs font-medium">イベント・セミナー運営</span>
-                </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">groups</span>
-                    <span class="text-xs font-medium">同窓会・自治会</span>
-                </div>
-                <div class="bg-white rounded-xl p-4 text-center border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-1.5 block">tune</span>
-                    <span class="text-xs font-medium">その他、自分で自由に設計</span>
+                <div>
+                    <div class="rounded-xl border border-gray-200 overflow-hidden aspect-[4/3] bg-white">
+                        <img
+                            src="assets/feature-business-document.webp"
+                            srcset="assets/feature-business-document-480.webp 480w, assets/feature-business-document.webp 960w"
+                            sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
+                            width="960" height="720"
+                            alt="見積書の利用イメージ"
+                            loading="lazy"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm font-semibold mt-3 mb-1">見積書・請求書</h3>
+                    <p class="text-xs text-muted leading-relaxed">自社情報を入れて書類を作成</p>
                 </div>
             </div>
+
+            <p class="text-[11px] text-muted text-center mt-6">画像は利用イメージです。実際のアプリ画面とは異なります。</p>
+            <p class="text-xs text-center text-primary font-medium mt-2">21種類のテンプレートに対応</p>
         </div>
     </section>
 
-    <!-- 使い方 -->
-    <section class="max-w-5xl mx-auto px-5 py-16">
+    <!-- ③ 使い方4ステップ -->
+    <section class="max-w-[1040px] mx-auto px-4 sm:px-8 py-8 sm:py-16">
         <h2 class="text-xl sm:text-2xl font-bold text-center mb-10">使い方は4ステップ</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
                 <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">1</div>
-                <h3 class="text-sm font-semibold mb-1.5">何を作るか選ぶ</h3>
-                <p class="text-xs text-gray-500 leading-relaxed">宛名ラベル・QR付き受講票・名札・見積書など21種のテンプレートから選ぶか、自分でゼロから組めます。</p>
+                <h3 class="text-sm font-semibold mb-1.5">テンプレートを選ぶ</h3>
+                <p class="text-xs text-muted leading-relaxed">作りたい書類を選択。</p>
             </div>
             <div>
                 <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">2</div>
-                <h3 class="text-sm font-semibold mb-1.5">名簿（CSV）を読み込む</h3>
-                <p class="text-xs text-gray-500 leading-relaxed">氏名・住所などが入ったCSVを読み込みます。フォーマットに迷ったら見本CSVをダウンロードできます。</p>
+                <h3 class="text-sm font-semibold mb-1.5">名簿を用意する</h3>
+                <p class="text-xs text-muted leading-relaxed">CSVを読み込むか、表に直接入力。</p>
             </div>
             <div>
                 <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">3</div>
-                <h3 class="text-sm font-semibold mb-1.5">帳票の中身を決める</h3>
-                <p class="text-xs text-gray-500 leading-relaxed">CSVの列をテキストやQRコードに割り当てます。QRコードは任意の要素の一つで、必須ではありません。</p>
+                <h3 class="text-sm font-semibold mb-1.5">差し込む項目を設定</h3>
+                <p class="text-xs text-muted leading-relaxed">氏名や住所、QRに使う項目を指定。</p>
             </div>
             <div>
                 <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mb-3">4</div>
-                <h3 class="text-sm font-semibold mb-1.5">配置を整えて一括生成</h3>
-                <p class="text-xs text-gray-500 leading-relaxed">位置とサイズを調整したら、ボタン一つでCSVの件数分のPDFを一括出力します。</p>
+                <h3 class="text-sm font-semibold mb-1.5">配置を整えて出力</h3>
+                <p class="text-xs text-muted leading-relaxed">仕上がりを確認して、まとめてPDF化。</p>
             </div>
         </div>
     </section>
 
-    <!-- 主な機能 -->
-    <section class="bg-surfaceDim py-16">
-        <div class="max-w-5xl mx-auto px-5">
-            <h2 class="text-xl sm:text-2xl font-bold text-center mb-2">主な機能</h2>
-            <p class="text-xs text-gray-500 text-center mb-10">21種類のテンプレートから、自社情報の自動差し込み、直感的な微調整まで。</p>
-
-            <h3 class="text-xs font-bold text-primary mb-3">テンプレート＆デザイン</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">grid_view</span>
-                    <h4 class="text-sm font-semibold mb-1">テンプレートギャラリー</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">宛名ラベル・受講票・名札・会員証から見積書・請求書まで、21種類の帳票をミニプレビュー付きで選べます。QRコードは数ある要素の一つで、QRなしの用途にも対応。</p>
+    <!-- ④ 入力・編集・再利用の3つの便利さ -->
+    <section class="bg-surfaceDim py-8 sm:py-16">
+        <div class="max-w-[1040px] mx-auto px-4 sm:px-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-center mb-10">入力も、調整も、次回の作成も。</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl border border-gray-100 p-5">
+                    <!-- 模式図：表入力 -->
+                    <div class="rounded-lg border border-gray-200 overflow-hidden text-[9px] mb-4">
+                        <div class="grid grid-cols-3 bg-surfaceDim font-semibold text-muted">
+                            <div class="px-2 py-1.5 border-r border-gray-200 truncate">氏名</div>
+                            <div class="px-2 py-1.5 border-r border-gray-200 truncate">住所</div>
+                            <div class="px-2 py-1.5 truncate">電話</div>
+                        </div>
+                        <div class="grid grid-cols-3 border-t border-gray-100">
+                            <div class="px-2 py-1.5 border-r border-gray-100 text-gray-400 truncate">山田 太郎</div>
+                            <div class="px-2 py-1.5 border-r border-gray-100 text-gray-400 truncate">東京都千代田区</div>
+                            <div class="px-2 py-1.5 text-gray-400 truncate">090-0000</div>
+                        </div>
+                        <div class="grid grid-cols-3 border-t border-gray-100">
+                            <div class="px-2 py-1.5 border-r border-gray-100 text-gray-400 truncate">佐藤 花子</div>
+                            <div class="px-2 py-1.5 border-r border-gray-100 text-gray-400 truncate">大阪府大阪市</div>
+                            <div class="px-2 py-1.5 text-gray-400 truncate">080-0000</div>
+                        </div>
+                    </div>
+                    <h3 class="text-sm font-semibold mb-1">CSVでも、直接入力でも</h3>
+                    <p class="text-xs text-muted leading-relaxed">表への貼り付けにも対応。</p>
                 </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">palette</span>
-                    <h4 class="text-sm font-semibold mb-1">配色パレット</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">9色のブランドカラーからワンクリックで一括配色。ロゴをアップロードすると代表色を自動抽出し、真っ先に候補として提示します。</p>
+                <div class="bg-white rounded-xl border border-gray-100 p-5">
+                    <!-- 模式図：編集画面（選択枠） -->
+                    <div class="rounded-lg border border-gray-200 bg-white p-3 mb-4 h-[74px] relative">
+                        <div class="absolute left-3 top-3 border-2 border-dashed border-primary rounded px-2 py-1.5 bg-primaryContainer/40">
+                            <div class="h-1.5 w-14 bg-primary/40 rounded"></div>
+                        </div>
+                        <div class="absolute right-3 top-3 w-7 h-7 border border-gray-300 rounded grid grid-cols-3 grid-rows-3 gap-[1px] p-[3px]">
+                            <span class="bg-gray-700 rounded-[1px]"></span><span class="bg-transparent"></span><span class="bg-gray-700 rounded-[1px]"></span>
+                            <span class="bg-transparent"></span><span class="bg-gray-700 rounded-[1px]"></span><span class="bg-transparent"></span>
+                            <span class="bg-gray-700 rounded-[1px]"></span><span class="bg-transparent"></span><span class="bg-gray-700 rounded-[1px]"></span>
+                        </div>
+                        <div class="absolute left-3 bottom-3 h-1.5 w-24 bg-gray-200 rounded"></div>
+                    </div>
+                    <h3 class="text-sm font-semibold mb-1">見ながら、配置を調整</h3>
+                    <p class="text-xs text-muted leading-relaxed">文字やロゴをドラッグで配置。</p>
                 </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">text_fields</span>
-                    <h4 class="text-sm font-semibold mb-1">書体の組み合わせ</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">「モダン」「フォーマル」「やわらか」など、見出しと本文の書体をまとめて一括変更できます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">bookmark</span>
-                    <h4 class="text-sm font-semibold mb-1">マイテンプレート</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">自分で組んだ帳票レイアウトを名前を付けて保存。次回から同じ形式ですぐ作れます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">image</span>
-                    <h4 class="text-sm font-semibold mb-1">ロゴ画像の自由配置</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">帳票要素の一つとしてロゴ画像を追加し、好きな位置・サイズで配置できます。</p>
-                </div>
-            </div>
-
-            <h3 class="text-xs font-bold text-primary mb-3">自社情報の自動差し込み</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">badge</span>
-                    <h4 class="text-sm font-semibold mb-1">自社情報の登録</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">会社名・住所・連絡先・インボイス登録番号・ロゴをブラウザに登録しておけば、対応するテンプレートを開いた瞬間に自動で差し込まれます。「会社情報を挿入」ボタンでいつでも呼び出し可能。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">receipt_long</span>
-                    <h4 class="text-sm font-semibold mb-1">経理・取引書類テンプレート</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">見積書・発注書・納品書・受領書・請求書・領収書の6種を収録。右上ロゴ・宛先/自社情報の2カラムヘッダー・小計/消費税/合計まで再現しています。</p>
-                </div>
-            </div>
-
-            <h3 class="text-xs font-bold text-primary mb-3">データ入力の柔軟さ</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">table_chart</span>
-                    <h4 class="text-sm font-semibold mb-1">表で直接入力</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">CSVを用意しなくても、選んだテンプレートに合わせた列・見本データ入りの表がすぐ開き、セル編集やスプレッドシートからの貼り付けで名簿を作成できます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">description</span>
-                    <h4 class="text-sm font-semibold mb-1">見本CSVのダウンロード</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">選択中のテンプレートに必要な列と実務的なサンプル値が自動で入った見本CSVを、いつでもダウンロードできます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">history</span>
-                    <h4 class="text-sm font-semibold mb-1">名簿のバージョン管理</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">名簿を取り込むたびに前回との差分（追加・変更・削除）を確認。過去の状態にも復元できます。</p>
-                </div>
-            </div>
-
-            <h3 class="text-xs font-bold text-primary mb-3">帳票の直感的な編集</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">open_with</span>
-                    <h4 class="text-sm font-semibold mb-1">拡大プレビューでの直接編集</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">要素をドラッグで移動、四隅ハンドルでリサイズ、テキストはダブルクリックでその場編集。ページ中央や他要素に近づくと自動で吸着するスマートガイド付き。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">undo</span>
-                    <h4 class="text-sm font-semibold mb-1">元に戻す／やり直す</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">配置や文字を間違えても、画面上のボタンやCtrl/Cmd+Zでいつでも取り消せます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">keyboard</span>
-                    <h4 class="text-sm font-semibold mb-1">キーボードショートカット</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">Deleteで削除、矢印キーで1mm移動（Shiftで10mm）、Ctrl/Cmd+Dで複製。マウスを使わない細かい調整にも対応します。</p>
-                </div>
-            </div>
-
-            <h3 class="text-xs font-bold text-primary mb-3">実務で使う機能</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">link</span>
-                    <h4 class="text-sm font-semibold mb-1">UTMパラメータ自動付与</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">QRコードのリンク先に自動でutm_source等を付与。紙媒体からの反応も計測できます。</p>
-                </div>
-                <div class="feature-card bg-white rounded-xl p-5 border border-gray-100">
-                    <span class="material-icons text-primary text-2xl mb-2 block">fact_check</span>
-                    <h4 class="text-sm font-semibold mb-1">検品用CSV</h4>
-                    <p class="text-xs text-gray-500 leading-relaxed">PDF生成と同時に「何ページ目に誰のデータを入れたか」の対応表を出力し、検品の手間を減らします。</p>
+                <div class="bg-white rounded-xl border border-gray-100 p-5">
+                    <!-- 模式図：保存したテンプレート -->
+                    <div class="rounded-lg border border-gray-200 bg-white p-3 mb-4 h-[74px] flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-lg bg-primaryContainer flex items-center justify-center shrink-0">
+                            <span class="material-icons text-primary text-lg">bookmark</span>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="h-2 w-20 bg-gray-300 rounded mb-1.5"></div>
+                            <div class="h-2 w-14 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+                    <h3 class="text-sm font-semibold mb-1">保存して、次回も使える</h3>
+                    <p class="text-xs text-muted leading-relaxed">レイアウトと自社情報を再利用。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- プライバシー -->
-    <section class="max-w-3xl mx-auto px-5 py-16 text-center">
+    <!-- ⑤ 詳しい機能：折りたたみ -->
+    <section class="max-w-[1040px] mx-auto px-4 sm:px-8 py-8 sm:py-16">
+        <h2 class="text-xl sm:text-2xl font-bold text-center mb-10">詳しい機能を見る</h2>
+        <div class="space-y-3 max-w-3xl mx-auto">
+
+            <!-- デザイン・編集 -->
+            <details class="rounded-xl border border-gray-200">
+                <summary class="cursor-pointer p-4 sm:p-5 flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-semibold">デザイン・編集</h3>
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">テンプレート21種</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">配色パレット</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">書体</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">ロゴ配置</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">直接編集</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">マイテンプレート</span>
+                        </div>
+                    </div>
+                    <span class="material-icons text-gray-400 details-chevron shrink-0">expand_more</span>
+                </summary>
+                <div class="px-4 sm:px-5 pb-5 pt-1 space-y-3 text-xs leading-relaxed text-muted">
+                    <p><strong class="text-body">テンプレートギャラリー（21種）</strong>：宛名ラベルから見積書まで、用途別のテンプレートから選べます。QRコードは要素の一つで、QRなしの用途にも対応します。</p>
+                    <p><strong class="text-body">配色パレット</strong>：9色のブランドカラーから一括配色。ロゴをアップロードすると代表色を自動抽出し、候補として提示します。</p>
+                    <p><strong class="text-body">書体の組み合わせ</strong>：「モダン」「フォーマル」「やわらか」など、見出し・本文の書体をまとめて変更できます。</p>
+                    <p><strong class="text-body">ロゴ画像の自由配置</strong>：帳票要素の一つとしてロゴを好きな位置・サイズで配置できます。</p>
+                    <p><strong class="text-body">拡大プレビューでの直接編集</strong>：ドラッグで移動、四隅ハンドルでリサイズ、テキストはダブルクリックでその場編集できます。ページ中央や他要素に近づくと自動で吸着するスマートガイド付きです。</p>
+                    <p><strong class="text-body">取り消し・やり直し</strong>：配置や文字を間違えても、画面上のボタンやショートカットでいつでも戻せます。</p>
+                    <ul class="list-disc list-inside space-y-0.5 pl-1">
+                        <li>Delete：選択した要素を削除</li>
+                        <li>矢印キー：1mm移動（Shiftキーで10mm）</li>
+                        <li>Ctrl/Cmd + D：複製</li>
+                        <li>Ctrl/Cmd + Z ／ Shift + Z：元に戻す・やり直す</li>
+                    </ul>
+                    <p><strong class="text-body">マイテンプレート</strong>：自分で組んだレイアウトを名前を付けて保存し、次回から呼び出せます。</p>
+                </div>
+            </details>
+
+            <!-- データ入力・管理 -->
+            <details class="rounded-xl border border-gray-200">
+                <summary class="cursor-pointer p-4 sm:p-5 flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-semibold">データ入力・管理</h3>
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">表入力</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">見本CSV</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">自社情報の自動差し込み</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">名簿の差分管理</span>
+                        </div>
+                    </div>
+                    <span class="material-icons text-gray-400 details-chevron shrink-0">expand_more</span>
+                </summary>
+                <div class="px-4 sm:px-5 pb-5 pt-1 space-y-3 text-xs leading-relaxed text-muted">
+                    <p><strong class="text-body">表への直接入力</strong>：CSVを用意しなくても、テンプレートに合わせた列・見本データ入りの表で名簿を作成できます。</p>
+                    <p><strong class="text-body">見本CSVのダウンロード</strong>：選択中のテンプレートに必要な列とサンプル値入りのCSVをダウンロードできます。</p>
+                    <p><strong class="text-body">自社情報の登録・差し込み</strong>：会社名・住所・連絡先・ロゴなどを登録しておくと、対応するテンプレートに自動で差し込まれます。</p>
+                    <p><strong class="text-body">名簿の差分確認・復元</strong>：名簿を取り込むたびに前回との差分（追加・変更・削除）を確認し、過去の状態にも復元できます。</p>
+                </div>
+            </details>
+
+            <!-- 出力・検品・計測 -->
+            <details class="rounded-xl border border-gray-200">
+                <summary class="cursor-pointer p-4 sm:p-5 flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-semibold">出力・検品・計測</h3>
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">経理書類6種</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">PDF一括出力</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">検品用CSV</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-surfaceDim text-muted">UTM計測</span>
+                        </div>
+                    </div>
+                    <span class="material-icons text-gray-400 details-chevron shrink-0">expand_more</span>
+                </summary>
+                <div class="px-4 sm:px-5 pb-5 pt-1 space-y-3 text-xs leading-relaxed text-muted">
+                    <p><strong class="text-body">経理・取引書類</strong>：見積書・発注書・納品書・受領書・請求書・領収書の6種を収録。小計・消費税・合計まで再現しています。</p>
+                    <p><strong class="text-body">PDF出力</strong>：位置とサイズを調整したら、CSVの件数分をまとめて一括でPDF生成します。</p>
+                    <p><strong class="text-body">検品用CSV</strong>：「何ページ目に誰のデータを入れたか」の対応表を出力し、検品の手間を減らします。</p>
+                    <p><strong class="text-body">UTMパラメータ付与</strong>：QRコードのリンク先にutm_source等を自動付与し、紙媒体からの反応も計測できます。</p>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ⑥ 活用できる業務 -->
+    <section class="bg-surfaceDim py-8 sm:py-16">
+        <div class="max-w-[1040px] mx-auto px-4 sm:px-8">
+            <h2 class="text-lg sm:text-xl font-bold text-center mb-1">こんな業務に</h2>
+            <p class="text-xs text-muted text-center mb-8">名簿があって、一人ひとりに違う紙を配る仕事なら、だいたい当てはまります。</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 max-w-2xl mx-auto">
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">school</span>
+                    <span class="text-xs">塾・スクール</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">apartment</span>
+                    <span class="text-xs">賃貸・マンション管理</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">local_hospital</span>
+                    <span class="text-xs">クリニック</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">shield</span>
+                    <span class="text-xs">保険代理店・士業</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">fitness_center</span>
+                    <span class="text-xs">ジム・会員制サービス</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">event</span>
+                    <span class="text-xs">イベント・セミナー運営</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">groups</span>
+                    <span class="text-xs">同窓会・自治会</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-primary text-lg shrink-0">tune</span>
+                    <span class="text-xs">その他、自分で自由に設計</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⑦ データの処理方法と利用開始ボタン -->
+    <section class="max-w-[1040px] mx-auto px-4 sm:px-8 py-8 sm:py-16 text-center">
         <span class="material-icons text-primary text-3xl mb-3">lock</span>
-        <h2 class="text-lg font-bold mb-3">データはブラウザの外に出ません</h2>
-        <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">
-            読み込んだ名簿も、生成した書類も、すべてブラウザの中だけで処理されます。サーバーへのアップロードは一切行われないので、個人情報を含む名簿でも安心して使えます。
+        <h2 class="text-lg font-bold mb-3">名簿もPDFも、ブラウザの外に送信されません</h2>
+        <p class="text-xs sm:text-sm text-muted max-w-xl mx-auto leading-relaxed">
+            読み込んだ名簿・ロゴ画像・生成した書類は、すべてブラウザ内（localStorage・IndexedDB）で処理・保存されます。
         </p>
+        <details class="mt-3 max-w-xl mx-auto text-left">
+            <summary class="text-xs text-primary cursor-pointer inline-block">詳しく見る</summary>
+            <p class="text-[11px] mt-2 leading-relaxed text-muted">
+                ページの表示に必要なフォントやライブラリ（Tailwind CSS、PDF生成ライブラリ等）は外部CDNから読み込みます。それ以外の、入力した名簿データやロゴ、生成した書類そのものがサーバーに送信されることはありません。
+            </p>
+        </details>
+        <div class="mt-8">
+            <a href="index.html" class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-lg text-sm font-semibold">
+                <span class="material-icons text-[18px]">arrow_forward</span>
+                無料で使ってみる
+            </a>
+        </div>
     </section>
 
-    <!-- カスタマイズ相談 -->
-    <section class="bg-surfaceDim py-16">
-        <div class="max-w-2xl mx-auto px-5 text-center">
+    <!-- ⑧ カスタマイズ相談・フッター -->
+    <section class="bg-surfaceDim py-8 sm:py-16">
+        <div class="max-w-2xl mx-auto px-4 sm:px-8 text-center">
             <span class="inline-block text-[11px] font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4">ビジネス利用・カスタマイズ</span>
             <h2 class="text-lg sm:text-xl font-bold mb-3">自社専用にカスタマイズしたい場合は</h2>
-            <p class="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6">
+            <p class="text-xs sm:text-sm text-muted leading-relaxed mb-6">
                 自社のテンプレートに合わせたい、複数人で名簿を共有したい、外部システムと連携したいなど、業務に合わせた個別カスタマイズのご相談を承っています。
             </p>
             <a href="https://marcrevix.com/contact/" target="_blank" rel="noopener" class="btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold">
