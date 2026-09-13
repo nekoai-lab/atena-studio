@@ -297,15 +297,21 @@
             </div>
         </div>
 
-        <!-- 作業モード（下線タブ） -->
-        <nav class="h-12 flex items-center gap-6 px-4 sm:px-8 border-t border-gray-100 overflow-x-auto">
-            <button class="header-tab main-mode-btn h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="overlay">
-                <span class="material-icons text-[18px]">layers</span> 背景PDFに合成
-            </button>
-            <button class="header-tab main-mode-btn active h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="designer">
-                <span class="material-icons text-[18px]">design_services</span> 新規帳票デザイン
-            </button>
-        </nav>
+        <!--
+            「背景PDFに合成」タブは無料版から撤去（実用性が低いため）。
+            有料版機能として構成はそのまま残してあるので、復活させる場合は
+            下記タブを外し、main-mode-btn/data-mode="overlay"のbindを有効化するだけでよい。
+            関連コード（modePanelOverlay・overlayPdfUploadSection・generatePDFOverlay等）は削除していない。
+
+            <nav class="h-12 flex items-center gap-6 px-4 sm:px-8 border-t border-gray-100 overflow-x-auto">
+                <button class="header-tab main-mode-btn h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="overlay">
+                    <span class="material-icons text-[18px]">layers</span> 背景PDFに合成
+                </button>
+                <button class="header-tab main-mode-btn active h-full flex items-center gap-1.5 text-sm whitespace-nowrap focus:outline-none" data-mode="designer">
+                    <span class="material-icons text-[18px]">design_services</span> 新規帳票デザイン
+                </button>
+            </nav>
+        -->
     </header>
 
     <main class="flex-grow overflow-y-auto relative p-4 sm:p-6">
