@@ -18,14 +18,7 @@
 
 ## 利用方法
 
-### オンライン利用
 [https://nekoai-lab.github.io/atena-studio/](https://nekoai-lab.github.io/atena-studio/) にアクセスするだけで使えます。
-
-### オフライン利用
-1. 以下の手順でZipファイルをダウンロードする。
-   <img width="960" height="540" alt="Image" src="https://github.com/user-attachments/assets/9fdb3c50-e2c3-4625-8e29-36b782e86baa" />
-2. ダウンロードしたZipファイルを解凍する。
-3. 解凍してできたディレクトリ内の `index.html` を、Google ChromeやEdge等のブラウザアプリで開く。
 
 ## 技術構成
 
@@ -36,7 +29,7 @@
 - **CSV解析**: [PapaParse](https://www.papaparse.com/)
 - **ZIP出力**: [JSZip](https://stuk.github.io/jszip/)
 - **スタイル**: [Tailwind CSS](https://tailwindcss.com/)
-- 各ライブラリはCDNを優先し、CDNに到達できない環境向けに `lib/` 配下へローカルフォールバックを同梱（オフライン起動を担保）
+- 各ライブラリはCDNを優先し、CDNに到達できない環境（社内ネットワーク等）向けに `lib/` 配下へローカルフォールバックを同梱
 - 名簿・自社情報・マイテンプレート・名簿バージョン履歴は、すべてブラウザの `localStorage` / `IndexedDB` に保存（サーバーには一切送信されません）
 
 ## プロジェクト構成
