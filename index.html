@@ -413,40 +413,42 @@
                                 <span class="material-icons text-[14px] mr-1">description</span>見本CSV
                             </button>
                         </div>
-                    </section>
 
-                    <!-- 名簿のバージョン管理（ブラウザ内IndexedDBに保存。サーバーには送信されない） -->
-                    <details id="listVersionSection" class="optional-accordion bg-surface rounded-2xl shadow-sm border border-[#e0e2ec]">
-                        <summary class="p-5 flex items-center justify-between gap-2">
-                            <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                <span class="material-icons text-[18px] text-gray-500">history</span>
-                                名簿のバージョン管理
-                                <span class="text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">任意・2回目以降に便利</span>
-                            </h2>
-                            <span class="material-icons text-gray-400 accordion-chevron">expand_more</span>
-                        </summary>
-                        <div class="px-5 pb-5">
-                            <div class="flex items-center justify-end gap-1.5 mb-2">
-                                <input type="file" id="importBackupInput" accept=".json" class="hidden">
-                                <button id="importBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-surfaceDim px-2.5 py-1 rounded-full flex items-center font-medium">
-                                    <span class="material-icons text-[14px] mr-1">upload</span>復元
-                                </button>
-                                <button id="exportBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-surfaceDim px-2.5 py-1 rounded-full flex items-center font-medium">
-                                    <span class="material-icons text-[14px] mr-1">download</span>バックアップ
-                                </button>
+                        <!-- 名簿のバージョン管理（②のオプション機能。ブラウザ内IndexedDBに保存、サーバーには送信されない） -->
+                        <details id="listVersionSection" class="optional-accordion mt-4 bg-surfaceDim rounded-xl border border-gray-200">
+                            <summary class="p-3.5 flex items-center justify-between gap-2 cursor-pointer">
+                                <h3 class="text-xs font-bold text-gray-700 flex items-center gap-2">
+                                    <span class="material-icons text-[16px] text-gray-500">history</span>
+                                    名簿のバージョン管理
+                                    <span class="text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">任意・2回目以降に便利</span>
+                                </h3>
+                                <span class="material-icons text-gray-400 accordion-chevron">expand_more</span>
+                            </summary>
+                            <div class="px-3.5 pb-3.5">
+                                <div class="flex items-center justify-end gap-1.5 mb-2">
+                                    <input type="file" id="importBackupInput" accept=".json" class="hidden">
+                                    <button id="importBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-white px-2.5 py-1 rounded-full flex items-center font-medium">
+                                        <span class="material-icons text-[14px] mr-1">upload</span>復元
+                                    </button>
+                                    <button id="exportBackupBtn" type="button" class="text-[11px] text-gray-600 hover:bg-white px-2.5 py-1 rounded-full flex items-center font-medium">
+                                        <span class="material-icons text-[14px] mr-1">download</span>バックアップ
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-gray-500 mb-3">同じ名簿を次回以降も使う場合、ここで保存しておくと「前回から誰が増えた・減った・変わったか」を自動で確認できます。このブラウザだけに保存され、どこにも送信されません。</p>
+                                <div class="mb-3">
+                                    <label class="block text-[11px] font-medium text-gray-700 mb-1">一人ひとりを区別できる列（例: 会員番号・メールアドレスなど）</label>
+                                    <div class="flex items-center gap-2">
+                                        <select id="listVersionIdColumn" class="m3-input flex-grow px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
+                                            <option value="">CSV読み込み後に選択してください</option>
+                                        </select>
+                                        <button id="saveListVersionBtn" type="button" class="m3-btn-filled px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap" disabled>この内容を保存</button>
+                                    </div>
+                                </div>
+                                <div id="listVersionDiffSummary" class="hidden mb-3 text-xs bg-white p-2.5 rounded-xl border border-gray-200"></div>
+                                <div id="listVersionHistory" class="space-y-1.5 max-h-52 overflow-y-auto text-[11px] text-gray-400">まだバージョンが保存されていません。</div>
                             </div>
-                            <p class="text-[11px] text-gray-500 mb-3">読み込んだCSVを「バージョン」として保存すると、前回との差分（追加/削除/変更）を確認できます。このブラウザだけに保存され、どこにも送信されません。</p>
-                            <div class="flex items-center gap-2 mb-3">
-                                <label class="text-[11px] font-medium text-gray-700 whitespace-nowrap">一意キーとなる列（ID）:</label>
-                                <select id="listVersionIdColumn" class="m3-input flex-grow px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
-                                    <option value="">CSV読み込み後に選択してください</option>
-                                </select>
-                                <button id="saveListVersionBtn" type="button" class="m3-btn-filled px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap" disabled>この内容を保存</button>
-                            </div>
-                            <div id="listVersionDiffSummary" class="hidden mb-3 text-xs bg-surfaceDim p-2.5 rounded-xl"></div>
-                            <div id="listVersionHistory" class="space-y-1.5 max-h-52 overflow-y-auto text-[11px] text-gray-400">まだバージョンが保存されていません。</div>
-                        </div>
-                    </details>
+                        </details>
+                    </section>
 
                     <!-- ▼▼ モード1: 既存PDFオーバーレイ設定 ▼▼ -->
                     <div id="modePanelOverlay" class="space-y-5">
@@ -597,17 +599,11 @@
                     <!-- ▼▼ モード2: PDF帳票デザイン完全作成パネル ▼▼ -->
                     <div id="modePanelDesigner" class="space-y-5 hidden">
                         <section class="bg-surface rounded-2xl shadow-sm p-5 border border-[#e0e2ec]">
-                            <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                    <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
-                                    用紙サイズ ＆ 帳票プリセット
-                                </h2>
-                                <div class="flex items-center gap-2">
-                                    <button id="presetNoticeBtn" class="m3-btn-tonal text-xs px-2.5 py-1 rounded-full font-medium">案内状プリセット</button>
-                                    <button id="presetTicketBtn" class="m3-btn-tonal text-xs px-2.5 py-1 rounded-full font-medium">チケットプリセット</button>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+                                <span class="bg-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">3</span>
+                                用紙サイズ
+                            </h2>
+                            <div class="grid grid-cols-2 gap-3 max-w-md">
                                 <div>
                                     <label class="block text-[11px] font-medium text-gray-700 mb-1">用紙サイズ</label>
                                     <select id="desPaperSize" class="m3-input w-full px-3 py-1.5 border border-gray-300 text-xs outline-none bg-white">
@@ -624,26 +620,6 @@
                                         <option value="l">横向き (Landscape)</option>
                                     </select>
                                 </div>
-                                <div class="col-span-2">
-                                    <label class="block text-[11px] font-medium text-gray-700 mb-1">日本語フォント (オプション)</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="file" id="customFontInput" accept=".ttf,.otf" class="hidden">
-                                        <button onclick="document.getElementById('customFontInput').click()" class="m3-btn-outlined px-3 py-1.5 rounded-full text-xs flex items-center font-medium">
-                                            <span class="material-icons text-[16px] mr-1">font_download</span>TTF/OTF指定
-                                        </button>
-                                        <span id="fontStatusText" class="text-[11px] text-gray-500 truncate">標準フォールバック描画使用中</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- マイテンプレート（ユーザーが組んだレイアウトを名前を付けて保存・再利用） -->
-                            <div class="mt-3.5 pt-3 border-t border-gray-100 flex items-center gap-2 flex-wrap">
-                                <label class="text-[11px] font-medium text-gray-700 whitespace-nowrap">マイテンプレート:</label>
-                                <select id="myTemplateSelect" class="m3-input flex-grow min-w-[140px] px-2.5 py-1.5 border border-gray-300 text-xs outline-none bg-white">
-                                    <option value="">選択...</option>
-                                </select>
-                                <button id="myTemplateSaveBtn" type="button" class="m3-btn-tonal text-[11px] px-2.5 py-1.5 rounded-full font-medium whitespace-nowrap">今の内容を保存</button>
-                                <button id="myTemplateDeleteBtn" type="button" class="text-[11px] text-error hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full whitespace-nowrap">削除</button>
                             </div>
                         </section>
 
@@ -711,6 +687,17 @@
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="p-3">
+                                        <p class="text-[11px] text-gray-600 mb-0.5">PDF出力用フォント（上級者向け・任意）:</p>
+                                        <p class="text-[10px] text-gray-400 mb-1.5">通常は指定不要です。文字を画像ではなく実データとして埋め込み、コピー・検索できるPDFにしたい場合に指定してください。</p>
+                                        <div class="flex items-center gap-2">
+                                            <input type="file" id="customFontInput" accept=".ttf,.otf" class="hidden">
+                                            <button type="button" onclick="document.getElementById('customFontInput').click()" class="m3-btn-outlined px-3 py-1.5 rounded-full text-xs flex items-center font-medium bg-white">
+                                                <span class="material-icons text-[16px] mr-1">font_download</span>TTF/OTF指定
+                                            </button>
+                                            <span id="fontStatusText" class="text-[11px] text-gray-500 truncate">標準フォールバック描画使用中</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -734,6 +721,14 @@
                                         <div id="elementForm" class="space-y-2.5 hidden"></div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- 今のデザインをマイテンプレートとして保存（読み込みは①のテンプレートを選ぶ画面から） -->
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2 flex-wrap">
+                                <p class="text-[10px] text-gray-400">保存したデザインは、①の「テンプレートを選ぶ」の中の「マイテンプレート」からいつでも呼び出せます。</p>
+                                <button id="myTemplateSaveBtn" type="button" class="m3-btn-tonal text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap flex items-center gap-1">
+                                    <span class="material-icons text-sm">bookmark_add</span>このデザインを名前を付けて保存
+                                </button>
                             </div>
                         </section>
                     </div>
@@ -1227,8 +1222,7 @@
                 addLabelBtn: document.getElementById('addLabelBtn'), addTableBtn: document.getElementById('addTableBtn'),
                 addBoxBtn: document.getElementById('addBoxBtn'), addQrBtn: document.getElementById('addQrBtn'), addLogoBtn: document.getElementById('addLogoBtn'),
                 insertCompanyInfoBtn: document.getElementById('insertCompanyInfoBtn'), openCompanyProfileFromStep4Btn: document.getElementById('openCompanyProfileFromStep4Btn'),
-                presetNoticeBtn: document.getElementById('presetNoticeBtn'), presetTicketBtn: document.getElementById('presetTicketBtn'),
-                myTemplateSelect: document.getElementById('myTemplateSelect'), myTemplateSaveBtn: document.getElementById('myTemplateSaveBtn'), myTemplateDeleteBtn: document.getElementById('myTemplateDeleteBtn'),
+                myTemplateSaveBtn: document.getElementById('myTemplateSaveBtn'),
                 customFontInput: document.getElementById('customFontInput'), fontStatusText: document.getElementById('fontStatusText'),
 
                 // モード3 (ZIP出力：独立化)
@@ -1745,38 +1739,6 @@
                 els.openCompanyProfileFromStep4Btn.onclick = () => els.openCompanyProfileBtn.click();
             }
 
-            els.presetNoticeBtn.onclick = () => {
-                designerElements = [
-                    { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
-                    { id: 'el_title', type: 'label', name: 'タイトル', text: '重要なお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 20, align: 'center', bold: true, fontFamily: 'mincho', color: '#111827' },
-                    { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
-                    { id: 'el_dest', type: 'label', name: '宛名枠', text: '{{氏名}} 様\n保護者様', x: 20, y: 44, width: 90, height: 20, fontSize: 13, align: 'left', bold: false, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
-                    { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。\n\nさて、本状に記載のQRコードより申請サイトへアクセスいただき、必要事項のご登録をお願い申し上げます。ご不明な点がございましたら、下記お問い合わせ先までご連絡ください。\n\n敬具', x: 20, y: 68, width: 170, height: 55, fontSize: 11, align: 'left' },
-                    { id: 'el_qr', type: 'qr', name: '専用QR', template: 'https://example.com/login?token={{TOKEN}}', x: 135, y: 128, size: 42 },
-                    { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲QRコードから手続き', x: 135, y: 171, width: 42, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
-                    { id: 'el_table', type: 'table', name: '確認事項表', x: 20, y: 190, width: 170, height: 18, rowHeight: 9, fontSize: 10, headers: ['受付番号', '対象者名', '区分'], columns: ['受付番号', '氏名', '区分'] },
-                    { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
-                    { id: 'el_footer', type: 'label', name: 'フッター', text: '{{発行者名}}　お問い合わせ: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
-                ];
-                selectedElementId = 'el_title'; renderDesTagPaletteFromTemplate(); renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
-                showToast('案内状プリセットを読み込みました。', 'success');
-            };
-
-            els.presetTicketBtn.onclick = () => {
-                designerElements = [
-                    { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
-                    { id: 'el_header', type: 'label', name: 'チケット名', text: 'EVENT TICKET', x: 20, y: 18, width: 257, height: 13, fontSize: 22, align: 'center', bold: true },
-                    { id: 'el_subheader', type: 'label', name: 'サブタイトル', text: '入場受領証 / Admission Receipt', x: 20, y: 32, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
-                    { id: 'el_info', type: 'label', name: '席番・氏名', text: 'No. {{番号}}\n座席番号: {{座席}}\nご芳名: {{氏名}} 様', x: 20, y: 50, width: 150, height: 34, fontSize: 12, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
-                    { id: 'el_qr', type: 'qr', name: '認証QR', template: 'https://check.in/{{番号}}', x: 185, y: 50, size: 55 },
-                    { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲入場時にご提示ください', x: 185, y: 108, width: 55, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
-                    { id: 'el_box', type: 'box', name: '切り取り線', x: 20, y: 140, width: 257, height: 0.6, color: '#d1d5db' },
-                    { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本チケットの譲渡・転売はご遠慮ください。', x: 20, y: 145, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
-                ];
-                selectedElementId = 'el_header'; renderDesTagPaletteFromTemplate(); renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
-                showToast('チケットプリセットを読み込みました。', 'success');
-            };
-
             // 用途別テンプレートギャラリー（QRは数ある要素の一つ、という位置づけのエントリーポイント）
             const TEMPLATE_GALLERY_PRESETS = {
                 mailingLabel: {
@@ -2120,6 +2082,38 @@
                         { id: 'el_total', type: 'label', name: '合計', text: '合計　¥{{合計金額}}', x: 110, y: 139, width: 80, height: 9, fontSize: 13, bold: true, align: 'right' },
                         { id: 'el_notes', type: 'label', name: '但し書き・備考', text: '但し書き: {{但し書き}}\n{{備考}}', x: 20, y: 155, width: 170, height: 28, fontSize: 10, border: true, borderColor: '#d1d5db' }
                     ]
+                },
+                importantNotice: {
+                    orientation: 'p',
+                    firstElementId: 'el_title',
+                    label: '重要なお知らせ',
+                    elements: [
+                        { id: 'el_date', type: 'label', name: '発行日', text: '{{発行日}}', x: 20, y: 10, width: 170, height: 7, fontSize: 10, align: 'right', color: '#6b7280' },
+                        { id: 'el_title', type: 'label', name: 'タイトル', text: '重要なお知らせ', x: 20, y: 20, width: 170, height: 12, fontSize: 20, align: 'center', bold: true, fontFamily: 'mincho', color: '#111827' },
+                        { id: 'el_underline', type: 'box', name: '見出し下線', x: 85, y: 34, width: 40, height: 1.2, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_dest', type: 'label', name: '宛名枠', text: '{{氏名}} 様\n保護者様', x: 20, y: 44, width: 90, height: 20, fontSize: 13, align: 'left', bold: false, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_msg', type: 'label', name: '本文', text: '拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。\n\nさて、本状に記載のQRコードより申請サイトへアクセスいただき、必要事項のご登録をお願い申し上げます。ご不明な点がございましたら、下記お問い合わせ先までご連絡ください。\n\n敬具', x: 20, y: 68, width: 170, height: 55, fontSize: 11, align: 'left' },
+                        { id: 'el_qr', type: 'qr', name: '専用QR', template: 'https://example.com/login?token={{TOKEN}}', x: 135, y: 128, size: 42 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲QRコードから手続き', x: 135, y: 171, width: 42, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_table', type: 'table', name: '確認事項表', x: 20, y: 190, width: 170, height: 18, rowHeight: 9, fontSize: 10, headers: ['受付番号', '対象者名', '区分'], columns: ['受付番号', '氏名', '区分'] },
+                        { id: 'el_divider', type: 'box', name: 'フッター区切り線', x: 20, y: 270, width: 170, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター', text: '{{発行者名}}　お問い合わせ: {{連絡先}}', x: 20, y: 274, width: 170, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
+                    ]
+                },
+                genericTicket: {
+                    orientation: 'l',
+                    firstElementId: 'el_header',
+                    label: '汎用チケット',
+                    elements: [
+                        { id: 'el_bar', type: 'box', name: 'アクセントバー', x: 0, y: 0, width: 297, height: 8, color: DEFAULT_ACCENT_COLOR },
+                        { id: 'el_header', type: 'label', name: 'チケット名', text: 'EVENT TICKET', x: 20, y: 18, width: 257, height: 13, fontSize: 22, align: 'center', bold: true },
+                        { id: 'el_subheader', type: 'label', name: 'サブタイトル', text: '入場受領証 / Admission Receipt', x: 20, y: 32, width: 257, height: 7, fontSize: 10, align: 'center', color: '#6b7280' },
+                        { id: 'el_info', type: 'label', name: '席番・氏名', text: 'No. {{番号}}\n座席番号: {{座席}}\nご芳名: {{氏名}} 様', x: 20, y: 50, width: 150, height: 34, fontSize: 12, border: true, borderColor: DEFAULT_ACCENT_COLOR, bg: '#ECEAFA' },
+                        { id: 'el_qr', type: 'qr', name: '認証QR', template: 'https://check.in/{{番号}}', x: 185, y: 50, size: 55 },
+                        { id: 'el_qrCaption', type: 'label', name: 'QR案内', text: '▲入場時にご提示ください', x: 185, y: 108, width: 55, height: 7, fontSize: 8, align: 'center', color: '#6b7280' },
+                        { id: 'el_box', type: 'box', name: '切り取り線', x: 20, y: 140, width: 257, height: 0.6, color: '#d1d5db' },
+                        { id: 'el_footer', type: 'label', name: 'フッター注記', text: '本チケットの譲渡・転売はご遠慮ください。', x: 20, y: 145, width: 257, height: 8, fontSize: 9, align: 'center', color: '#9ca3af' }
+                    ]
                 }
             };
 
@@ -2143,7 +2137,9 @@
                 deliveryNote:       { icon: 'local_shipping',      desc: '納品No.・明細・小計/消費税/合計',    category: '経理・取引書類' },
                 receiptOfGoods:     { icon: 'fact_check',          desc: '受領確認文・受領印欄つき',           category: '経理・取引書類' },
                 invoiceBill:        { icon: 'receipt',             desc: 'お支払期限・振込先つき',             category: '経理・取引書類' },
-                paymentReceipt:     { icon: 'payments',            desc: '但し書き・領収金額つき',             category: '経理・取引書類' }
+                paymentReceipt:     { icon: 'payments',            desc: '但し書き・領収金額つき',             category: '経理・取引書類' },
+                importantNotice:    { icon: 'campaign',            desc: '確認事項表・QR付き',                 category: '案内状・通知' },
+                genericTicket:      { icon: 'confirmation_number', desc: '汎用のイベントチケット／QR付き',     category: '受付・会員' }
             };
             const TEMPLATE_GALLERY_CATEGORY_ORDER = ['受付・会員', '案内状・通知', 'ラベル・証明', '経理・取引書類'];
 
@@ -2297,17 +2293,30 @@
                 grid.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3';
                 names.forEach(name => {
                     const t = templates[name];
-                    const card = document.createElement('button');
-                    card.type = 'button';
-                    card.className = 'template-picker-card text-left border border-gray-200 rounded-xl overflow-hidden hover:border-primary hover:shadow-md transition-all bg-white';
+                    const card = document.createElement('div');
+                    card.className = 'template-picker-card relative border border-gray-200 rounded-xl overflow-hidden hover:border-primary hover:shadow-md transition-all bg-white';
                     card.innerHTML = `
-                        <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
-                        <div class="p-2.5">
-                            <span class="material-icons text-gray-500 text-base align-middle mr-1">bookmark</span>
-                            <span class="text-xs font-semibold text-gray-900">${name}</span>
-                        </div>
+                        <button type="button" class="w-full text-left" data-apply>
+                            <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
+                            <div class="p-2.5">
+                                <span class="material-icons text-gray-500 text-base align-middle mr-1">bookmark</span>
+                                <span class="text-xs font-semibold text-gray-900">${name}</span>
+                            </div>
+                        </button>
+                        <button type="button" class="absolute top-1.5 right-1.5 bg-white/90 hover:bg-red-50 hover:text-red-500 text-gray-400 rounded-full w-6 h-6 flex items-center justify-center shadow" data-delete title="削除">
+                            <span class="material-icons text-[15px]">delete</span>
+                        </button>
                     `;
-                    card.addEventListener('click', () => applyMyTemplate(name));
+                    card.querySelector('[data-apply]').addEventListener('click', () => applyMyTemplate(name));
+                    card.querySelector('[data-delete]').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (!confirm(`マイテンプレート『${name}』を削除しますか？`)) return;
+                        const ts = loadMyTemplates();
+                        delete ts[name];
+                        saveMyTemplatesStore(ts);
+                        renderMyTemplatesInPicker();
+                        showToast(`マイテンプレート『${name}』を削除しました。`, 'success');
+                    });
                     grid.appendChild(card);
                     renderTemplateThumbnail(card.querySelector('canvas'), t);
                 });
@@ -3078,18 +3087,6 @@
             function saveMyTemplatesStore(templates) {
                 localStorage.setItem(MY_TEMPLATE_KEY, JSON.stringify(templates));
             }
-            function renderMyTemplateOptions() {
-                if (!els.myTemplateSelect) return;
-                const templates = loadMyTemplates();
-                const currentVal = els.myTemplateSelect.value;
-                els.myTemplateSelect.innerHTML = '<option value="">選択...</option>';
-                Object.keys(templates).forEach(name => {
-                    const opt = document.createElement('option');
-                    opt.value = name; opt.textContent = name;
-                    els.myTemplateSelect.appendChild(opt);
-                });
-                if (templates[currentVal]) els.myTemplateSelect.value = currentVal;
-            }
             if (els.myTemplateSaveBtn) {
                 els.myTemplateSaveBtn.addEventListener('click', () => {
                     if (designerElements.length === 0) return showToast('保存する要素がありません。先に帳票要素を追加してください。', 'error');
@@ -3101,38 +3098,9 @@
                         elements: JSON.parse(JSON.stringify(designerElements))
                     };
                     saveMyTemplatesStore(templates);
-                    renderMyTemplateOptions();
-                    els.myTemplateSelect.value = name;
-                    showToast(`マイテンプレート『${name}』を保存しました。次回もここから呼び出せます。`, 'success');
+                    renderMyTemplatesInPicker();
+                    showToast(`マイテンプレート『${name}』を保存しました。「テンプレートを選ぶ」からいつでも呼び出せます。`, 'success');
                 });
-            }
-            if (els.myTemplateDeleteBtn) {
-                els.myTemplateDeleteBtn.addEventListener('click', () => {
-                    const name = els.myTemplateSelect.value;
-                    if (!name) return showToast('削除するマイテンプレートを選択してください。', 'error');
-                    const templates = loadMyTemplates();
-                    delete templates[name];
-                    saveMyTemplatesStore(templates);
-                    renderMyTemplateOptions();
-                    showToast(`マイテンプレート『${name}』を削除しました。`, 'success');
-                });
-            }
-            if (els.myTemplateSelect) {
-                els.myTemplateSelect.addEventListener('change', () => {
-                    const name = els.myTemplateSelect.value;
-                    if (!name) return;
-                    const templates = loadMyTemplates();
-                    const t = templates[name];
-                    if (!t) return;
-                    els.desOrientation.value = t.orientation;
-                    designerElements = JSON.parse(JSON.stringify(t.elements));
-                    selectedElementId = designerElements[0] ? designerElements[0].id : null;
-                    applyCompanyInfoToDesign(true);
-                    renderDesTagPaletteFromTemplate();
-                    renderElementList(); renderElementEditor(); syncMainToExp(); drawPreview();
-                    showToast(`マイテンプレート『${name}』を呼び出しました。`, 'success');
-                });
-                renderMyTemplateOptions();
             }
 
             // 画像から代表色（背景の白系・黒系を除いた、最も頻出する色）を抽出する簡易ロジック
