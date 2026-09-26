@@ -1,0 +1,2 @@
+# main に直接 push してよいパス（ai-dev-harness の main-check が読む。glob を1行に1つ）
+# 空＝すべて PR。main のルートがそのまま GitHub Pages（https://nekoai-lab.github.io/atena-studio/）で公開されるため

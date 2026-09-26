@@ -4,7 +4,8 @@
 
 ## 概要
 
-（1〜2行で：誰の・何を楽にするものか。詳しくは PRODUCT.md）
+名簿 CSV から宛名ラベル・受講票・名札・見積書などをブラウザだけで作る帳票ツール（public）。サーバー不要、データはブラウザの外に送らない。
+機能と今後の展開は README.md、設計は DESIGN.md、予定は ROADMAP.md。
 
 ## よく使うコマンド
 
@@ -38,4 +39,6 @@
 
 ## このリポジトリ固有のルール
 
-（あれば書く）
+- **main のルートがそのまま GitHub Pages で公開される**（legacy ビルド、source は main の `/`）。main に入った時点で本番。main への直接 push はしない（`.github/direct-push-allow` は空）
+- `.nojekyll` がないので、ルートの Markdown（この CLAUDE.md など）も Pages でページとして公開される。public リポジトリなので中身は元から公開だが、鍵や個人情報は書かない
+- public なので、コミットは noreply アドレス（REPOS.md の置き場所のルール）
