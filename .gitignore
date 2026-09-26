@@ -1,3 +1,8 @@
 .DS_Store
 reference-templates/
 assets/ChatGPT Image*.png
+
+# 鍵（ai-dev-harness policies/secrets.md。.env.example だけはコミットしてよい）
+.env
+.env.*
+!.env.example
