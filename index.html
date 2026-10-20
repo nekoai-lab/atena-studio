@@ -1473,6 +1473,12 @@
                 });
             }
 
+            // 画面に差し込む文字列のエスケープ。読み込んだファイル（設定・バックアップ）や保存済みの値は、
+            // 利用者以外が作ったものでありうるので、innerHTML に入れる前に必ず通す
+            function esc(value) {
+                return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
             function logProgress(message) {
                 const time = new Date().toLocaleTimeString('ja-JP', { hour12: false });
                 const p = document.createElement('div');
@@ -1502,7 +1508,7 @@
                     card.innerHTML = `
                         <div class="flex items-center gap-2 overflow-hidden">
                             <span class="material-icons text-primary text-[16px]">${typeIcon}</span>
-                            <span class="font-medium truncate">${el.name || '無題'}</span>
+                            <span class="font-medium truncate">${esc(el.name || '無題')}</span>
                         </div>
                         <div class="flex items-center gap-1">
                             <button class="text-gray-400 hover:text-red-500 p-1 delete-btn" title="削除"><span class="material-icons text-[14px]">delete</span></button>
@@ -1527,7 +1533,7 @@
                         <label class="block text-[11px] text-gray-600 mb-0.5">文字サイズ (pt)</label>
                         <div class="flex items-center gap-1">
                             <button type="button" class="font-size-step m3-btn-outlined w-6 h-6 shrink-0 rounded flex items-center justify-center text-xs leading-none" data-target="${id}" data-delta="-1">−</button>
-                            <input type="number" id="${id}" value="${value}" class="m3-input w-full px-1 py-1 border rounded text-xs text-center font-mono">
+                            <input type="number" id="${id}" value="${esc(value)}" class="m3-input w-full px-1 py-1 border rounded text-xs text-center font-mono">
                             <button type="button" class="font-size-step m3-btn-outlined w-6 h-6 shrink-0 rounded flex items-center justify-center text-xs leading-none" data-target="${id}" data-delta="1">＋</button>
                         </div>
                         <div class="flex flex-wrap gap-1 mt-1">
@@ -1720,18 +1726,18 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">要素名</label>
-                            <input type="text" id="propName" value="${el.name || ''}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
+                            <input type="text" id="propName" value="${esc(el.name || '')}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
                         </div>
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">種類</label>
-                            <span class="text-xs font-mono text-primary font-bold uppercase inline-block mt-1">${el.type}</span>
+                            <span class="text-xs font-mono text-primary font-bold uppercase inline-block mt-1">${esc(el.type)}</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-4 gap-2">
-                        <div><label class="block text-[11px] text-gray-600">X (mm)</label><input type="number" id="propX" value="${el.x ?? 20}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
-                        <div><label class="block text-[11px] text-gray-600">Y (mm)</label><input type="number" id="propY" value="${el.y ?? 20}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
-                        <div><label class="block text-[11px] text-gray-600">${el.type === 'qr' ? 'サイズ' : '幅 (mm)'}</label><input type="number" id="propW" value="${el.type === 'qr' ? el.size : (el.width ?? 100)}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
-                        <div><label class="block text-[11px] text-gray-600">${el.type === 'qr' ? '-' : '高さ(mm)'}</label><input type="number" id="propH" value="${el.height ?? 10}" ${el.type === 'qr' ? 'disabled' : ''} class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                        <div><label class="block text-[11px] text-gray-600">X (mm)</label><input type="number" id="propX" value="${esc(el.x ?? 20)}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                        <div><label class="block text-[11px] text-gray-600">Y (mm)</label><input type="number" id="propY" value="${esc(el.y ?? 20)}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                        <div><label class="block text-[11px] text-gray-600">${el.type === 'qr' ? 'サイズ' : '幅 (mm)'}</label><input type="number" id="propW" value="${esc(el.type === 'qr' ? el.size : (el.width ?? 100))}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                        <div><label class="block text-[11px] text-gray-600">${el.type === 'qr' ? '-' : '高さ(mm)'}</label><input type="number" id="propH" value="${esc(el.height ?? 10)}" ${el.type === 'qr' ? 'disabled' : ''} class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
                     </div>
                 `;
 
@@ -1739,7 +1745,7 @@
                     fieldsHtml += `
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">表示テキスト (CSVタグ可)</label>
-                            <textarea id="propText" rows="3" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${el.text || ''}</textarea>
+                            <textarea id="propText" rows="3" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${esc(el.text || '')}</textarea>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div>${fontSizeControlHtml('propFontSize', el.fontSize || 12)}</div>
@@ -1781,21 +1787,21 @@
                     fieldsHtml += `
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">QRコードデータテンプレート</label>
-                            <textarea id="propTemplate" rows="2" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${el.template || ''}</textarea>
+                            <textarea id="propTemplate" rows="2" class="m3-input w-full px-2.5 py-1 border rounded text-xs font-mono">${esc(el.template || '')}</textarea>
                         </div>
                     `;
                 } else if (el.type === 'table') {
                     fieldsHtml += `
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">ヘッダー項目 (カンマ区切り)</label>
-                            <input type="text" id="propHeaders" value="${(el.headers || []).join(', ')}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
+                            <input type="text" id="propHeaders" value="${esc((el.headers || []).join(', '))}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
                         </div>
                         <div>
                             <label class="block text-[11px] font-medium text-gray-600 mb-0.5">差し込みCSV列名 (カンマ区切り)</label>
-                            <input type="text" id="propColumns" value="${(el.columns || []).join(', ')}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
+                            <input type="text" id="propColumns" value="${esc((el.columns || []).join(', '))}" class="m3-input w-full px-2.5 py-1 border rounded text-xs">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <div><label class="block text-[11px] text-gray-600">1行の高さ (mm)</label><input type="number" id="propRowHeight" value="${el.rowHeight || 8}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
+                            <div><label class="block text-[11px] text-gray-600">1行の高さ (mm)</label><input type="number" id="propRowHeight" value="${esc(el.rowHeight || 8)}" class="m3-input w-full px-2 py-1 border rounded text-xs text-right font-mono"></div>
                             <div>${fontSizeControlHtml('propFontSize', el.fontSize || 10)}</div>
                         </div>
                     `;
@@ -2491,7 +2497,7 @@
                             <div class="bg-surfaceDim p-2"><canvas class="w-full block rounded shadow-sm bg-white"></canvas></div>
                             <div class="p-2.5">
                                 <span class="material-icons text-gray-500 text-base align-middle mr-1">bookmark</span>
-                                <span class="text-xs font-semibold text-gray-900">${name}</span>
+                                <span class="text-xs font-semibold text-gray-900">${esc(name)}</span>
                             </div>
                         </button>
                         <button type="button" class="absolute top-1.5 right-1.5 bg-white/90 hover:bg-red-50 hover:text-red-500 text-gray-400 rounded-full w-6 h-6 flex items-center justify-center shadow" data-delete title="削除">
@@ -3060,12 +3066,24 @@
                     tx.onerror = () => reject(tx.error);
                 }));
             }
-            function idbClearAll(storeNames) {
+            // 複数のストアを1つのトランザクションで入れ替える。途中で失敗したら全体が取り消され、元の履歴が残る
+            function idbReplaceAll(valuesByStore) {
+                const names = Object.keys(valuesByStore);
                 return openListDB().then(db => new Promise((resolve, reject) => {
-                    const tx = db.transaction(storeNames, 'readwrite');
-                    storeNames.forEach(name => tx.objectStore(name).clear());
+                    const tx = db.transaction(names, 'readwrite');
                     tx.oncomplete = () => resolve();
                     tx.onerror = () => reject(tx.error);
+                    tx.onabort = () => reject(tx.error || new Error('aborted'));
+                    try {
+                        names.forEach(name => {
+                            const store = tx.objectStore(name);
+                            store.clear();
+                            valuesByStore[name].forEach(v => store.put(v));
+                        });
+                    } catch (err) {
+                        tx.abort();
+                        reject(err);
+                    }
                 }));
             }
 
@@ -3149,7 +3167,7 @@
                     const row = document.createElement('div');
                     row.className = 'flex items-center justify-between bg-surfaceDim px-2.5 py-1.5 rounded-lg';
                     const displayTime = v.importedAt.slice(0, 16).replace('T', ' ');
-                    row.innerHTML = `<span>${displayTime}　${v.rowCount}件　<span class="text-gray-400">(追加${d.added ?? '-'}/変更${d.changed ?? '-'}/削除${d.removed ?? '-'})</span></span><button type="button" data-version-id="${v.id}" class="restore-version-btn text-primary hover:underline font-medium">この時点に復元</button>`;
+                    row.innerHTML = `<span>${esc(displayTime)}　${esc(v.rowCount)}件　<span class="text-gray-400">(追加${esc(d.added ?? '-')}/変更${esc(d.changed ?? '-')}/削除${esc(d.removed ?? '-')})</span></span><button type="button" data-version-id="${esc(v.id)}" class="restore-version-btn text-primary hover:underline font-medium">この時点に復元</button>`;
                     els.listVersionHistory.appendChild(row);
                 });
                 els.listVersionHistory.querySelectorAll('.restore-version-btn').forEach(btn => {
@@ -3164,6 +3182,17 @@
                 });
             }
             if (els.saveListVersionBtn) els.saveListVersionBtn.addEventListener('click', saveListVersion);
+
+            // バックアップの1件の形を確かめる（ここを通らないものは読み込まない。表示側でもエスケープする）
+            function isValidListVersion(v) {
+                const isCount = (n) => n === undefined || n === null || (Number.isInteger(n) && n >= 0);
+                return !!v && typeof v === 'object'
+                    && typeof v.id === 'string'
+                    && typeof v.importedAt === 'string' && !Number.isNaN(Date.parse(v.importedAt))
+                    && Number.isInteger(v.rowCount) && v.rowCount >= 0
+                    && Array.isArray(v.rows) && Array.isArray(v.headers)
+                    && (v.diff === undefined || v.diff === null || (typeof v.diff === 'object' && isCount(v.diff.added) && isCount(v.diff.changed) && isCount(v.diff.removed)));
+            }
 
             async function exportBackup() {
                 const [versions, recipients] = await Promise.all([idbGetAll('listVersions'), idbGetAll('recipients')]);
@@ -3183,10 +3212,10 @@
                         try {
                             const payload = JSON.parse(reader.result);
                             if (!Array.isArray(payload.listVersions) || !Array.isArray(payload.recipients)) throw new Error('invalid format');
+                            if (!payload.listVersions.every(isValidListVersion)) throw new Error('invalid format');
+                            if (!payload.recipients.every(r => r && typeof r === 'object' && (typeof r.recipientId === 'string' || typeof r.recipientId === 'number'))) throw new Error('invalid format');
                             if (!confirm(`現在ブラウザに保存されている名簿の履歴を、このバックアップの内容（バージョン${payload.listVersions.length}件）で置き換えます。よろしいですか？`)) return;
-                            await idbClearAll(['listVersions', 'recipients']);
-                            await idbPutAll('listVersions', payload.listVersions);
-                            await idbPutAll('recipients', payload.recipients);
+                            await idbReplaceAll({ listVersions: payload.listVersions, recipients: payload.recipients });
                             await renderListVersionHistory();
                             showToast('バックアップを復元しました。', 'success');
                         } catch (err) {
