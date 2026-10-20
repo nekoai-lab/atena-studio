@@ -3066,12 +3066,24 @@
                     tx.onerror = () => reject(tx.error);
                 }));
             }
-            function idbClearAll(storeNames) {
+            // 複数のストアを1つのトランザクションで入れ替える。途中で失敗したら全体が取り消され、元の履歴が残る
+            function idbReplaceAll(valuesByStore) {
+                const names = Object.keys(valuesByStore);
                 return openListDB().then(db => new Promise((resolve, reject) => {
-                    const tx = db.transaction(storeNames, 'readwrite');
-                    storeNames.forEach(name => tx.objectStore(name).clear());
+                    const tx = db.transaction(names, 'readwrite');
                     tx.oncomplete = () => resolve();
                     tx.onerror = () => reject(tx.error);
+                    tx.onabort = () => reject(tx.error || new Error('aborted'));
+                    try {
+                        names.forEach(name => {
+                            const store = tx.objectStore(name);
+                            store.clear();
+                            valuesByStore[name].forEach(v => store.put(v));
+                        });
+                    } catch (err) {
+                        tx.abort();
+                        reject(err);
+                    }
                 }));
             }
 
@@ -3201,10 +3213,9 @@
                             const payload = JSON.parse(reader.result);
                             if (!Array.isArray(payload.listVersions) || !Array.isArray(payload.recipients)) throw new Error('invalid format');
                             if (!payload.listVersions.every(isValidListVersion)) throw new Error('invalid format');
+                            if (!payload.recipients.every(r => r && typeof r === 'object' && (typeof r.recipientId === 'string' || typeof r.recipientId === 'number'))) throw new Error('invalid format');
                             if (!confirm(`現在ブラウザに保存されている名簿の履歴を、このバックアップの内容（バージョン${payload.listVersions.length}件）で置き換えます。よろしいですか？`)) return;
-                            await idbClearAll(['listVersions', 'recipients']);
-                            await idbPutAll('listVersions', payload.listVersions);
-                            await idbPutAll('recipients', payload.recipients);
+                            await idbReplaceAll({ listVersions: payload.listVersions, recipients: payload.recipients });
                             await renderListVersionHistory();
                             showToast('バックアップを復元しました。', 'success');
                         } catch (err) {
